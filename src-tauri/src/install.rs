@@ -661,12 +661,32 @@ fn arguments(values: &Value, vars: &HashMap<String, String>) -> Result<Vec<Strin
     }
     Ok(out)
 }
+fn launch_claims(token: &str) -> Result<Value> {
+    use base64::Engine as _;
+    let payload = token
+        .split('.')
+        .nth(1)
+        .ok_or_else(|| Error::msg("Minecraft token format is invalid; sign in again"))?;
+    let bytes = base64::engine::general_purpose::URL_SAFE_NO_PAD.decode(payload)?;
+    let claims: Value = serde_json::from_slice(&bytes)?;
+    for field in ["xuid", "clientId"] {
+        if claims[field].as_str().is_none_or(str::is_empty) {
+            return Err(Error::msg(format!(
+                "Minecraft token has no {field}; sign in again"
+            )));
+        }
+    }
+    Ok(claims)
+}
 pub async fn launch(
     inst: Installed,
     p: &Profile,
     account: &crate::state::Account,
     token: &str,
 ) -> Result<tokio::process::Child> {
+    // Minecraft Services already authenticated this token. Decode claims only to
+    // populate launch arguments; this helper never grants account access.
+    let claims = launch_claims(token)?;
     let root = inst.root;
     let m = inst.metadata;
     let mut vars: HashMap<String, String> = HashMap::new();
@@ -674,8 +694,14 @@ pub async fn launch(
         ("auth_player_name", account.name.clone()),
         ("auth_uuid", account.id.clone()),
         ("auth_access_token", token.into()),
-        ("auth_xuid", String::new()),
-        ("clientid", String::new()),
+        (
+            "auth_xuid",
+            claims["xuid"].as_str().unwrap_or("").to_string(),
+        ),
+        (
+            "clientid",
+            claims["clientId"].as_str().unwrap_or("").to_string(),
+        ),
         ("user_type", "msa".into()),
         (
             "version_name",
@@ -770,6 +796,16 @@ mod tests {
             preset: "Custom".into(),
         };
         assert_eq!(loader_id(&p), "1.21.9-forge-59.0.5");
+    }
+    #[test]
+    fn launch_identity_requires_account_claims() {
+        use base64::Engine as _;
+        let payload = base64::engine::general_purpose::URL_SAFE_NO_PAD
+            .encode(br#"{"xuid":"123","clientId":"registered-app"}"#);
+        let claims = launch_claims(&format!("header.{payload}.signature")).unwrap();
+        assert_eq!(claims["xuid"], "123");
+        assert!(launch_claims("invalid").is_err());
+        assert!(launch_claims("header.e30.signature").is_err());
     }
     #[test]
     fn maven_coordinates() {

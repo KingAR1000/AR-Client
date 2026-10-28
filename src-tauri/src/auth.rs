@@ -103,7 +103,13 @@ async fn exchange(c: &reqwest::Client, mut ms: Value) -> Result<(Account, Value)
             .ok_or_else(|| Error::msg("Minecraft profile missing"))?
             .into(),
         name: p["name"].as_str().unwrap_or("Player").into(),
-        skin: p["skins"][0]["url"].as_str().map(str::to_owned),
+        skin: p["skins"][0]["url"].as_str().map(|u| {
+            u.replacen(
+                "http://textures.minecraft.net/",
+                "https://textures.minecraft.net/",
+                1,
+            )
+        }),
         capes: p["capes"].as_array().cloned().unwrap_or_default(),
     };
     ms["minecraft"] = mc;

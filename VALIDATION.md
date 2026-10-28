@@ -6,7 +6,7 @@ Checked on 2026-10-28. This distinguishes implemented code from verified behavio
 
 - Mojang manifest: latest official release **26.3**.
 - React/TypeScript production build; **4 frontend tests**.
-- **18 Rust tests**: path/HTTPS validation, checksum verification, metadata inheritance, version normalization, Send-safe command futures, profile CRUD, EULA enforcement, content rollback/collision protection, skin decoding and configuration recovery.
+- **19 Rust tests**: path/HTTPS validation, checksum verification, metadata inheritance, version normalization, Send-safe command futures, profile CRUD, EULA enforcement, content rollback/collision protection, skin decoding and configuration recovery.
 - Browser navigation across launcher sections: no uncaught runtime errors. Browser mode correctly refuses native operations.
 - Standalone website at desktop and 390px mobile widths: no horizontal overflow or runtime errors.
 - Fabric companion `gradle build` succeeds with JDK 21 / Gradle 9.1.0; includes the crosshair/scoreboard mixins. Compilation does not prove gameplay behavior.
