@@ -552,7 +552,8 @@ pub async fn install(
     use futures_util::{stream, StreamExt, TryStreamExt};
     let total = objects.len();
     let count = Arc::new(std::sync::atomic::AtomicUsize::new(0));
-    stream::iter(objects.values().map(|v| {
+    let downloads: Vec<Value> = objects.values().cloned().collect();
+    stream::iter(downloads.into_iter().map(|v| {
         let c = c.clone();
         let root = root.clone();
         let progress = progress.clone();

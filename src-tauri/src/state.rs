@@ -149,6 +149,20 @@ mod tests {
         assert!(p.validate().is_err());
     }
     #[test]
+    fn recovers_valid_backup_without_destroying_corrupt_file() {
+        let d = tempfile::tempdir().unwrap();
+        let state = State::default();
+        write(d.path(), &state).unwrap();
+        write(d.path(), &state).unwrap();
+        std::fs::write(d.path().join("state.json"), b"broken").unwrap();
+        let recovered = read(d.path()).unwrap();
+        assert_eq!(recovered.settings["recoveredFromBackup"], true);
+        assert!(std::fs::read_dir(d.path()).unwrap().flatten().any(|e| e
+            .file_name()
+            .to_string_lossy()
+            .starts_with("state.corrupt-")));
+    }
+    #[test]
     fn persists_state() {
         let d = tempfile::tempdir().unwrap();
         let s = State::default();

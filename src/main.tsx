@@ -93,6 +93,11 @@ function App() {
   async function refresh() {
     const s = await request<LauncherState>("state");
     setState(s);
+    if (s.settings.recoveredFromBackup)
+      setNotice({
+        text: "Configuration was recovered from its backup. The damaged file was preserved in your data folder. Save Settings to acknowledge.",
+        error: true,
+      });
     return s;
   }
   async function run<T>(

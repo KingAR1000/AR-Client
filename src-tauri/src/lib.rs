@@ -696,6 +696,13 @@ pub fn run() {
 #[cfg(test)]
 mod command_tests {
     use super::*;
+    #[test]
+    fn dispatch_future_is_send() {
+        fn check<T: Send>(_: T) {}
+        let d = tempfile::tempdir().unwrap();
+        let e = engine(d.path().into());
+        check(e.dispatch("state", json!({})));
+    }
     fn engine(root: PathBuf) -> Engine {
         Engine::new(root, Arc::new(|_| {}))
     }
