@@ -1,1 +1,32 @@
-{"name":"ar-client","version":"0.1.0","private":true,"type":"module","license":"GPL-3.0-only","scripts":{"dev":"vite --host 127.0.0.1","build":"tsc --noEmit && vite build","desktop":"tauri dev","bundle":"tauri build","test":"vitest run"},"dependencies":{"@tauri-apps/api":"^2.8.0","@tauri-apps/plugin-updater":"^2.9.0","lucide-react":"^0.468.0","react":"^19.0.0","react-dom":"^19.0.0","skinview3d":"^3.4.2"},"devDependencies":{"@tauri-apps/cli":"^2.8.0","@types/react":"^19.0.0","@types/react-dom":"^19.0.0","@vitejs/plugin-react":"^4.7.0","typescript":"~5.9.2","vite":"^6.3.6","vitest":"^3.2.4"}}
+{
+  "name": "ar-client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "GPL-3.0-only",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "desktop": "tauri dev",
+    "bundle": "node scripts/prepare-companion.mjs && tauri build",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.8.0",
+    "@tauri-apps/plugin-updater": "^2.9.0",
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "skinview3d": "^3.4.2"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.8.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "prettier": "^3.9.10",
+    "typescript": "~5.9.2",
+    "vite": "^6.3.6",
+    "vitest": "^3.2.4"
+  }
+}

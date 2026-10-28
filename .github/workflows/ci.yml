@@ -1,18 +1,19 @@
 name: Build and test
 on:
   push:
-    branches: [main, 'feat/**']
+    branches: [main, "feat/**"]
   pull_request:
 permissions:
   contents: read
 jobs:
   launcher:
+    needs: fabric
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
           cache: npm
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
@@ -21,6 +22,10 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: cargo test --manifest-path src-tauri/Cargo.toml --no-default-features --locked
+      - uses: actions/download-artifact@v4
+        with:
+          name: AR-Client-Fabric-1.21.9
+          path: in-game/build/libs
       - run: npm run bundle
       - uses: actions/upload-artifact@v4
         with:
@@ -39,10 +44,10 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: "21"
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '9.1.0'
+          gradle-version: "9.1.0"
       - run: gradle -p in-game build --no-daemon
       - uses: actions/upload-artifact@v4
         with:

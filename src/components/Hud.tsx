@@ -1,0 +1,342 @@
+import React, { useEffect, useRef, useState } from "react";
+
+import {
+  Home,
+  Play,
+  Layers,
+  Box,
+  Image,
+  Package,
+  UserRound,
+  Users,
+  Download,
+  Settings,
+  ChevronRight,
+  Plus,
+  ArrowUpRight,
+  Search,
+  Folder,
+  Trash2,
+  Copy,
+  RefreshCw,
+  X,
+  Check,
+  SlidersHorizontal,
+  Move,
+  ArrowUp,
+  ArrowDown,
+  ExternalLink,
+  LoaderCircle,
+  ShieldCheck,
+  Terminal,
+  ChevronDown,
+} from "lucide-react";
+
+import {
+  request,
+  desktop,
+  message,
+  fileData,
+  loaderChoices,
+  type Profile,
+  type LauncherState,
+  type Content,
+} from "../api";
+
+import type { Page, Run, Widget } from "../api";
+import Empty from "./Empty";
+const widgetNames = [
+  "FPS",
+  "CPS",
+  "Keystrokes",
+  "Coordinates",
+  "Ping",
+  "Armor",
+  "Potions",
+  "Clock",
+];
+export default function Hud({
+  profile,
+  run,
+  fail,
+}: {
+  profile?: Profile;
+  run: Run;
+  fail: (e: unknown) => void;
+}) {
+  const [widgets, setWidgets] = useState<Widget[]>([]),
+    [selected, setSelected] = useState("FPS"),
+    [toggleSprint, setToggleSprint] = useState(false),
+    [extras, setExtras] = useState({
+      customCrosshair: false,
+      hideScoreboard: false,
+      crosshairSize: 4,
+      crosshairGap: 2,
+      crosshairColor: "#ffffff",
+      chatOpacity: 1,
+    });
+  const board = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (profile)
+      request<{
+        widgets: Widget[];
+        toggleSprint: boolean;
+        customCrosshair?: boolean;
+        hideScoreboard?: boolean;
+        crosshairSize?: number;
+        crosshairGap?: number;
+        crosshairColor?: string;
+        chatOpacity?: number;
+      }>("hud.load", { profile: profile.id })
+        .then((v) => {
+          setWidgets(
+            v.widgets.length
+              ? v.widgets
+              : widgetNames.map((id, i) => ({
+                  id,
+                  x: 0.03,
+                  y: 0.05 + i * 0.09,
+                  scale: 1,
+                  opacity: 0.85,
+                  color: "#ffffff",
+                  enabled: true,
+                })),
+          );
+          setToggleSprint(v.toggleSprint);
+          setExtras({
+            customCrosshair: v.customCrosshair ?? false,
+            hideScoreboard: v.hideScoreboard ?? false,
+            crosshairSize: v.crosshairSize ?? 4,
+            crosshairGap: v.crosshairGap ?? 2,
+            crosshairColor: v.crosshairColor ?? "#ffffff",
+            chatOpacity: v.chatOpacity ?? 1,
+          });
+        })
+        .catch(fail);
+  }, [profile?.id]);
+  const active = widgets.find((w) => w.id === selected);
+  function change(update: Partial<Widget>) {
+    setWidgets((ws) =>
+      ws.map((w) => (w.id === selected ? { ...w, ...update } : w)),
+    );
+  }
+  if (!profile)
+    return (
+      <section className="panel">
+        <Empty
+          title="Choose an installation first"
+          text="HUD layouts are saved separately for each installation."
+        />
+      </section>
+    );
+  return (
+    <>
+      <div className="callout">
+        <Move size={20} />
+        <span>
+          Position preview. Widgets display real game data when the AR Fabric
+          mod is installed. Layout changes apply on the next game launch.
+        </span>
+      </div>
+      <div className="hud-layout">
+        <div className="hud-board" ref={board}>
+          <span className="hud-label">HUD POSITION PREVIEW</span>
+          <div className="crosshair">+</div>
+          {widgets
+            .filter((w) => w.enabled)
+            .map((w) => (
+              <button
+                className={`hud-widget ${selected === w.id ? "selected" : ""}`}
+                key={w.id}
+                style={{
+                  left: `${w.x * 100}%`,
+                  top: `${w.y * 100}%`,
+                  opacity: w.opacity,
+                  color: w.color,
+                  transform: `scale(${w.scale})`,
+                }}
+                onPointerDown={(e) => {
+                  setSelected(w.id);
+                  e.currentTarget.setPointerCapture(e.pointerId);
+                }}
+                onPointerMove={(e) => {
+                  if (
+                    !e.currentTarget.hasPointerCapture(e.pointerId) ||
+                    !board.current
+                  )
+                    return;
+                  const rect = board.current.getBoundingClientRect();
+                  setWidgets((ws) =>
+                    ws.map((x) =>
+                      x.id === w.id
+                        ? {
+                            ...x,
+                            x: Math.min(
+                              0.85,
+                              Math.max(0, (e.clientX - rect.left) / rect.width),
+                            ),
+                            y: Math.min(
+                              0.92,
+                              Math.max(0, (e.clientY - rect.top) / rect.height),
+                            ),
+                          }
+                        : x,
+                    ),
+                  );
+                }}
+                onPointerUp={(e) =>
+                  e.currentTarget.releasePointerCapture(e.pointerId)
+                }
+              >
+                {w.id}
+              </button>
+            ))}
+        </div>
+        <section className="panel">
+          <h3>Widget controls</h3>
+          <label>
+            Widget
+            <select
+              value={selected}
+              onChange={(e) => setSelected(e.target.value)}
+            >
+              {widgets.map((w) => (
+                <option key={w.id}>{w.id}</option>
+              ))}
+            </select>
+          </label>
+          {active && (
+            <>
+              <label className="checkbox">
+                <input
+                  type="checkbox"
+                  checked={active.enabled}
+                  onChange={(e) => change({ enabled: e.target.checked })}
+                />
+                Visible
+              </label>
+              <label>
+                Scale · {active.scale.toFixed(1)}×
+                <input
+                  type="range"
+                  min="0.5"
+                  max="2"
+                  step="0.1"
+                  value={active.scale}
+                  onChange={(e) => change({ scale: +e.target.value })}
+                />
+              </label>
+              <label>
+                Opacity
+                <input
+                  type="range"
+                  min="0.2"
+                  max="1"
+                  step="0.05"
+                  value={active.opacity}
+                  onChange={(e) => change({ opacity: +e.target.value })}
+                />
+              </label>
+              <label>
+                Color
+                <input
+                  type="color"
+                  value={active.color}
+                  onChange={(e) => change({ color: e.target.value })}
+                />
+              </label>
+            </>
+          )}
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={toggleSprint}
+              onChange={(e) => setToggleSprint(e.target.checked)}
+            />
+            Toggle sprint on by default
+          </label>
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={extras.customCrosshair}
+              onChange={(e) =>
+                setExtras({ ...extras, customCrosshair: e.target.checked })
+              }
+            />
+            Custom crosshair
+          </label>
+          <label>
+            Crosshair size
+            <input
+              type="range"
+              min="2"
+              max="16"
+              value={extras.crosshairSize}
+              onChange={(e) =>
+                setExtras({ ...extras, crosshairSize: +e.target.value })
+              }
+            />
+          </label>
+          <label>
+            Crosshair gap
+            <input
+              type="range"
+              min="0"
+              max="10"
+              value={extras.crosshairGap}
+              onChange={(e) =>
+                setExtras({ ...extras, crosshairGap: +e.target.value })
+              }
+            />
+          </label>
+          <label>
+            Crosshair color
+            <input
+              type="color"
+              value={extras.crosshairColor}
+              onChange={(e) =>
+                setExtras({ ...extras, crosshairColor: e.target.value })
+              }
+            />
+          </label>
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={extras.hideScoreboard}
+              onChange={(e) =>
+                setExtras({ ...extras, hideScoreboard: e.target.checked })
+              }
+            />
+            Hide scoreboard
+          </label>
+          <label>
+            Chat opacity
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={extras.chatOpacity}
+              onChange={(e) =>
+                setExtras({ ...extras, chatOpacity: +e.target.value })
+              }
+            />
+          </label>
+          <button
+            className="primary"
+            onClick={() =>
+              run("Save HUD layout", () =>
+                request("hud.save", {
+                  profile: profile.id,
+                  layout: { widgets, toggleSprint, zoomKey: "C", ...extras },
+                }),
+              )
+            }
+          >
+            Save layout <Check size={16} />
+          </button>
+        </section>
+      </div>
+    </>
+  );
+}

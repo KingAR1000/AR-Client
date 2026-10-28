@@ -36,11 +36,13 @@ public final class ArClient implements ClientModInitializer {
     }
     public static class Layout {
         public List<Widget> widgets=new ArrayList<>(); public boolean toggleSprint=false; public String zoomKey="C";
+        public boolean customCrosshair=false,hideScoreboard=false; public int crosshairSize=4,crosshairGap=2; public String crosshairColor="#ffffff"; public double chatOpacity=1;
         public Layout(){String[] names={"FPS","CPS","Keystrokes","Coordinates","Ping","Armor","Potions","Clock"};for(int i=0;i<names.length;i++)widgets.add(new Widget(names[i],.05+i*.09));}
     }
     @Override public void onInitializeClient(){
         try {if(Files.exists(CONFIG)){Layout loaded=GSON.fromJson(Files.readString(CONFIG),Layout.class);if(loaded!=null&&loaded.widgets!=null)layout=loaded;}}catch(Exception e){LOG.warn("Could not read AR HUD layout; using defaults",e);}
         sanitize();sprintEnabled=layout.toggleSprint;
+        MinecraftClient.getInstance().options.getChatOpacity().setValue(clamp(layout.chatOpacity,0,1));
         KeyBinding.Category category=KeyBinding.Category.create(Identifier.of("ar_client","controls"));
         zoom=KeyBindingHelper.registerKeyBinding(new KeyBinding("key.ar_client.zoom",InputUtil.Type.KEYSYM,GLFW.GLFW_KEY_C,category));
         sprint=KeyBindingHelper.registerKeyBinding(new KeyBinding("key.ar_client.sprint",InputUtil.Type.KEYSYM,GLFW.GLFW_KEY_R,category));

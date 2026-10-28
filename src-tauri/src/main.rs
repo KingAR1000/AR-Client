@@ -1,2 +1,4 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-fn main() { ar_core::run(); }
+fn main() {
+    ar_core::run();
+}
