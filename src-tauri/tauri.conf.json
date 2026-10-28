@@ -26,9 +26,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": [
-      "nsis"
-    ],
+    "targets": ["nsis"],
     "shortDescription": "An open-source Minecraft Java launcher",
     "category": "Game",
     "copyright": "Copyright KingAR1000",
@@ -43,9 +41,12 @@
       "icons/128x128@2x.png",
       "icons/icon.ico"
     ],
-    "resources": [
-      "resources/*"
-    ]
+    "resources": ["resources/*"]
   },
-  "plugins": {}
+  "plugins": {
+    "updater": {
+      "pubkey": "",
+      "endpoints": []
+    }
+  }
 }

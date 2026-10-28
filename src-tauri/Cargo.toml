@@ -34,5 +34,6 @@ tar = "0.4"
 keyring = { version = "3", features = ["windows-native", "sync-secret-service", "crypto-rust", "vendored"] }
 base64 = "0.22"
 url = "2"
+png = "0.17"
 [dev-dependencies]
 tempfile = "3"

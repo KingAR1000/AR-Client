@@ -12,6 +12,7 @@ writeFileSync(
       plugins: {
         updater: {
           pubkey,
+          requireSignedVersion: true,
           endpoints: [
             "https://github.com/KingAR1000/AR-Client/releases/latest/download/latest.json",
           ],

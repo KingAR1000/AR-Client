@@ -1,50 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
-import {
-  Home,
-  Play,
-  Layers,
-  Box,
-  Image,
-  Package,
-  UserRound,
-  Users,
-  Download,
-  Settings,
-  ChevronRight,
-  Plus,
-  ArrowUpRight,
-  Search,
-  Folder,
-  Trash2,
-  Copy,
-  RefreshCw,
-  X,
-  Check,
-  SlidersHorizontal,
-  Move,
-  ArrowUp,
-  ArrowDown,
-  ExternalLink,
-  LoaderCircle,
-  ShieldCheck,
-  Terminal,
-  ChevronDown,
-} from "lucide-react";
+import { Check, ShieldCheck, X } from "lucide-react";
 
-import {
-  request,
-  desktop,
-  message,
-  fileData,
-  loaderChoices,
-  type Profile,
-  type LauncherState,
-  type Content,
-} from "../api";
+import { loaderChoices, request, type Profile } from "../api";
 
-import type { Page, Run, Widget } from "../api";
-import Empty from "./Empty";
 export default function ProfileEditor({
   profile,
   versions,

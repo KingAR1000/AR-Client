@@ -76,7 +76,25 @@ pub fn read(root: &Path) -> Result<State> {
     if !p.exists() {
         return Ok(State::default());
     }
-    Ok(serde_json::from_slice(&std::fs::read(p)?)?)
+    match serde_json::from_slice(&std::fs::read(&p)?) {
+        Ok(state) => Ok(state),
+        Err(original) => {
+            let backup = root.join("state.json.bak");
+            let mut recovered: State =
+                serde_json::from_slice(&std::fs::read(&backup).map_err(|_| {
+                    Error::msg(format!(
+                        "Configuration is damaged and no readable backup exists: {original}"
+                    ))
+                })?)?;
+            std::fs::rename(
+                &p,
+                root.join(format!("state.corrupt-{}.json", uuid::Uuid::new_v4())),
+            )?;
+            recovered.settings["recoveredFromBackup"] = json!(true);
+            write(root, &recovered)?;
+            Ok(recovered)
+        }
+    }
 }
 pub fn write(root: &Path, s: &State) -> Result<()> {
     std::fs::create_dir_all(root)?;

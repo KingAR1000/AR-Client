@@ -33,6 +33,20 @@ pub fn safe_path(root: &Path, relative: &str) -> Result<PathBuf> {
     {
         return Err(Error::msg("Unsafe file path"));
     }
+    if std::fs::symlink_metadata(root).is_ok_and(|m| m.file_type().is_symlink()) {
+        return Err(Error::msg("Managed directory cannot be a symbolic link"));
+    }
+    for part in relative.split('/') {
+        let stem = part.split('.').next().unwrap_or("").to_ascii_uppercase();
+        if part.ends_with(['.', ' '])
+            || ["CON", "PRN", "AUX", "NUL"].contains(&stem.as_str())
+            || (stem.len() == 4
+                && (stem.starts_with("COM") || stem.starts_with("LPT"))
+                && matches!(stem.as_bytes()[3], b'1'..=b'9'))
+        {
+            return Err(Error::msg("Invalid Windows filename"));
+        }
+    }
     let p = Path::new(relative);
     if p.components().any(|c| !matches!(c, Component::Normal(_))) {
         return Err(Error::msg("Unsafe file path"));
@@ -64,10 +78,16 @@ pub async fn json(client: &reqwest::Client, url: &str) -> Result<Value> {
     if r.content_length().unwrap_or(0) > 32 * 1024 * 1024 {
         return Err(Error::msg("Metadata exceeds size limit"));
     }
-    let bytes = r.bytes().await?;
-    if bytes.len() > 32 * 1024 * 1024 {
-        return Err(Error::msg("Metadata exceeds size limit"));
+    let mut stream = r.bytes_stream();
+    let mut bytes = Vec::new();
+    while let Some(chunk) = stream.next().await {
+        let chunk = chunk?;
+        if bytes.len() + chunk.len() > 32 * 1024 * 1024 {
+            return Err(Error::msg("Metadata exceeds size limit"));
+        }
+        bytes.extend_from_slice(&chunk);
     }
+
     Ok(serde_json::from_slice(&bytes)?)
 }
 pub async fn download(

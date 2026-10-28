@@ -17,7 +17,7 @@ async fn main() -> ar_core::Result<()> {
     let progress = Arc::new(|v: serde_json::Value| println!("{}", v["stage"]));
     let results = catalog::search(&c, "modrinth", "mod", "sodium", &p, 0).await?;
     assert!(!results["hits"].as_array().unwrap().is_empty());
-    let root = PathBuf::from("/tmp/ar-catalog-verification");
+    let root = PathBuf::from("/tmp/ar-catalog-verification-v2");
     for id in ["sodium", "lithium", "fabric-api"] {
         catalog::install(&c, &root, &p, "modrinth", id, "mod", progress.clone()).await?;
     }

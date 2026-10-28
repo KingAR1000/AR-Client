@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { loaderChoices, message, request } from "../src/api";
+import { describe,expect,it } from "vitest";
+import { loaderChoices,message,request } from "../src/api";
 describe("catalog loader responses", () => {
   it("normalizes real Fabric metadata and Maven version lists", () => {
     expect(

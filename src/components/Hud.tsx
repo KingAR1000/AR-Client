@@ -1,49 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import {
-  Home,
-  Play,
-  Layers,
-  Box,
-  Image,
-  Package,
-  UserRound,
-  Users,
-  Download,
-  Settings,
-  ChevronRight,
-  Plus,
-  ArrowUpRight,
-  Search,
-  Folder,
-  Trash2,
-  Copy,
-  RefreshCw,
-  X,
-  Check,
-  SlidersHorizontal,
-  Move,
-  ArrowUp,
-  ArrowDown,
-  ExternalLink,
-  LoaderCircle,
-  ShieldCheck,
-  Terminal,
-  ChevronDown,
-} from "lucide-react";
+import { Check, Move } from "lucide-react";
 
-import {
-  request,
-  desktop,
-  message,
-  fileData,
-  loaderChoices,
-  type Profile,
-  type LauncherState,
-  type Content,
-} from "../api";
+import { request, type Profile } from "../api";
 
-import type { Page, Run, Widget } from "../api";
+import type { Run, Widget } from "../api";
 import Empty from "./Empty";
 const widgetNames = [
   "FPS",
@@ -126,6 +87,15 @@ export default function Hud({
         <Empty
           title="Choose an installation first"
           text="HUD layouts are saved separately for each installation."
+        />
+      </section>
+    );
+  if (profile.loader !== "fabric" || profile.version !== "1.21.9")
+    return (
+      <section className="panel">
+        <Empty
+          title="This installation needs a different AR companion build"
+          text="The bundled AR HUD currently supports Fabric 1.21.9. Choose a Fabric 1.21.9 installation to edit its HUD; other game versions can still launch normally."
         />
       </section>
     );

@@ -287,7 +287,7 @@ impl Engine {
             }
             "content.list" => {
                 let p = find(text(&a, "profile")?)?;
-                Ok(json!(catalog::read_lock(
+                Ok(json!(catalog::list_content(
                     &self.root.join("instances").join(&p.id)
                 )?))
             }
@@ -619,8 +619,15 @@ fn validate_skin(bytes: &[u8]) -> Result<()> {
     if width != 64 || ![32, 64].contains(&height) {
         return Err(Error::msg("Minecraft skins must be 64×64 or 64×32 pixels"));
     }
+    let mut reader = png::Decoder::new(std::io::Cursor::new(bytes)).read_info()?;
+    let size = reader.output_buffer_size();
+    if size > 65536 {
+        return Err(Error::msg("Unexpected skin pixel format"));
+    }
+    reader.next_frame(&mut vec![0; size])?;
     Ok(())
 }
+
 fn open_path(path: &std::path::Path) -> Result<()> {
     #[cfg(windows)]
     {
@@ -684,4 +691,78 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![request])
         .run(tauri::generate_context!())
         .expect("AR Client failed to start");
+}
+
+#[cfg(test)]
+mod command_tests {
+    use super::*;
+    fn engine(root: PathBuf) -> Engine {
+        Engine::new(root, Arc::new(|_| {}))
+    }
+    #[tokio::test]
+    async fn profiles_roundtrip_and_delete_preserves_worlds() {
+        let d = tempfile::tempdir().unwrap();
+        let e = engine(d.path().into());
+        let p=e.dispatch("profile.save",json!({"id":"","name":"Survival","version":"1.21.9","loader":"vanilla","loaderVersion":"","ram":2048,"java":"","preset":"Custom"})).await.unwrap();
+        let id = p["id"].as_str().unwrap();
+        let world = d.path().join("instances").join(id).join("saves");
+        std::fs::create_dir_all(&world).unwrap();
+        std::fs::write(world.join("level.dat"), b"world").unwrap();
+        e.dispatch("profile.delete", json!({"id":id}))
+            .await
+            .unwrap();
+        let trash = std::fs::read_dir(d.path().join("trash"))
+            .unwrap()
+            .next()
+            .unwrap()
+            .unwrap()
+            .path();
+        assert_eq!(
+            std::fs::read(trash.join("saves/level.dat")).unwrap(),
+            b"world"
+        );
+        assert!(state::read(d.path()).unwrap().profiles.is_empty());
+    }
+    #[tokio::test]
+    async fn refuses_arbitrary_commands_and_missing_accounts() {
+        let d = tempfile::tempdir().unwrap();
+        let e = engine(d.path().into());
+        assert!(e.dispatch("shell.execute", json!({})).await.is_err());
+        assert!(e
+            .dispatch("account.select", json!({"id":"unknown"}))
+            .await
+            .is_err());
+    }
+    #[tokio::test]
+    async fn requires_explicit_eula_before_download() {
+        let d = tempfile::tempdir().unwrap();
+        let e = engine(d.path().into());
+        let p = e
+            .dispatch(
+                "profile.save",
+                json!({"id":"","name":"Survival","version":"1.21.9","loader":"vanilla","ram":2048}),
+            )
+            .await
+            .unwrap();
+        let err = e
+            .dispatch("install", json!({"id":p["id"]}))
+            .await
+            .unwrap_err();
+        assert!(err.to_string().contains("EULA"));
+    }
+    #[test]
+    fn skin_dimensions_are_validated() {
+        let mut image = Vec::new();
+        {
+            let mut encoder = png::Encoder::new(&mut image, 64, 64);
+            encoder.set_color(png::ColorType::Rgba);
+            encoder.set_depth(png::BitDepth::Eight);
+            let mut writer = encoder.write_header().unwrap();
+            writer.write_image_data(&vec![255; 64 * 64 * 4]).unwrap();
+        }
+        assert!(validate_skin(&image).is_ok());
+        assert!(validate_skin(&image[..24]).is_err());
+        image[20..24].copy_from_slice(&512u32.to_be_bytes());
+        assert!(validate_skin(&image).is_err());
+    }
 }

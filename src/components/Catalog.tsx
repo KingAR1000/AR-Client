@@ -1,49 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
-  Home,
-  Play,
-  Layers,
-  Box,
-  Image,
-  Package,
-  UserRound,
-  Users,
-  Download,
-  Settings,
-  ChevronRight,
-  Plus,
-  ArrowUpRight,
-  Search,
-  Folder,
-  Trash2,
-  Copy,
-  RefreshCw,
-  X,
-  Check,
-  SlidersHorizontal,
-  Move,
-  ArrowUp,
   ArrowDown,
+  ArrowUp,
+  Box,
+  Download,
   ExternalLink,
   LoaderCircle,
-  ShieldCheck,
-  Terminal,
-  ChevronDown,
+  Package,
+  Plus,
+  Search,
+  Trash2,
 } from "lucide-react";
 
-import {
-  request,
-  desktop,
-  message,
-  fileData,
-  loaderChoices,
-  type Profile,
-  type LauncherState,
-  type Content,
-} from "../api";
+import { fileData, message, request, type Content, type Profile } from "../api";
 
-import type { Page, Run, Widget } from "../api";
+import type { Page, Run } from "../api";
 import Empty from "./Empty";
 export default function Catalog({
   page,
@@ -277,7 +249,7 @@ export default function Catalog({
       ) : (
         <section className="panel">
           <div className="section-title">
-            <h3>Managed {page.toLowerCase()}</h3>
+            <h3>Installed {page.toLowerCase()}</h3>
             <button
               className="text-button"
               onClick={() =>
@@ -377,7 +349,7 @@ export default function Catalog({
           )}
           {!installed.some((x) => x.kind === kind) && (
             <Empty
-              title="Nothing installed from the catalog yet"
+              title="No content installed yet"
               text="Discover compatible content and add it to this installation."
             />
           )}

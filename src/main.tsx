@@ -1,57 +1,49 @@
-import React, { useEffect, useRef, useState } from "react";
-import { createRoot } from "react-dom/client";
 import { listen } from "@tauri-apps/api/event";
 import {
-  Home,
-  Play,
-  Layers,
-  Box,
-  Image,
-  Package,
-  UserRound,
-  Users,
-  Download,
-  Settings,
-  ChevronRight,
-  Plus,
   ArrowUpRight,
-  Search,
-  Folder,
-  Trash2,
-  Copy,
-  RefreshCw,
-  X,
+  Box,
   Check,
-  SlidersHorizontal,
-  Move,
-  ArrowUp,
-  ArrowDown,
-  ExternalLink,
+  ChevronDown,
+  ChevronRight,
+  Copy,
+  Download,
+  Folder,
+  Home,
+  Image,
+  Layers,
   LoaderCircle,
+  Move,
+  Package,
+  Play,
+  Plus,
+  RefreshCw,
+  Settings,
   ShieldCheck,
   Terminal,
-  ChevronDown,
+  Trash2,
+  UserRound,
+  Users,
+  X,
 } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { createRoot } from "react-dom/client";
 
+import type { Page } from "./api";
 import {
-  request,
   desktop,
   message,
-  fileData,
-  loaderChoices,
-  type Profile,
+  request,
   type LauncherState,
-  type Content,
+  type Profile,
 } from "./api";
-import "./style.css";
-import type { Page } from "./api";
-import Empty from "./components/Empty";
-import ProfileEditor from "./components/ProfileEditor";
-import Catalog from "./components/Catalog";
 import Accounts from "./components/Accounts";
-import Preferences from "./components/Preferences";
-import Updates from "./components/Updates";
+import Catalog from "./components/Catalog";
+import Empty from "./components/Empty";
 import Hud from "./components/Hud";
+import Preferences from "./components/Preferences";
+import ProfileEditor from "./components/ProfileEditor";
+import Updates from "./components/Updates";
+import "./style.css";
 const Skins = React.lazy(() => import("./components/Skins"));
 
 const nav: [Page, typeof Home][] = [
@@ -110,6 +102,7 @@ function App() {
     if (lock.current) return;
     lock.current = true;
     setBusy(label);
+    setProgress(null);
     setNotice(null);
     try {
       const result = await fn();
@@ -155,7 +148,9 @@ function App() {
     setEditing({
       id: "",
       name: "My installation",
-      version: latest || versions[0] || "",
+      version: versions.includes("1.21.9")
+        ? "1.21.9"
+        : latest || versions[0] || "",
       loader: "fabric",
       loaderVersion: "",
       ram: 4096,

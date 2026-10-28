@@ -112,6 +112,29 @@ pub fn read_lock(root: &Path) -> Result<Vec<Value>> {
     }
     Ok(serde_json::from_slice(&std::fs::read(path)?)?)
 }
+pub fn list_content(root: &Path) -> Result<Vec<Value>> {
+    let mut entries = read_lock(root)?;
+    for (folder, kind, extension) in [
+        ("mods", "mod", "jar"),
+        ("resourcepacks", "resourcepack", "zip"),
+    ] {
+        let dir = root.join(folder);
+        if !dir.exists() {
+            continue;
+        }
+        for item in std::fs::read_dir(dir)? {
+            let item = item?;
+            let name = item.file_name().to_string_lossy().into_owned();
+            if item.file_type()?.is_file()
+                && item.path().extension().is_some_and(|s| s == extension)
+                && !entries.iter().any(|x| x["filename"] == name)
+            {
+                entries.push(json!({"filename":name,"source":"local","projectId":"","versionId":"User imported / untracked","kind":kind}));
+            }
+        }
+    }
+    Ok(entries)
+}
 fn write_lock(root: &Path, lock: &[Value]) -> Result<()> {
     std::fs::write(
         root.join("ar-content.json"),
@@ -379,6 +402,8 @@ pub async fn import_pack(
         }else{
             let index:Value=serde_json::from_slice(&std::fs::read(staging.join("manifest.json"))?)?;
             if index["minecraft"]["version"]!=p.version{return Err(Error::msg("Modpack Minecraft version differs from this installation"));}
+            for loader in index["minecraft"]["modLoaders"].as_array().into_iter().flatten(){if loader["primary"]==true {let required=loader["id"].as_str().unwrap_or("");if required!=format!("{}-{}",p.loader,p.loader_version) {return Err(Error::msg(format!("Pack requires {required}; create a matching installation first")));}}}
+            if let Some(overrides)=index["overrides"].as_str(){if overrides!="overrides"{let source=net::safe_path(&staging,overrides)?;if source.exists(){copy_tree(&source,&staging.join("overrides"))?;}}}
             for file in index["files"].as_array().into_iter().flatten(){let v=cf(c,&format!("mods/{}/files/{}",file["projectID"],file["fileID"])).await?;let hash=v["hashes"].as_array().and_then(|a|a.iter().find(|x|x["algo"]==1)).and_then(|x|x["value"].as_str()).unwrap_or("");let dest=net::safe_path(&staging.join("resolved/mods"),v["fileName"].as_str().unwrap_or(""))?;net::download(c,v["downloadUrl"].as_str().ok_or_else(||Error::msg("Pack file blocks third-party downloads"))?,&dest,hash,"sha1").await?;}
         }
         for directory in ["resolved","overrides","client-overrides"]{let src=staging.join(directory);if src.exists(){copy_tree(&src,root)?;}}
@@ -406,7 +431,8 @@ pub fn copy_tree(from: &Path, to: &Path) -> Result<()> {
 }
 pub fn remove(root: &Path, filename: &str) -> Result<()> {
     let mut lock = read_lock(root)?;
-    let record = lock
+    let all = list_content(root)?;
+    let record = all
         .iter()
         .find(|x| x["filename"] == filename)
         .ok_or_else(|| Error::msg("Managed file not found"))?
@@ -450,16 +476,39 @@ pub fn order_packs(root: &Path, names: &[String]) -> Result<()> {
     Ok(())
 }
 
-#[cfg(test)] mod tests {
- use super::*;
- #[test] fn failed_commit_restores_previous_mod_and_lock(){
-  let dir=tempfile::tempdir().unwrap();let root=dir.path();std::fs::create_dir_all(root.join("mods")).unwrap();std::fs::write(root.join("mods/old.jar"),b"old").unwrap();
-  let old=vec![json!({"filename":"old.jar","projectId":"p","source":"modrinth","kind":"mod"})];write_lock(root,&old).unwrap();
-  let stage=root.join("stage");std::fs::create_dir(&stage).unwrap();let records=vec![json!({"filename":"missing.jar","projectId":"p","source":"modrinth","kind":"mod"})];
-  assert!(commit_content(root,&stage,&records,&old).is_err());assert_eq!(std::fs::read(root.join("mods/old.jar")).unwrap(),b"old");assert_eq!(read_lock(root).unwrap(),old);
- }
- #[test] fn refuses_unmanaged_file_collision(){
-  let dir=tempfile::tempdir().unwrap();let root=dir.path();std::fs::create_dir_all(root.join("mods")).unwrap();std::fs::write(root.join("mods/local.jar"),b"local").unwrap();
-  let records=vec![json!({"filename":"local.jar","projectId":"p","source":"modrinth","kind":"mod"})];assert!(commit_content(root,&root.join("stage"),&records,&[]).is_err());assert_eq!(std::fs::read(root.join("mods/local.jar")).unwrap(),b"local");
- }
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn failed_commit_restores_previous_mod_and_lock() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path();
+        std::fs::create_dir_all(root.join("mods")).unwrap();
+        std::fs::write(root.join("mods/old.jar"), b"old").unwrap();
+        let old =
+            vec![json!({"filename":"old.jar","projectId":"p","source":"modrinth","kind":"mod"})];
+        write_lock(root, &old).unwrap();
+        let stage = root.join("stage");
+        std::fs::create_dir(&stage).unwrap();
+        let records = vec![
+            json!({"filename":"missing.jar","projectId":"p","source":"modrinth","kind":"mod"}),
+        ];
+        assert!(commit_content(root, &stage, &records, &old).is_err());
+        assert_eq!(std::fs::read(root.join("mods/old.jar")).unwrap(), b"old");
+        assert_eq!(read_lock(root).unwrap(), old);
+    }
+    #[test]
+    fn refuses_unmanaged_file_collision() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path();
+        std::fs::create_dir_all(root.join("mods")).unwrap();
+        std::fs::write(root.join("mods/local.jar"), b"local").unwrap();
+        let records =
+            vec![json!({"filename":"local.jar","projectId":"p","source":"modrinth","kind":"mod"})];
+        assert!(commit_content(root, &root.join("stage"), &records, &[]).is_err());
+        assert_eq!(
+            std::fs::read(root.join("mods/local.jar")).unwrap(),
+            b"local"
+        );
+    }
 }
