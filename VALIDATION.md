@@ -1,31 +1,53 @@
 # Validation record
 
-This file distinguishes implementation from verified behavior. No production certification or FPS benchmark is implied.
+Checked on 2026-10-28. This distinguishes implemented code from verified behavior; no production certification or FPS benchmark is implied.
 
-## Verified in the Linux workspace
+## Passed in the Linux workspace
 
-- Mojang manifest fetched on 2026-10-28: latest release `26.3`.
-- React/TypeScript production build completes.
-- Nine Rust core unit tests pass (checksum verification, path validation, rule matching, library inheritance, profile validation, state round-trip).
-- Further integration and platform build results will be recorded before handoff.
+- Mojang manifest: latest official release **26.3**.
+- React/TypeScript production build; **4 frontend tests**.
+- **18 Rust tests**: path/HTTPS validation, checksum verification, metadata inheritance, version normalization, Send-safe command futures, profile CRUD, EULA enforcement, content rollback/collision protection, skin decoding and configuration recovery.
+- Browser navigation across launcher sections: no uncaught runtime errors. Browser mode correctly refuses native operations.
+- Standalone website at desktop and 390px mobile widths: no horizontal overflow or runtime errors.
+- Fabric companion `gradle build` succeeds with JDK 21 / Gradle 9.1.0; includes the crosshair/scoreboard mixins. Compilation does not prove gameplay behavior.
+- Live Modrinth search and downloads for Sodium, Lithium and Fabric API, including hash verification.
+- Public compatibility metadata retrieved from Fabric, Quilt, Forge and NeoForge.
 
-## Requires external setup or runtime verification
+## Real installation checks (not gameplay tests)
 
-- Microsoft/Xbox/Minecraft login, refresh, entitlement checks, skins/capes: no approved Microsoft application ID or owner test session supplied.
-- CurseForge: no API key supplied.
-- Signed updater: no project updater signing key supplied; no published release exists.
-- Windows Authenticode: no certificate supplied.
-- Minecraft gameplay, graphics/input latency and performance presets: require real game sessions on target hardware.
-- Companion mod currently targets Fabric 1.21.9 only. It must not be installed into 26.x.
+These fetched upstream metadata, downloaded/verified game jars, assets and libraries, ran relevant official loader installers, and assembled the classpath. None authenticated or launched Minecraft with an invented account.
 
-## Implementation boundaries
+| Minecraft | Loader | Result |
+| --- | --- | --- |
+| 1.21.9 | Fabric 0.17.2 | Passed, 79 classpath entries |
+| 1.21.9 | Quilt 0.29.2 | Passed, 82 classpath entries |
+| 1.21.9 | Forge 59.0.5 | Passed, 119 classpath entries |
+| 1.21.9 | NeoForge 21.9.16-beta | Passed, 99 classpath entries |
+| 26.3 | Vanilla | Passed, 67 classpath entries; automatic verified Java 25 runtime installation |
 
-- No crosshair/scoreboard/chat customization controls yet; the companion currently implements HUD metrics, zoom, toggles and layout editing.
-- Modpack imports and manually imported files are not fully tracked for per-file update/removal by the catalog manager.
-- Catalog updates select the first upstream compatible release. Full transactional rollback across multiple moved files and user-facing cancellation are not yet implemented.
-- Dependency resolution rejects some nested pinned dependency shapes rather than guessing. Full arbitrary modpack graph support is not certified.
-- Download progress reports verified file counts/stages, not continuous byte-level totals.
-- Automatic update installation is opt-in; development builds cannot verify signed updates until the public key is configured.
-- The website source is included; custom-domain hosting/DNS is not configured.
+Forge/NeoForge subprocess checks used the workspace's inherited HTTP proxy and Java truststore through `JAVA_TOOL_OPTIONS`. Ordinary direct-network desktop installations do not require that workspace-specific configuration.
 
-These are actual gaps relative to the original request, not claims that all requested features have been completed.
+## Windows CI
+
+The workflow builds a Windows x64 NSIS installer, bundles the Fabric companion, and smoke-tests native application startup without service credentials. Final run/artifact results are recorded in the pull request and GitHub Actions. Earlier runs caught missing Windows icon resources and a non-Send asset-download future; both were corrected and regression coverage added.
+
+## External setup / unverified runtime behavior
+
+- Microsoft/Xbox/Minecraft login, token refresh, entitlement checks, skin uploads and capes: no approved Microsoft application ID or owner login session supplied.
+- CurseForge live workflows: no API key supplied.
+- Signed updater: no project signing key or published stable release exists.
+- Windows Authenticode: no signing certificate supplied; development installer is unsigned.
+- Minecraft gameplay, Fabric mixin behavior, graphics/input latency, per-GPU performance and long-running game recovery: not verified in a real authenticated target-hardware session.
+- Companion mod targets **Fabric 1.21.9 only**. The launcher can install other official releases; that does not make this mod compatible with them.
+
+## Remaining gaps relative to the full product brief
+
+- Full modpack lifecycle tracking/updating and transactional rollback of pack overrides are not implemented. Use a separate installation for each pack. Imported/local files do not acquire trustworthy compatibility metadata merely by being imported.
+- Mod catalog updates support staged downloads and rollback on ordinary file-operation failures. This is not a crash-proof database transaction, nor proof of compatibility across arbitrary third-party dependency graphs.
+- No user-facing download cancellation or byte-level progress; progress reports actual stages and verified file counts.
+- HUD has position, scale, opacity, color, visibility, in-game keybinds, crosshair settings, scoreboard visibility and chat opacity; multiple named saved layouts, full theme management, advanced chat/scoreboard styling and animated resource-pack previews are absent.
+- Loader updates are selected through installation configuration, not automatically migrated in the Update Center. Minecraft upgrades use new installations rather than world migration.
+- Resource usage has not been benchmarked. “Maximum FPS” is a configurable preset with compatible Sodium/Lithium installation, not an FPS guarantee.
+- Website source is included; hosting and custom-domain DNS are not configured.
+
+This is substantial executable implementation work, but it is **not the complete production-ready application described in the original brief**. The remaining gaps are documented rather than hidden behind placeholder success states.

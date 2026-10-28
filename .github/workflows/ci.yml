@@ -2,7 +2,9 @@ name: Build and test
 on:
   push:
     branches: [main, "feat/**"]
+    paths-ignore: ["**/*.md", "website/**"]
   pull_request:
+    paths-ignore: ["**/*.md", "website/**"]
 concurrency:
   group: build-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
@@ -30,6 +32,13 @@ jobs:
           name: AR-Client-Fabric-1.21.9
           path: in-game/build/libs
       - run: npm run bundle
+      - name: Verify desktop starts without service credentials
+        shell: pwsh
+        run: |
+          $process = Start-Process -FilePath "src-tauri/target/release/ar-client.exe" -PassThru
+          Start-Sleep -Seconds 8
+          if ($process.HasExited) { throw "AR Client exited during startup (code $($process.ExitCode))" }
+          Stop-Process -Id $process.Id
       - uses: actions/upload-artifact@v4
         with:
           name: AR-Client-Windows-x64

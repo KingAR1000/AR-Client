@@ -19,7 +19,11 @@ export type LauncherState = {
   profiles: Profile[];
   accounts: Account[];
   activeAccount: string | null;
-  settings: { microsoftClientId: string; eulaAccepted: boolean };
+  settings: {
+    microsoftClientId: string;
+    eulaAccepted: boolean;
+    recoveredFromBackup?: boolean;
+  };
   running: string[];
   version: string;
   curseforgeConfigured: boolean;

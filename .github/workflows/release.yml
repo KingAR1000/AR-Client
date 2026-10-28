@@ -37,6 +37,7 @@ jobs:
           AR_UPDATER_PUBLIC_KEY: ${{ vars.AR_UPDATER_PUBLIC_KEY }}
       - uses: tauri-apps/tauri-action@v0
         env:
+          AR_MICROSOFT_CLIENT_ID: ${{ vars.AR_MICROSOFT_CLIENT_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}

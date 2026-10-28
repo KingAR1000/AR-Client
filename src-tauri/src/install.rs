@@ -290,6 +290,19 @@ pub fn merge(base: &Value, loader: &Value) -> Value {
     }
     result
 }
+fn loader_id(p: &Profile) -> String {
+    if p.loader == "forge" {
+        format!(
+            "{}-forge-{}",
+            p.version,
+            p.loader_version
+                .strip_prefix(&format!("{}-", p.version))
+                .unwrap_or(&p.loader_version)
+        )
+    } else {
+        format!("neoforge-{}", p.loader_version)
+    }
+}
 async fn loader_metadata(
     c: &reqwest::Client,
     root: &Path,
@@ -396,7 +409,8 @@ async fn loader_metadata(
             let path = e.path().join(format!("{id}.json"));
             if path.is_file() {
                 let v: Value = serde_json::from_slice(&std::fs::read(path)?)?;
-                if v["inheritsFrom"] == p.version && id.contains(&p.loader_version) {
+                let expected = loader_id(p);
+                if v["inheritsFrom"] == p.version && id == expected {
                     found = Some(v);
                 }
             }
@@ -742,6 +756,20 @@ mod tests {
             &json!([{"action":"allow","features":{"is_demo_user":true}}])
         ));
         assert!(!allowed(&json!([{"action":"allow"},{"action":"disallow"}])));
+    }
+    #[test]
+    fn forge_installer_version_id_is_normalized() {
+        let p = Profile {
+            id: uuid::Uuid::new_v4().to_string(),
+            name: "test".into(),
+            version: "1.21.9".into(),
+            loader: "forge".into(),
+            loader_version: "1.21.9-59.0.5".into(),
+            ram: 2048,
+            java: String::new(),
+            preset: "Custom".into(),
+        };
+        assert_eq!(loader_id(&p), "1.21.9-forge-59.0.5");
     }
     #[test]
     fn maven_coordinates() {

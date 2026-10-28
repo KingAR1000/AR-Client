@@ -67,7 +67,7 @@ impl Default for State {
             profiles: vec![],
             accounts: vec![],
             active_account: None,
-            settings: json!({"microsoftClientId":"","concurrentDownloads":6,"theme":"dark","closeOnLaunch":false,"eulaAccepted":false}),
+            settings: json!({"microsoftClientId":option_env!("AR_MICROSOFT_CLIENT_ID").unwrap_or(""),"concurrentDownloads":6,"theme":"dark","closeOnLaunch":false,"eulaAccepted":false}),
         }
     }
 }

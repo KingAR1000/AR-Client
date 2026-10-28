@@ -24,16 +24,18 @@ git switch feat/ar-client
 npm ci
 npm test
 cargo test --manifest-path src-tauri/Cargo.toml --no-default-features --locked
+gradle -p in-game build --no-daemon
+node scripts/prepare-companion.mjs
 npm run desktop
 ```
 
-Build the Windows installer with `npm run bundle`. The executable is under `src-tauri/target/release/bundle/nsis/`. CI uploads the installer as the **AR-Client-Windows-x64** artifact. Development installers are not Authenticode signed and may trigger Windows SmartScreen.
+Build the Fabric companion first with `gradle -p in-game build`, then build the Windows installer with `npm run bundle`. The executable is under `src-tauri/target/release/bundle/nsis/`. CI uploads the installer as the **AR-Client-Windows-x64** artifact. Development installers are not Authenticode signed and may trigger Windows SmartScreen.
 
 ```powershell
 gradle -p in-game build --no-daemon
 ```
 
-The distributable mod is `in-game/build/libs/ar-client-fabric-0.1.0.jar` (not the sources jar). Create a **Fabric 1.21.9** installation, install **Fabric API** from Mods, and import the AR jar into that installation. The launcher and mod share `config/ar-client.json` for HUD layouts. Right Shift opens the in-game HUD editor; C zooms, R toggles sprint, V toggles sneak. Rebind these in Minecraft's Controls menu.
+The distributable mod is `in-game/build/libs/ar-client-fabric-0.1.0.jar` (not the sources jar). Packaged builds automatically install the bundled companion and compatible **Fabric API** into **Fabric 1.21.9** installations. For development or separate use, install Fabric API and import the AR jar manually. The launcher and mod share `config/ar-client.json` for HUD layouts. Right Shift opens the in-game HUD editor; C zooms, R toggles sprint, V toggles sneak. Rebind these in Minecraft's Controls menu.
 
 Linux development requires WebKitGTK 4.1, GTK 3, librsvg, libappindicator/ayatana development packages and a running Secret Service credential vault. Windows is the primary distribution target. Change bundle targets explicitly for Linux packaging.
 
@@ -55,7 +57,7 @@ There is **no shared or borrowed Microsoft client ID** in this repository.
 1. Register an application in Microsoft Entra supporting personal Microsoft accounts.
 2. Configure it as a public client and allow public client/device authorization flows. Never embed a client secret in a desktop application.
 3. Follow Microsoft's current Minecraft/Xbox API access process and obtain any required approval for the application. A registration alone does not guarantee Minecraft Services access.
-4. Enter the public Application (client) ID in AR Client → Settings.
+4. Enter the public Application (client) ID in AR Client → Settings. For releases, set the repository variable `AR_MICROSOFT_CLIENT_ID`; new installations then use that public ID by default.
 5. Test with an account that owns Minecraft Java, including account refresh, multiple accounts and family restrictions.
 
 The implementation uses Microsoft's device authorization endpoint, Xbox Live authentication, XSTS, Minecraft login, ownership entitlements and profile services. Access/refresh credentials are stored through Windows Credential Manager (Linux: Secret Service), never in `state.json`. Passwords are entered only on Microsoft's website. OS vault failures are surfaced; there is no plaintext fallback.
@@ -66,7 +68,7 @@ Modrinth browsing requires no key. CurseForge requires an API key issued under i
 
 Author-disabled CurseForge downloads are rejected with an explanation. Dependency versions and game/loader compatibility are checked before content downloads. Catalog updates are explicit and isolated per installation. Imported jars/zips are user-provided and not represented as upstream-verified catalog downloads. Review mods before importing executable code.
 
-Modpack imports require an installation matching the pack's game and loader requirements. `.mrpack` and CurseForge zip manifests are supported; content requiring unavailable or blocked downloads fails with a visible error. Imported packs and manually imported files are accessible through Open installation folder; they are not falsely presented as fully tracked catalog projects.
+Modpack imports require an installation matching the pack's game and loader requirements. `.mrpack` and CurseForge zip manifests are supported; content requiring unavailable or blocked downloads fails with a visible error. Imported mods and resource packs appear as local/untracked files and can be removed in the UI. Full modpack lifecycle updates are not implemented; use isolated installations for packs.
 
 ## Secure releases
 
