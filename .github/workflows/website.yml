@@ -1,10 +1,6 @@
 name: Website checks
 on:
-  push:
-    branches: [main, "feat/**"]
-    paths: ["website/**", ".github/workflows/website.yml"]
-  pull_request:
-    paths: ["website/**", ".github/workflows/website.yml"]
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

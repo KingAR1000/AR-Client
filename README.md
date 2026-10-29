@@ -12,7 +12,7 @@ New installations default to the latest stable release from Mojang's manifest, c
 - `src-tauri/`: Rust authentication, installation, content and launch services.
 - `in-game/`: Fabric companion mod.
 - `website/`: Vercel website and server functions; see [hosting instructions](website/HOSTING.md).
-- `scripts/` and `.github/workflows/`: packaging, release signing and automated checks.
+- `scripts/` and `.github/workflows/`: packaging, release signing and checks.
 
 Outside contributions are not currently accepted; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -31,7 +31,7 @@ node scripts/prepare-companion.mjs
 npm run desktop
 ```
 
-Run `npm run bundle` to create the Windows installer under `src-tauri/target/release/bundle/nsis/`. CI uploads it as **AR-Client-Windows-x64**. Development installers are unsigned and may trigger Windows SmartScreen.
+Run `npm run bundle` to create the Windows installer under `src-tauri/target/release/bundle/nsis/`. All GitHub workflows are manual: open **Actions → select a workflow → Run workflow**. **Build and test** uploads the installer as **AR-Client-Windows-x64**. Development installers are unsigned and may trigger Windows SmartScreen.
 
 Packaged builds install the companion and Fabric API into compatible Fabric 1.21.9 instances. For manual installation, use `in-game/build/libs/ar-client-fabric-0.1.0.jar` and Fabric API. Right Shift opens the HUD editor; C zooms, R toggles sprint and V toggles sneak. Rebind controls in Minecraft's Controls menu.
 
