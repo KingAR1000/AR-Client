@@ -42,7 +42,7 @@ Linux development requires WebKitGTK 4.1, GTK 3, librsvg, libappindicator/ayatan
 ## First launch
 
 1. Settings → read and accept Minecraft's EULA.
-2. Configure the Microsoft application client ID described below.
+2. AR Client’s registered public Microsoft client ID is bundled by default. Older builds can use `a638a66e-7242-4bbe-b197-631d1ce1d7fb` in Settings.
 3. Accounts → Add account → authorize the device code on Microsoft's own website.
 4. Create an installation, choose an officially listed game release and compatible modloader, and set RAM.
 5. Install/repair or Launch Minecraft. Downloads are hashed before use. Java is fetched from Eclipse Temurin when no explicit executable is selected.
@@ -50,14 +50,16 @@ Linux development requires WebKitGTK 4.1, GTK 3, librsvg, libappindicator/ayatan
 
 The launcher never bypasses ownership, provides cracked accounts, redistributes Minecraft jars, or invents successful login/download results. The Vite browser view has no desktop privileges and explicitly refuses native operations.
 
-## Authentication setup — owner action required
+## Authentication configuration
 
-There is **no shared or borrowed Microsoft client ID** in this repository.
+AR Client uses its own public Microsoft application ID, `a638a66e-7242-4bbe-b197-631d1ce1d7fb`, provided by the project owner. This identifier is public, not a credential. Existing installations with an empty ID adopt this default; explicitly configured IDs are preserved. On 2026-10-29 Microsoft accepted a device authorization request for it. That check does not establish Minecraft Services approval or a completed player login.
+
+For forks registering their own application:
 
 1. Register an application in Microsoft Entra supporting personal Microsoft accounts.
 2. Configure it as a public client and allow public client/device authorization flows. Never embed a client secret in a desktop application.
 3. Follow Microsoft's current Minecraft/Xbox API access process and obtain any required approval for the application. A registration alone does not guarantee Minecraft Services access.
-4. Enter the public Application (client) ID in AR Client → Settings. For releases, set the repository variable `AR_MICROSOFT_CLIENT_ID`; new installations then use that public ID by default.
+4. Enter the public Application (client) ID in AR Client → Settings, or set `AR_MICROSOFT_CLIENT_ID` at build time. CI and release workflows can read it from a repository variable of the same name. If unset or empty, builds use AR Client’s bundled ID.
 5. Test with an account that owns Minecraft Java, including account refresh, multiple accounts and family restrictions.
 
 The implementation uses Microsoft's device authorization endpoint, Xbox Live authentication, XSTS, Minecraft login, ownership entitlements and profile services. Access/refresh credentials are stored through Windows Credential Manager (Linux: Secret Service), never in `state.json`. Passwords are entered only on Microsoft's website. OS vault failures are surfaced; there is no plaintext fallback.

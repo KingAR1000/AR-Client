@@ -10,6 +10,8 @@ concurrency:
   cancel-in-progress: true
 permissions:
   contents: read
+env:
+  AR_MICROSOFT_CLIENT_ID: ${{ vars.AR_MICROSOFT_CLIENT_ID }}
 jobs:
   launcher:
     needs: fabric

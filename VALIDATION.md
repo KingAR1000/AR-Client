@@ -1,12 +1,12 @@
 # Validation record
 
-Checked on 2026-10-28. This distinguishes implemented code from verified behavior; no production certification or FPS benchmark is implied.
+Installation checks were performed on 2026-10-28; Microsoft registration checks and defaults were updated on 2026-10-29. This distinguishes implemented code from verified behavior; no production certification or FPS benchmark is implied.
 
 ## Passed in the Linux workspace
 
 - Mojang manifest: latest official release **26.3**.
 - React/TypeScript production build; **4 frontend tests**.
-- **19 Rust tests**: path/HTTPS validation, checksum verification, metadata inheritance, version normalization, Send-safe command futures, profile CRUD, EULA enforcement, content rollback/collision protection, skin decoding and configuration recovery.
+- **20 Rust tests**: path/HTTPS validation, checksum verification, metadata inheritance, version normalization, Send-safe command futures, profile CRUD, EULA enforcement, content rollback/collision protection, skin decoding and configuration recovery, and empty-ID migration while preserving custom registrations.
 - Browser navigation across launcher sections: no uncaught runtime errors. Browser mode correctly refuses native operations.
 - Standalone website at desktop and 390px mobile widths: no horizontal overflow or runtime errors.
 - Fabric companion `gradle build` succeeds with JDK 21 / Gradle 9.1.0; includes the crosshair/scoreboard mixins. Compilation does not prove gameplay behavior.
@@ -33,7 +33,7 @@ The workflow builds a Windows x64 NSIS installer, bundles the Fabric companion, 
 
 ## External setup / unverified runtime behavior
 
-- Microsoft/Xbox/Minecraft login, token refresh, entitlement checks, skin uploads and capes: no approved Microsoft application ID or owner login session supplied.
+- Microsoft accepted a device authorization request for the owner-provided app ID `a638a66e-7242-4bbe-b197-631d1ce1d7fb` on 2026-10-29. Full Microsoft/Xbox/Minecraft login, token refresh, entitlement checks, skin uploads and capes remain unverified; no player authorization session or Minecraft Services approval confirmation has been supplied.
 - CurseForge live workflows: no API key supplied.
 - Signed updater: no project signing key or published stable release exists.
 - Windows Authenticode: no signing certificate supplied; development installer is unsigned.
