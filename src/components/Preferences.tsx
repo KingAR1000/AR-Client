@@ -71,11 +71,11 @@ export default function Preferences({
         </form>
       </section>
       <section className="panel">
-        <h3>CurseForge API key</h3>
+        <h3>CurseForge connection</h3>
         <p className="muted">
           {state.curseforgeConfigured
-            ? "A key is saved in your OS credential vault."
-            : "No key configured. Modrinth remains available without one."}
+            ? "Your personal key is saved in your OS credential vault and connects directly to CurseForge."
+            : "Uses the AR Client catalog service when deployed. You can optionally add your own key to connect directly. Modrinth needs no key."}
         </p>
         <form
           onSubmit={(e) => {
@@ -87,7 +87,7 @@ export default function Preferences({
           }}
         >
           <label>
-            API key
+            Personal API key (optional)
             <input
               type="password"
               value={key}

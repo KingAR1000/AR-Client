@@ -3,21 +3,56 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#101010" />
+    <meta name="theme-color" content="#0b0b0b" />
     <meta
       name="description"
-      content="AR Client by KingAR1000. A free, open-source Minecraft Java launcher. Your worlds, your mods, your rules."
+      content="AR Client. A free, open-source Minecraft Java launcher by KingAR1000. The latest stable Minecraft, isolated installations, mods, and skins. No ads."
     />
-    <title>AR Client — Your Minecraft. Your way.</title>
+    <title>AR Client — Minecraft, on your terms.</title>
+    <link rel="icon" type="image/png" href="/assets/ar-mark.png" />
+    <link
+      rel="preload"
+      as="font"
+      href="/assets/barlow-condensed.ttf"
+      type="font/ttf"
+      crossorigin
+    />
     <style>
+      @font-face {
+        font-family: Barlow;
+        src: url("/assets/barlow-condensed.ttf") format("truetype");
+        font-weight: 800;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: DM;
+        src: url("/assets/dm-sans.ttf") format("truetype");
+        font-weight: 400;
+        font-display: swap;
+      }
+      :root {
+        color-scheme: dark;
+        --bg: #0b0b0b;
+        --ink: #f1f1f1;
+        --muted: #a2a2a2;
+        --line: #ffffff22;
+      }
       * {
         box-sizing: border-box;
       }
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 24px;
+      }
       body {
         margin: 0;
-        background: #101010;
-        color: #f3f3f3;
-        font-family: Inter, "Segoe UI", Arial, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          14px/1.6 DM,
+          "Segoe UI",
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
       }
       a {
         color: inherit;
@@ -25,480 +60,1330 @@
       }
       button {
         font: inherit;
+        color: inherit;
       }
-      header,
-      main,
-      footer {
-        max-width: 1180px;
-        margin: auto;
-        padding: 0 42px;
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
       }
-      header {
-        height: 100px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #292929;
+      button {
+        cursor: pointer;
       }
-      .logo {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        font-size: 12px;
-        letter-spacing: 4px;
-        font-weight: 700;
-      }
-      .logo img {
-        width: 60px;
-        height: 45px;
-        object-fit: contain;
-        filter: grayscale(1) invert(1) brightness(13);
-      }
-      nav {
-        display: flex;
-        gap: 30px;
-        font-size: 11px;
-        color: #999;
-      }
-      nav a:hover {
-        color: white;
-      }
-      .hero {
-        padding: 96px 0 80px;
-        position: relative;
-        overflow: hidden;
-      }
-      .eyebrow {
-        font-size: 9px;
-        letter-spacing: 2.2px;
-        color: #8d8d8d;
-        text-transform: uppercase;
-      }
-      .hero h1 {
-        font-size: clamp(58px, 8vw, 99px);
-        line-height: 1.02;
-        letter-spacing: -5px;
-        font-weight: 500;
-        margin: 28px 0;
-      }
-      .hero h1 span {
-        color: #858585;
-      }
-      .hero > p {
-        font-size: 16px;
-        line-height: 1.8;
-        color: #9b9b9b;
-        max-width: 470px;
-      }
-      .actions {
-        display: flex;
-        align-items: center;
-        gap: 25px;
-        margin-top: 35px;
-      }
-      .button {
-        background: #f1f1f1;
-        color: #111;
-        padding: 16px 23px;
-        border-radius: 5px;
-        font-size: 12px;
-        font-weight: 600;
-        display: inline-flex;
-        gap: 25px;
-        align-items: center;
-      }
-      .button:hover {
-        background: #ccc;
-      }
-      .text-link {
-        font-size: 12px;
-        color: #aaa;
-      }
-      .text-link:hover {
-        color: white;
-      }
-      .release-note {
-        color: #666;
-        font-size: 10px;
-        margin-top: 15px;
-      }
-      .hero .cube {
-        position: absolute;
-        right: 15px;
-        top: 140px;
-        width: 220px;
-        height: 220px;
-        transform: rotate(-20deg) skewY(12deg);
-        background: linear-gradient(140deg, #777, #292929 60%);
-        border: 1px solid #777;
-        box-shadow: 35px 45px 80px #0008;
-        z-index: -1;
-      }
-      .hero .cube:after {
-        content: "";
-        position: absolute;
-        width: 95px;
-        height: 95px;
-        top: 190px;
-        right: 180px;
-        background: linear-gradient(140deg, #8a8a8a, #242424);
-        border: 1px solid #777;
-      }
-      .principles {
-        display: flex;
-        justify-content: space-between;
-        padding: 22px 0;
-        border-top: 1px solid #303030;
-        border-bottom: 1px solid #303030;
-        font-size: 10px;
-        letter-spacing: 1.4px;
-        color: #b1b1b1;
-      }
-      .section {
-        padding: 75px 0;
-        border-bottom: 1px solid #292929;
-      }
-      .section-head {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 50px;
-        margin-bottom: 40px;
-      }
-      .section h2 {
-        font-size: 36px;
-        line-height: 1.15;
-        letter-spacing: -1.5px;
-        font-weight: 500;
-        margin: 12px 0;
-      }
-      .section p {
-        color: #929292;
-        font-size: 13px;
-        line-height: 1.9;
-      }
-      .details {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 34px;
-      }
-      .detail {
-        border-top: 1px solid #444;
-        padding-top: 22px;
-      }
-      .detail > span {
-        font-family: monospace;
-        color: #5e5e5e;
-        font-size: 12px;
-      }
-      .detail h3 {
-        font-size: 17px;
-        font-weight: 500;
-        margin: 24px 0 10px;
-      }
-      .detail p {
-        font-size: 12px;
-      }
-      .build-note {
-        padding: 24px;
-        border: 1px solid #333;
-        background: #171717;
-        border-radius: 7px;
-        margin-top: 34px;
-        display: flex;
-        gap: 25px;
-        align-items: flex-start;
-      }
-      .build-note b {
-        font-size: 11px;
-        white-space: nowrap;
-        padding-top: 4px;
-      }
-      .build-note p {
-        margin: 0;
-        font-size: 11px;
-      }
-      .open-source {
-        display: grid;
-        grid-template-columns: 1.4fr 1fr;
-        gap: 70px;
-      }
-      .open-source .links {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-      .links a {
-        padding: 18px 0;
-        border-bottom: 1px solid #333;
-        display: flex;
-        justify-content: space-between;
-        font-size: 12px;
-      }
-      .links a:hover {
-        color: #aaa;
-      }
-      .owner {
-        font-size: 12px;
-        color: #aaa;
-        margin-top: 25px;
-      }
-      footer {
-        padding-top: 30px;
-        padding-bottom: 35px;
-        display: flex;
-        justify-content: space-between;
-        gap: 25px;
-        color: #666;
-        font-size: 10px;
-      }
-      footer p {
-        max-width: 570px;
-        line-height: 1.8;
-        margin: 0;
-      }
-      .legal {
-        margin-top: 10px !important;
-        font-size: 9px;
-      }
-      a:focus-visible {
+      a:focus-visible,
+      button:focus-visible,
+      summary:focus-visible {
         outline: 2px solid white;
         outline-offset: 6px;
       }
-      @media (max-width: 750px) {
-        header,
-        main,
-        footer {
-          padding-left: 24px;
-          padding-right: 24px;
-        }
-        header {
-          height: 80px;
-        }
-        nav {
-          gap: 18px;
-        }
-        nav a:first-child {
-          display: none;
+      ::selection {
+        background: #fff;
+        color: #111;
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+      img {
+        max-width: 100%;
+      }
+      .wrap {
+        width: min(1280px, calc(100% - 96px));
+        margin: auto;
+      }
+      .mono {
+        font:
+          10px/1.5 Consolas,
+          monospace;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .arrow {
+        font: 22px/1 sans-serif;
+      }
+      .skip {
+        position: absolute;
+        top: -80px;
+        left: 20px;
+        padding: 12px;
+        background: white;
+        color: black;
+        z-index: 20;
+      }
+      .skip:focus {
+        top: 15px;
+      }
+      .nav {
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--line);
+        gap: 30px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .brand img {
+        display: block;
+        width: 64px;
+        height: 48px;
+        object-fit: contain;
+      }
+      .brand span {
+        font-size: 13px;
+        font-weight: bold;
+        letter-spacing: 5px;
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 34px;
+        font-size: 12px;
+      }
+      .nav-links > a:not(.nav-download) {
+        color: #bcbcbc;
+      }
+      .nav-links > a:hover {
+        color: #fff;
+      }
+      .nav-download {
+        border: 1px solid #777777;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+      .nav-download:hover {
+        background: #eee;
+        color: #111;
+      }
+      .hero {
+        position: relative;
+        min-height: 720px;
+        display: flex;
+        align-items: center;
+        isolation: isolate;
+        overflow: hidden;
+      }
+      .hero-art {
+        position: absolute;
+        inset: 0 -70px 0 30%;
+        z-index: -2;
+        pointer-events: none;
+      }
+      .hero canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .hero-art:after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(90deg, var(--bg), transparent 35%),
+          linear-gradient(
+            0deg,
+            var(--bg),
+            transparent 12%,
+            transparent 85%,
+            var(--bg)
+          );
+      }
+      .hero-copy {
+        padding: 58px 0 78px;
+        max-width: 640px;
+      }
+      .label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #c2c2c2;
+      }
+      .label:before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        background: #eee;
+      }
+      .hero h1 {
+        font:
+          800 clamp(78px, 9vw, 130px)/0.88 Barlow,
+          Impact,
+          sans-serif;
+        letter-spacing: -1.4px;
+        margin: 29px 0 28px;
+        text-transform: uppercase;
+      }
+      .hero h1 span {
+        color: transparent;
+        -webkit-text-stroke: 1px #f1f1f1;
+      }
+      .hero-description {
+        font-size: 15px;
+        color: #aaaaaa;
+        max-width: 325px;
+        line-height: 1.8;
+      }
+      .actions {
+        display: flex;
+        gap: 23px;
+        align-items: center;
+        margin: 30px 0 13px;
+      }
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+        background: #ededed;
+        color: #151515;
+        min-height: 51px;
+        padding: 0 23px;
+        font-size: 12px;
+        font-weight: bold;
+        border: 1px solid #ededed;
+        transition:
+          background 0.16s,
+          transform 0.16s;
+      }
+      .button:hover {
+        background: #fff;
+        transform: translateY(-2px);
+      }
+      .source-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 12px;
+      }
+      .source-link:hover {
+        text-decoration: underline;
+      }
+      .hero-note {
+        font-size: 10px;
+        color: #939393;
+      }
+      .scene-credit {
+        position: absolute;
+        right: 0;
+        bottom: 40px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #999999;
+      }
+      .scene-credit:before {
+        content: "+";
+        color: #e2e2e2;
+        font: 28px monospace;
+      }
+      .facts {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        padding: 21px 0;
+        gap: 15px;
+      }
+      .fact {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+      .fact span:first-child {
+        font-size: 12px;
+      }
+      .fact small {
+        color: #8d8d8d;
+        font:
+          9px Consolas,
+          monospace;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .fact + .fact {
+        border-left: 1px solid var(--line);
+        padding-left: 28px;
+      }
+      .section {
+        padding: 100px 0;
+      }
+      .section-header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 40px;
+        margin-bottom: 34px;
+      }
+      .section-number {
+        color: #858585;
+        margin-bottom: 13px;
+      }
+      h2 {
+        font:
+          800 clamp(36px, 4vw, 54px)/1 Barlow,
+          Impact,
+          sans-serif;
+        letter-spacing: 0.2px;
+        text-transform: uppercase;
+      }
+      .section-header > p {
+        color: var(--muted);
+        max-width: 350px;
+        font-size: 12px;
+        line-height: 1.8;
+      }
+      .launcher-frame {
+        border: 1px solid #ffffff26;
+        background: #111;
+        box-shadow: 0 30px 70px #0007;
+      }
+      .frame-bar {
+        height: 33px;
+        border-bottom: 1px solid #ffffff12;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        color: #82827b;
+        font:
+          9px Consolas,
+          monospace;
+        letter-spacing: 1px;
+      }
+      .frame-bar span:last-child {
+        font-size: 16px;
+        letter-spacing: 9px;
+      }
+      .launcher-frame img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .screenshot-note {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+        color: #858585;
+        font-size: 10px;
+        gap: 18px;
+      }
+      .feature-rows {
+        padding-top: 50px;
+      }
+      .feature-row {
+        display: grid;
+        grid-template-columns: 50px 1fr 1.05fr;
+        gap: 24px;
+        padding: 29px 0;
+        border-top: 1px solid var(--line);
+        align-items: baseline;
+      }
+      .feature-row > span {
+        font:
+          10px Consolas,
+          monospace;
+        color: #777777;
+      }
+      .feature-row h3 {
+        font-size: 18px;
+        font-weight: 400;
+        letter-spacing: -0.5px;
+      }
+      .feature-row p {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.8;
+      }
+      .version-section {
+        border-block: 1px solid var(--line);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        padding: 64px 0;
+        gap: 80px;
+      }
+      .version-display {
+        display: flex;
+        align-items: baseline;
+        gap: 17px;
+        margin: 18px 0;
+      }
+      .version-display strong {
+        font:
+          800 100px/0.9 Barlow,
+          Impact,
+          sans-serif;
+        letter-spacing: -2px;
+      }
+      .version-display span {
+        font-size: 10px;
+        color: #aaaaaa;
+      }
+      .version-copy {
+        max-width: 360px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .compat-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-content: center;
+        gap: 0 32px;
+      }
+      .compat-list > div {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 13px;
+      }
+      .compat-list span {
+        color: #999999;
+        font-size: 11px;
+      }
+      .compat-note {
+        grid-column: 1/-1;
+        font-size: 10px;
+        color: #888888;
+        margin-top: 15px;
+      }
+      .download {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: start;
+      }
+      .download-copy > p {
+        font-size: 13px;
+        color: var(--muted);
+        max-width: 350px;
+        margin: 22px 0;
+      }
+      .download-card {
+        border: 1px solid #ffffff30;
+        padding: 29px;
+        background: #101010;
+      }
+      .download-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+      .windows-icon {
+        display: grid;
+        grid-template-columns: repeat(2, 13px);
+        gap: 3px;
+        transform: perspective(90px) rotateY(-12deg);
+      }
+      .windows-icon i {
+        width: 13px;
+        height: 13px;
+        background: #e8e8e8;
+      }
+      .download-card h3 {
+        font-size: 18px;
+        font-weight: 400;
+      }
+      .download-card .build-status {
+        color: #969696;
+        font-size: 11px;
+        margin: 20px 0;
+      }
+      .download-card .button {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .requirements {
+        border-top: 1px solid var(--line);
+        padding-top: 16px;
+        margin-top: 22px;
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        font-size: 10px;
+        color: #999999;
+      }
+      .download-warning {
+        font-size: 11px;
+        color: #929292;
+        line-height: 1.8;
+        margin-top: 15px;
+      }
+      .faq {
+        margin-top: 60px;
+        max-width: 800px;
+      }
+      .faq details {
+        border-top: 1px solid var(--line);
+      }
+      .faq details:last-child {
+        border-bottom: 1px solid var(--line);
+      }
+      .faq summary {
+        padding: 19px 30px 19px 0;
+        cursor: pointer;
+        position: relative;
+        font-size: 13px;
+        list-style: none;
+      }
+      .faq summary::-webkit-details-marker {
+        display: none;
+      }
+      .faq summary:after {
+        content: "+";
+        position: absolute;
+        right: 0;
+        font-size: 20px;
+        top: 13px;
+        color: #929292;
+      }
+      .faq details[open] summary:after {
+        content: "−";
+      }
+      .faq details p {
+        font-size: 12px;
+        line-height: 1.9;
+        color: var(--muted);
+        padding: 0 35px 23px 0;
+      }
+      .faq a {
+        text-decoration: underline;
+      }
+      .opensource {
+        background: #e8e8e8;
+        color: #171717;
+        padding: 55px 0;
+      }
+      .opensource .wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 35px;
+      }
+      .opensource h2 {
+        font-size: 40px;
+      }
+      .opensource p {
+        font-size: 12px;
+        color: #5b5b5b;
+        margin-top: 13px;
+        max-width: 420px;
+      }
+      .opensource a {
+        display: flex;
+        align-items: center;
+        gap: 35px;
+        border-bottom: 1px solid #777777;
+        padding: 12px 0;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+      .footer {
+        padding: 35px 0 25px;
+      }
+      .footer-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 25px;
+        padding-bottom: 28px;
+      }
+      .footer .brand img {
+        width: 43px;
+        height: 33px;
+      }
+      .footer .brand span {
+        font-size: 10px;
+        letter-spacing: 3px;
+      }
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 22px;
+        color: #a0a0a0;
+        font-size: 10px;
+      }
+      .footer-links a:hover {
+        color: white;
+      }
+      .footer-bottom {
+        border-top: 1px solid var(--line);
+        padding-top: 20px;
+        display: flex;
+        justify-content: space-between;
+        gap: 30px;
+        color: #777777;
+        font-size: 9px;
+      }
+      .footer-bottom p {
+        max-width: 540px;
+      }
+      @media (min-width: 1500px) {
+        .hero-art {
+          right: -100px;
         }
         .hero {
-          padding: 65px 0;
-        }
-        .hero h1 {
-          letter-spacing: -3px;
-        }
-        .hero .cube {
-          right: -120px;
-          opacity: 0.4;
-        }
-        .principles {
-          font-size: 8px;
-          gap: 12px;
-          line-height: 1.7;
-        }
-        .section-head,
-        .open-source {
-          grid-template-columns: 1fr;
-          gap: 12px;
-        }
-        .details {
-          grid-template-columns: 1fr;
-        }
-        .section {
-          padding: 50px 0;
-        }
-        .section h2 {
-          font-size: 32px;
-        }
-        .build-note {
-          flex-direction: column;
-          gap: 12px;
-        }
-        footer {
-          flex-direction: column;
-        }
-        .actions {
-          gap: 20px;
-        }
-        .button {
-          padding: 14px 17px;
+          min-height: 780px;
         }
       }
-      @media (prefers-reduced-motion: no-preference) {
-        a {
-          transition:
-            color 0.2s,
-            background 0.2s;
+      @media (max-width: 900px) {
+        .wrap {
+          width: calc(100% - 48px);
         }
+        .hero {
+          min-height: 660px;
+        }
+        .hero h1 {
+          font-size: 100px;
+        }
+        .hero-art {
+          left: 15%;
+          right: -180px;
+          opacity: 0.7;
+        }
+        .hero-art:after {
+          background:
+            linear-gradient(90deg, var(--bg), #0b0b0b77 30%, transparent 60%),
+            linear-gradient(0deg, var(--bg), transparent 30%);
+        }
+        .scene-credit {
+          display: none;
+        }
+        .nav-links {
+          gap: 22px;
+        }
+        .fact {
+          display: block;
+        }
+        .fact small {
+          display: block;
+          margin-top: 4px;
+        }
+        .fact + .fact {
+          padding-left: 14px;
+        }
+        .section {
+          padding: 75px 0;
+        }
+        .version-section,
+        .download {
+          gap: 35px;
+        }
+        .version-display strong {
+          font-size: 86px;
+        }
+        .section-header > p {
+          max-width: 280px;
+        }
+      }
+      @media (max-width: 600px) {
+        .wrap {
+          width: calc(100% - 36px);
+        }
+        .nav {
+          height: 78px;
+          gap: 12px;
+        }
+        .brand {
+          gap: 8px;
+        }
+        .brand img {
+          width: 49px;
+          height: 36px;
+        }
+        .brand span {
+          font-size: 11px;
+          letter-spacing: 3px;
+        }
+        .nav-links {
+          gap: 0;
+        }
+        .nav-links > a:not(.nav-download) {
+          display: none;
+        }
+        .nav-download {
+          padding: 8px 11px;
+          font-size: 10px;
+          gap: 15px;
+        }
+        .hero {
+          min-height: 690px;
+          align-items: start;
+        }
+        .hero-copy {
+          padding: 55px 0 210px;
+        }
+        .hero h1 {
+          font-size: 88px;
+          margin-top: 25px;
+          letter-spacing: -1px;
+        }
+        .hero-description {
+          font-size: 12px;
+          max-width: 260px;
+        }
+        .hero-art {
+          inset: 350px -100px -30px -160px;
+          opacity: 0.65;
+        }
+        .hero-art:after {
+          background: linear-gradient(
+            180deg,
+            var(--bg),
+            #0b0b0b50 25%,
+            transparent 65%,
+            var(--bg)
+          );
+        }
+        .hero-copy > .label {
+          font-size: 8px;
+        }
+        .actions {
+          gap: 18px;
+          margin-top: 24px;
+        }
+        .button {
+          padding: 0 16px;
+          gap: 18px;
+          min-height: 48px;
+          font-size: 11px;
+        }
+        .source-link {
+          font-size: 10px;
+        }
+        .hero-note {
+          font-size: 9px;
+        }
+        .facts {
+          grid-template-columns: 1fr 1fr;
+          gap: 22px 15px;
+          padding: 22px 0;
+        }
+        .fact + .fact {
+          padding-left: 0;
+          border: 0;
+        }
+        .fact span:first-child {
+          font-size: 12px;
+        }
+        .fact small {
+          font-size: 8px;
+        }
+        .section {
+          padding: 54px 0;
+        }
+        .section-header {
+          display: block;
+          margin-bottom: 25px;
+        }
+        h2 {
+          font-size: 42px;
+        }
+        .section-header > p {
+          margin-top: 18px;
+          max-width: 100%;
+        }
+        .frame-bar {
+          height: 26px;
+          font-size: 7px;
+          padding: 0 10px;
+        }
+        .screenshot-note {
+          font-size: 8px;
+        }
+        .feature-rows {
+          padding-top: 30px;
+        }
+        .feature-row {
+          grid-template-columns: 24px 1fr;
+          gap: 8px 14px;
+          padding: 22px 0;
+        }
+        .feature-row h3 {
+          font-size: 17px;
+        }
+        .feature-row p {
+          grid-column: 2;
+          font-size: 11px;
+        }
+        .version-section {
+          grid-template-columns: 1fr;
+          gap: 26px;
+          padding: 42px 0;
+        }
+        .version-display strong {
+          font-size: 100px;
+        }
+        .version-copy {
+          font-size: 11px;
+        }
+        .compat-list {
+          gap: 0 25px;
+        }
+        .download {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+        .download-copy > p {
+          margin: 17px 0 8px;
+          font-size: 12px;
+        }
+        .download-card {
+          padding: 22px;
+        }
+        .faq {
+          margin-top: 30px;
+        }
+        .faq summary {
+          font-size: 12px;
+        }
+        .opensource {
+          padding: 38px 0;
+        }
+        .opensource .wrap {
+          display: block;
+        }
+        .opensource h2 {
+          font-size: 37px;
+        }
+        .opensource p {
+          font-size: 11px;
+        }
+        .opensource a {
+          display: inline-flex;
+          margin-top: 20px;
+        }
+        .footer-top {
+          align-items: start;
+        }
+        .footer-links {
+          max-width: 170px;
+          justify-content: end;
+          gap: 12px 18px;
+        }
+        .footer-bottom {
+          display: block;
+          font-size: 8px;
+        }
+        .footer-bottom p + p {
+          margin-top: 12px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
         html {
-          scroll-behavior: smooth;
+          scroll-behavior: auto;
+        }
+        *,
+        *:before,
+        *:after {
+          transition: none !important;
         }
       }
     </style>
   </head>
   <body>
-    <header>
-      <a class="logo" href="#" aria-label="AR Client home"
-        ><img
-          id="logo"
-          alt="AR"
-          src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAIdpAAQAAAABAAAAWgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAAh2gAwAEAAAAAQAAAY0AAAAA/8AAEQgBjQIdAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/bAEMAAgICAgICBAICBAUEBAQFBwUFBQUHCQcHBwcHCQsJCQkJCQkLCwsLCwsLCw0NDQ0NDRAQEBAQEhISEhISEhISEv/bAEMBAwMDBAQECAQECBIMCgwSEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEv/dAAQAIv/aAAwDAQACEQMRAD8A/fyiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo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RRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB/9T9/KKKKACmkd6dRQBHTGHNSEYppGaAICO1R4xVgjsaYVoAgK03b7VNt9KNpoAh2U4KBUm00oWgBoGaeFpwWpAtACAZp4HaingYoAAMUtFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB//9X9/KKKKACiiigAphGKfRQBHTdtSFabQBHj1pMCpaKAI8e1O2mnUuDQA0AClxmnBfWnUAIBiloooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD//W/fyiiigAooooAKKKKACiiigBMCjApaKADAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP//X/fyiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9k="
-        /><span>CLIENT</span></a
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="wrap nav">
+      <a class="brand" href="#" aria-label="AR Client home"
+        ><img src="/assets/ar-mark.png" width="64" height="48" alt="AR" /><span
+          >CLIENT</span
+        ></a
       >
-      <nav>
-        <a href="#experience">The experience</a
-        ><a href="#open-source">Open source</a
-        ><a href="https://github.com/KingAR1000/AR-Client">GitHub ↗</a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#launcher">The launcher</a
+        ><a href="https://github.com/KingAR1000/AR-Client">GitHub ↗︎</a
+        ><a class="nav-download" href="#download"
+          >Get AR Client <span aria-hidden="true">↓</span></a
+        >
       </nav>
     </header>
-    <main>
-      <section class="hero">
-        <div class="eyebrow">Independent. Open source. Made for Minecraft.</div>
-        <h1>Your Minecraft.<br /><span>Your way.</span></h1>
-        <p>
-          A home for your worlds, your mods, and whatever comes next. Meet AR
-          Client.
-        </p>
-        <div class="actions">
-          <a
-            class="button"
-            id="download"
-            href="https://github.com/KingAR1000/AR-Client/releases"
-            >View releases <span>↗</span></a
-          ><a
-            class="text-link"
-            href="https://github.com/KingAR1000/AR-Client/tree/feat/ar-client"
-            >Explore the source ↗</a
-          >
+    <main id="main">
+      <section class="wrap hero" aria-labelledby="title">
+        <div class="hero-art" aria-hidden="true">
+          <canvas id="world"></canvas>
         </div>
-        <div class="release-note" id="release-status" role="status">
-          Windows 11 · Java Edition · Development build
+        <div class="hero-copy">
+          <p class="label mono">Independent. Open source. Minecraft Java.</p>
+          <h1 id="title">Minecraft.<br /><span>On your</span><br />terms.</h1>
+          <p class="hero-description">
+            Your worlds, mods, and versions.<br />One launcher that keeps it all
+            together.
+          </p>
+          <div class="actions">
+            <a class="button" href="#download"
+              >Get AR Client <span aria-hidden="true">↓</span></a
+            ><a
+              class="source-link"
+              href="https://github.com/KingAR1000/AR-Client"
+              >View source <span aria-hidden="true">↗︎</span></a
+            >
+          </div>
+          <p class="hero-note">
+            Free forever · Windows 11, 64-bit · Development build
+          </p>
         </div>
-        <div class="cube" aria-hidden="true"></div>
+        <p class="scene-credit mono">Built for the worlds you make.</p>
       </section>
-      <div class="principles">
-        <span>100% FREE & OPEN SOURCE</span><span>NO ADVERTISING</span
-        ><span>NO TELEMETRY</span><span>GPL v3</span>
+      <div class="wrap facts" aria-label="Project facts">
+        <div class="fact">
+          <span>100% free</span><small>No subscription</small>
+        </div>
+        <div class="fact">
+          <span>No advertising</span><small>Just the game</small>
+        </div>
+        <div class="fact">
+          <span>Open source</span><small>GNU GPL v3</small>
+        </div>
+        <div class="fact">
+          <span>By KingAR1000</span><small>Independent project</small>
+        </div>
       </div>
-      <section class="section" id="experience">
-        <div class="section-head">
+      <section class="wrap section" id="launcher">
+        <div class="section-header">
           <div>
-            <span class="eyebrow">Less friction. More Minecraft.</span>
-            <h2>Everything has<br />its own place.</h2>
+            <p class="section-number mono">01 / The launcher</p>
+            <h2>Everything in its place.</h2>
           </div>
           <p>
-            Keep your survival world separate from your next modpack. Pick a
-            Minecraft release, choose a compatible loader, and give each
-            installation its own settings. A quiet interface for a game with
-            endless possibilities.
+            A separate setup for every way you play. Switch installations, find
+            compatible mods, and keep your worlds organized.
           </p>
         </div>
-        <div class="details">
-          <article class="detail">
-            <span>01 / INSTALLATIONS</span>
-            <h3>Room to experiment.</h3>
+        <div class="launcher-frame">
+          <div class="frame-bar">
+            <span>AR CLIENT / LAUNCHER</span><span aria-hidden="true">− ×</span>
+          </div>
+          <img
+            src="/assets/launcher.jpg"
+            width="1280"
+            height="820"
+            loading="lazy"
+            alt="AR Client desktop interface with navigation for installations, mods, skins, accounts, and updates"
+          />
+        </div>
+        <div class="screenshot-note">
+          <span>Actual interface. Development build.</span
+          ><span>Windows 11 / 64-bit</span>
+        </div>
+        <div class="feature-rows">
+          <article class="feature-row">
+            <span>01</span>
+            <h3>A world for every setup.</h3>
             <p>
-              Isolated game directories, per-installation memory settings, and
-              official Minecraft version discovery. Your setup stays organized.
+              Keep survival, servers, and modded games in separate
+              installations, each with its own files, memory settings, and Java
+              runtime.
             </p>
           </article>
-          <article class="detail">
-            <span>02 / CUSTOMIZATION</span>
-            <h3>Make yourself at home.</h3>
+          <article class="feature-row">
+            <span>02</span>
+            <h3>Your next favorite mod.</h3>
             <p>
-              Browse mod catalogs, preview your skin in 3D, and arrange HUD
-              widgets with the version-specific AR Fabric companion.
+              Browse Modrinth and CurseForge with version filtering. Install
+              compatible content and its required dependencies from the
+              launcher.
             </p>
           </article>
-          <article class="detail">
-            <span>03 / TRANSPARENCY</span>
-            <h3>Nothing behind the curtain.</h3>
+          <article class="feature-row">
+            <span>03</span>
+            <h3>A look that’s yours.</h3>
             <p>
-              Read the code, inspect the builds, and contribute. Credentials
-              belong in your system’s vault. The project belongs to its
-              community.
+              Preview skins in 3D, upload your own, and manage owned capes. The
+              version-specific Fabric companion adds an editable in-game HUD.
             </p>
           </article>
         </div>
-        <div class="build-note">
-          <b>DEVELOPMENT STATUS</b>
-          <p>
-            This is an early implementation, not a production-certified release.
-            Microsoft app registration is configured; full player login and
-            signed updates still need verification. The Fabric companion
-            currently targets 1.21.9. Check the repository’s validation notes
-            for tested features and limitations.
+      </section>
+      <section class="wrap version-section" aria-labelledby="version-title">
+        <div>
+          <p class="section-number mono" id="version-title">
+            02 / Latest stable, first
+          </p>
+          <div class="version-display">
+            <strong id="minecraft-version">26.3</strong
+            ><span>MINECRAFT JAVA</span>
+          </div>
+          <p class="version-copy" id="minecraft-note">
+            Latest official release checked 29 October 2026. New installations
+            default to the latest stable release from Mojang’s manifest. Older
+            releases remain available from 1.21.9.
+          </p>
+        </div>
+        <div class="compat-list">
+          <div>Vanilla <span>Official</span></div>
+          <div>Fabric <span>Modloader</span></div>
+          <div>Forge <span>Modloader</span></div>
+          <div>NeoForge <span>Modloader</span></div>
+          <div>Quilt <span>Modloader</span></div>
+          <div>1.21.9+ <span>Release range</span></div>
+          <p class="compat-note">
+            Loader and mod availability depends on the selected game version.
+            The bundled AR HUD currently supports Fabric 1.21.9.
           </p>
         </div>
       </section>
-      <section class="section open-source" id="open-source">
-        <div>
-          <span class="eyebrow">Built in the open</span>
-          <h2>A client you can<br />make your own.</h2>
-          <p>
-            AR Client is free software under GNU GPL v3. Read it, change it,
-            help improve it. No subscription required.
-          </p>
-          <div class="owner">
-            Created by <a href="https://kingar1000.xyz">KingAR1000 ↗</a>
+      <section class="wrap section" id="download">
+        <div class="download">
+          <div class="download-copy">
+            <p class="section-number mono">03 / Get AR Client</p>
+            <h2>Your next world<br />starts here.</h2>
+            <p>
+              Free to use. Free to change. A Microsoft account with access to
+              Minecraft Java is required to play.
+            </p>
+            <a
+              class="source-link"
+              href="https://github.com/KingAR1000/AR-Client/releases"
+              >Release history <span aria-hidden="true">↗︎</span></a
+            >
+          </div>
+          <div>
+            <div class="download-card">
+              <div class="download-card-head">
+                <div>
+                  <h3>AR Client for Windows</h3>
+                  <p class="muted mono" style="margin-top: 4px">
+                    Windows 11 · x64
+                  </p>
+                </div>
+                <span class="windows-icon" aria-hidden="true"
+                  ><i></i><i></i><i></i><i></i
+                ></span>
+              </div>
+              <p class="build-status" id="build-status" aria-live="polite">
+                Development builds are available on GitHub Actions.
+              </p>
+              <a
+                class="button"
+                id="download-link"
+                href="https://github.com/KingAR1000/AR-Client/actions/workflows/ci.yml?query=branch%3Afeat%2Far-client"
+                ><span id="download-label">View Windows builds</span
+                ><span aria-hidden="true">↗︎</span></a
+              >
+              <div class="requirements">
+                <span>Windows installer</span
+                ><span id="release-label">Development channel</span>
+              </div>
+            </div>
+            <p class="download-warning" id="download-note">
+              No stable release is published yet. GitHub sign-in is needed to
+              download Actions artifacts. Windows gameplay and the signed update
+              cycle are still unverified; this is not a production-certified
+              release.
+            </p>
           </div>
         </div>
-        <div class="links">
+        <div class="faq" aria-label="Frequently asked questions">
+          <details>
+            <summary>Do I need to own Minecraft?</summary>
+            <p>
+              Yes. AR Client uses official Microsoft authentication and checks
+              access to Minecraft Java Edition. It does not include Minecraft or
+              bypass account ownership.
+            </p>
+          </details>
+          <details>
+            <summary>Which Minecraft version should I use?</summary>
+            <p>
+              New installations default to the latest stable official release,
+              currently 26.3. You can select older supported releases down to
+              1.21.9. Existing installations keep their version so an update
+              cannot silently upgrade your worlds. Mods and loaders must support
+              the version you select.
+            </p>
+          </details>
+          <details>
+            <summary>Is everything ready for everyday use?</summary>
+            <p>
+              AR Client is a development build. Native Windows builds,
+              installation checks, and automated tests are available, but signed
+              updates and authenticated gameplay still need verification. The
+              bundled AR HUD is currently limited to Fabric 1.21.9. Read the
+              <a
+                href="https://github.com/KingAR1000/AR-Client/blob/feat/ar-client/VALIDATION.md"
+                >validation notes</a
+              >
+              for the tested scope and remaining limitations.
+            </p>
+          </details>
+          <details>
+            <summary>Where do I report a problem?</summary>
+            <p>
+              <a href="https://github.com/KingAR1000/AR-Client/issues"
+                >Open a GitHub issue</a
+              >
+              with your game version, loader, and error message. You can also
+              email
+              <a href="mailto:hello@kingar1000.xyz">hello@kingar1000.xyz</a>.
+              Never include access tokens, passwords, or API keys in a report.
+            </p>
+          </details>
+        </div>
+      </section>
+      <section class="opensource">
+        <div class="wrap">
+          <div>
+            <h2>The code is yours, too.</h2>
+            <p>
+              Read it. Change it. Help build it. AR Client is free software
+              under the GNU General Public License v3.
+            </p>
+          </div>
           <a href="https://github.com/KingAR1000/AR-Client"
-            >Browse the repository <span>↗</span></a
-          ><a
-            href="https://github.com/KingAR1000/AR-Client/blob/feat/ar-client/CONTRIBUTING.md"
-            >Contribute to AR Client <span>↗</span></a
-          ><a
-            href="https://github.com/KingAR1000/AR-Client/blob/feat/ar-client/VALIDATION.md"
-            >Read the validation notes <span>↗</span></a
-          ><a href="https://github.com/KingAR1000/AR-Client/issues"
-            >Report an issue <span>↗</span></a
+            >Explore the repository
+            <span class="arrow" aria-hidden="true">↗︎</span></a
           >
         </div>
       </section>
     </main>
-    <footer>
-      <div>
-        <p>© <span id="year"></span> KingAR1000 · AR Client · GPL v3</p>
-        <p class="legal">
-          Not an official Minecraft product. Not approved by or associated with
-          Mojang or Microsoft.<br />Minecraft Java Edition ownership is required
-          to play.
-        </p>
+    <footer class="wrap footer">
+      <div class="footer-top">
+        <a class="brand" href="#" aria-label="Back to top"
+          ><img
+            src="/assets/ar-mark.png"
+            width="43"
+            height="33"
+            alt="AR"
+          /><span>CLIENT</span></a
+        >
+        <nav class="footer-links" aria-label="Footer">
+          <a href="https://kingar1000.xyz">KingAR1000 ↗︎</a
+          ><a href="mailto:hello@kingar1000.xyz">Contact</a
+          ><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a
+          ><a href="https://github.com/KingAR1000/AR-Client">GitHub ↗︎</a>
+        </nav>
       </div>
-      <div>
-        <a href="mailto:hello@kingar1000.xyz">Contact support ↗</a> ·
-        <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a>
+      <div class="footer-bottom">
+        <p>
+          Not an official Minecraft product. Not approved by or associated with
+          Mojang or Microsoft.
+        </p>
+        <p>© <span id="year">2026</span> KingAR1000 · AR Client</p>
       </div>
     </footer>
     <script>
-      document.getElementById("year").textContent = new Date().getFullYear();
-      fetch(
-        "https://api.github.com/repos/KingAR1000/AR-Client/releases/latest",
-        { headers: { Accept: "application/vnd.github+json" } },
-      )
-        .then(async (response) => {
-          if (!response.ok) throw new Error("No stable release");
-          return response.json();
-        })
-        .then((release) => {
-          const asset = release.assets?.find((a) => a.name.endsWith(".exe"));
-          if (
-            asset &&
-            new URL(asset.browser_download_url).hostname === "github.com"
-          ) {
-            document.getElementById("download").href =
-              asset.browser_download_url;
-            document.getElementById("download").textContent =
-              "Download for Windows ↗";
-            document.getElementById("release-status").textContent =
-              release.tag_name + " · Windows 11 x64 · Free";
+      // Original voxel artwork, drawn only on resize. No game assets or render loop.
+      (() => {
+        const canvas = document.getElementById("world"),
+          ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        const n = 37,
+          heights = [],
+          trees = new Map(),
+          noise = (x, z) => {
+            const s = Math.sin(x * 127.1 + z * 311.7) * 43758.5453;
+            return s - Math.floor(s);
+          };
+        for (let x = 0; x < n; x++) {
+          heights[x] = [];
+          for (let z = 0; z < n; z++) {
+            const river = 3.4 * Math.sin(z * 0.15) + 18,
+              distance = Math.abs(x - river),
+              hills =
+                3 +
+                3 * Math.sin(x * 0.13 + 1.2) * Math.cos(z * 0.13) +
+                2 * Math.sin(z * 0.2 + x * 0.09),
+              cliff = Math.max(0, 6 - Math.hypot(x - 29, z - 13) * 0.65),
+              h =
+                distance < 2
+                  ? 1
+                  : Math.max(
+                      2,
+                      Math.floor(
+                        hills +
+                          cliff +
+                          Math.min(distance, 7) * 0.55 +
+                          noise(x, z) * 0.6,
+                      ),
+                    );
+            heights[x][z] = h;
+            if (
+              h >= 4 &&
+              distance > 4 &&
+              x > 6 &&
+              z > 3 &&
+              z < 32 &&
+              noise(x + 42, z + 89) > 0.94
+            )
+              trees.set(x + "," + z, h);
           }
-        })
-        .catch(() => {
-          document.getElementById("release-status").textContent =
-            "No stable release published yet · View builds on GitHub";
-        });
+        }
+        function draw() {
+          const b = canvas.getBoundingClientRect(),
+            dpr = Math.min(devicePixelRatio || 1, 2);
+          canvas.width = Math.round(b.width * dpr);
+          canvas.height = Math.round(b.height * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.clearRect(0, 0, b.width, b.height);
+          const scale = Math.min(b.width / 73, b.height / 45),
+            sx = scale,
+            sy = scale * 0.49,
+            sz = scale * 0.82,
+            ox = b.width * 0.53,
+            oy = b.height * 0.24,
+            point = (x, z, h) => [
+              ox + (x - z) * sx,
+              oy + (x + z) * sy - h * sz,
+            ];
+          const face = (points, color) => {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            points.forEach(([x, z, h], i) => {
+              const p = point(x, z, h);
+              if (i) ctx.lineTo(...p);
+              else ctx.moveTo(...p);
+            });
+            ctx.closePath();
+            ctx.fill();
+          };
+          const cube = (x, z, h, base, top, left, right) => {
+            face(
+              [
+                [x, z, h],
+                [x, z + 1, h],
+                [x, z + 1, base],
+                [x, z, base],
+              ],
+              left,
+            );
+            face(
+              [
+                [x, z + 1, h],
+                [x + 1, z + 1, h],
+                [x + 1, z + 1, base],
+                [x, z + 1, base],
+              ],
+              right,
+            );
+            face(
+              [
+                [x, z, h],
+                [x + 1, z, h],
+                [x + 1, z + 1, h],
+                [x, z + 1, h],
+              ],
+              top,
+            );
+          };
+          for (let sum = 0; sum < n * 2; sum++)
+            for (let x = 0; x < n; x++) {
+              const z = sum - x;
+              if (z < 0 || z >= n) continue;
+              const h = heights[x][z],
+                water = h === 1,
+                light = Math.floor(72 + h * 5 + noise(x, z) * 7);
+              cube(
+                x,
+                z,
+                h,
+                0,
+                water ? "#bcbcbc" : `rgb(${light},${light},${light})`,
+                water ? "#515151" : "#333333",
+                water ? "#777777" : "#484848",
+              );
+              if (!water && noise(x + 67, z + 17) > 0.86) {
+                const p = point(x + 0.2, z + 0.3, h + 0.01);
+                ctx.fillStyle = "#ffffff0b";
+                ctx.fillRect(p[0], p[1], scale * 0.32, 1);
+              }
+              if (trees.has(x + "," + z)) {
+                cube(
+                  x + 0.35,
+                  z + 0.35,
+                  h + 2,
+                  h,
+                  "#585858",
+                  "#282828",
+                  "#393939",
+                );
+                for (let layer = 0; layer < 3; layer++) {
+                  const width = layer === 2 ? 1 : 2;
+                  for (let tx = 0; tx < width; tx++)
+                    for (let tz = 0; tz < width; tz++)
+                      cube(
+                        x - 0.4 + tx + (layer === 2 ? 0.5 : 0),
+                        z - 0.4 + tz + (layer === 2 ? 0.5 : 0),
+                        h + 2.5 + layer,
+                        h + 1.7 + layer,
+                        layer === 2 ? "#a7a7a7" : "#858585",
+                        "#383838",
+                        "#555555",
+                      );
+                }
+              }
+            }
+        }
+        let scheduled = false;
+        new ResizeObserver(() => {
+          if (!scheduled) {
+            scheduled = true;
+            requestAnimationFrame(() => {
+              scheduled = false;
+              draw();
+            });
+          }
+        }).observe(canvas);
+      })();
+      document.getElementById("year").textContent = new Date().getFullYear();
+      // Resolve a real published Windows asset; keep the working builds link on failure.
+      (async () => {
+        try {
+          const response = await fetch(
+            "https://api.github.com/repos/KingAR1000/AR-Client/releases/latest",
+            { signal: AbortSignal.timeout(8000) },
+          );
+          if (!response.ok) return;
+          const release = await response.json();
+          if (
+            release.draft ||
+            release.prerelease ||
+            !Array.isArray(release.assets)
+          )
+            return;
+          const asset = release.assets.find(
+            (a) =>
+              /\.exe$/i.test(a.name) &&
+              /x64/i.test(a.name) &&
+              a.browser_download_url?.startsWith(
+                "https://github.com/KingAR1000/AR-Client/releases/download/",
+              ),
+          );
+          if (!asset) return;
+          document.getElementById("download-link").href =
+            asset.browser_download_url;
+          document.getElementById("download-label").textContent =
+            "Download for Windows";
+          document.getElementById("release-label").textContent =
+            release.tag_name;
+          document.getElementById("build-status").textContent =
+            `${release.tag_name} · ${(asset.size / 1048576).toFixed(1)} MB · Published ${new Date(release.published_at).toLocaleDateString("en-GB")}`;
+          document.getElementById("download-note").textContent =
+            "Read the release notes for tested features, compatibility, and known issues before installing. A valid Minecraft Java account is required.";
+        } catch {}
+      })();
+      (async () => {
+        try {
+          const response = await fetch("/api/minecraft", {
+            signal: AbortSignal.timeout(8000),
+          });
+          if (!response.ok) return;
+          const version = await response.json();
+          if (!/^[0-9][A-Za-z0-9._+-]{0,39}$/.test(version.release)) return;
+          document.getElementById("minecraft-version").textContent =
+            version.release;
+          document.getElementById("minecraft-note").textContent =
+            "Latest stable release from Mojang’s official manifest. New installations start here. Older supported releases remain available from 1.21.9.";
+        } catch {}
+      })();
     </script>
   </body>
 </html>

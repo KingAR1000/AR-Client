@@ -9,17 +9,33 @@ use serde_json::{json, Value};
 use std::{collections::HashSet, path::Path};
 const MR: &str = "https://api.modrinth.com/v2";
 async fn cf(c: &reqwest::Client, path: &str) -> Result<Value> {
-    let key = state::secret_get("curseforge").map_err(|_| {
-        Error::msg("Add your CurseForge API key in Settings. Modrinth works without a key.")
-    })?;
-    Ok(c.get(format!("https://api.curseforge.com/v1/{path}"))
-        .header("x-api-key", key)
-        .send()
-        .await?
-        .error_for_status()?
-        .json::<Value>()
-        .await?["data"]
-        .clone())
+    let request = if let Ok(key) = state::secret_get("curseforge") {
+        c.get(format!("https://api.curseforge.com/v1/{path}"))
+            .header("x-api-key", key)
+    } else {
+        // The project key stays in Vercel's server environment, never in binaries.
+        // Personal keys remain an optional direct-to-CurseForge override.
+        let (route, query) = path.split_once('?').unwrap_or((path, ""));
+        let url = format!(
+            "https://client.kingar1000.xyz/api/curseforge?path={}&{query}",
+            urlencoding(route)
+        );
+        c.get(url)
+    };
+    let response = request.send().await?;
+    if !response.status().is_success() {
+        return Err(Error::msg(match response.status().as_u16() {
+            401 | 403 => "CurseForge rejected the configured key. Update your personal key in Settings or contact AR Client support.",
+            429 => "CurseForge request limit reached. Try again shortly.",
+            404 | 503 => "The AR Client CurseForge service is not available yet. Modrinth works now; a personal CurseForge key can be saved in Settings.",
+            _ => "The CurseForge catalog is temporarily unavailable. Try again shortly.",
+        }));
+    }
+    let payload: Value = response.json().await?;
+    payload
+        .get("data")
+        .cloned()
+        .ok_or_else(|| Error::msg("Invalid CurseForge catalog response"))
 }
 pub async fn search(
     c: &reqwest::Client,

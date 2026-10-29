@@ -5,10 +5,10 @@ Installation checks were performed on 2026-10-28; Microsoft registration checks 
 ## Passed in the Linux workspace
 
 - Mojang manifest: latest official release **26.3**.
-- React/TypeScript production build; **4 frontend tests**.
+- React/TypeScript production build; **6 frontend tests**, including latest-stable defaults and release-range fallbacks; **4 release-policy tests** and **8 catalog-service tests**.
 - **20 Rust tests**: path/HTTPS validation, checksum verification, metadata inheritance, version normalization, Send-safe command futures, profile CRUD, EULA enforcement, content rollback/collision protection, skin decoding and configuration recovery, and empty-ID migration while preserving custom registrations.
 - Browser navigation across launcher sections: no uncaught runtime errors. Browser mode correctly refuses native operations.
-- Standalone website at desktop and 390px mobile widths: no horizontal overflow or runtime errors.
+- Redesigned Vercel website at 320px, 390px, 1280px and 1440px widths: no horizontal overflow or uncaught runtime errors; logo loads without brightness/inversion filters. Real Mojang metadata route returns 26.3. Screenshot shows the actual browser-rendered launcher interface, not a native gameplay session.
 - Fabric companion `gradle build` succeeds with JDK 21 / Gradle 9.1.0; includes the crosshair/scoreboard mixins. Compilation does not prove gameplay behavior.
 - Live Modrinth search and downloads for Sodium, Lithium and Fabric API, including hash verification.
 - Public compatibility metadata retrieved from Fabric, Quilt, Forge and NeoForge.
@@ -34,7 +34,7 @@ The workflow builds a Windows x64 NSIS installer, bundles the Fabric companion, 
 ## External setup / unverified runtime behavior
 
 - Microsoft accepted a device authorization request for the owner-provided app ID `a638a66e-7242-4bbe-b197-631d1ce1d7fb` on 2026-10-29. Full Microsoft/Xbox/Minecraft login, token refresh, entitlement checks, skin uploads and capes remain unverified; no player authorization session or Minecraft Services approval confirmation has been supplied.
-- CurseForge live workflows: no API key supplied.
+- Owner-supplied CurseForge API key accepted by a live catalog request (HTTP 200) on 2026-10-29; the actual server handler also returned verified catalog JSON for a 26.3 search with no credential in its response. The bounded Vercel function and optional personal-vault override are implemented; public deployment and full install/update workflows remain unverified. The key is not in source or binaries.
 - Signed updater: no project signing key or published stable release exists.
 - Windows Authenticode: no signing certificate supplied; development installer is unsigned.
 - Minecraft gameplay, Fabric mixin behavior, graphics/input latency, per-GPU performance and long-running game recovery: not verified in a real authenticated target-hardware session.
@@ -48,6 +48,6 @@ The workflow builds a Windows x64 NSIS installer, bundles the Fabric companion, 
 - HUD has position, scale, opacity, color, visibility, in-game keybinds, crosshair settings, scoreboard visibility and chat opacity; multiple named saved layouts, full theme management, advanced chat/scoreboard styling and animated resource-pack previews are absent.
 - Loader updates are selected through installation configuration, not automatically migrated in the Update Center. Minecraft upgrades use new installations rather than world migration.
 - Resource usage has not been benchmarked. “Maximum FPS” is a configurable preset with compatible Sodium/Lithium installation, not an FPS guarantee.
-- Website preview is published, including tested privacy/terms pages and support contact. Custom-domain DNS and SSL verification for client.kingar1000.xyz remain pending owner-added Cloudflare records; see website/HOSTING.md.
+- Website redesign and server functions are prepared for the owner's chosen Vercel deployment. The prior Sites preview remains separate and has not been replaced. Vercel import, private environment setup, domain attachment and HTTPS verification are pending; use Vercel's assigned DNS values, not the superseded Sites records. See website/HOSTING.md.
 
 This is substantial executable implementation work, but it is **not the complete production-ready application described in the original brief**. The remaining gaps are documented rather than hidden behind placeholder success states.

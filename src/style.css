@@ -161,8 +161,6 @@ code {
   width: 57px;
   height: 45px;
   object-fit: contain;
-  filter: grayscale(1) invert(1) brightness(13);
-  mix-blend-mode: screen;
 }
 .brand > span {
   font-weight: 700;
@@ -441,13 +439,22 @@ main {
   background: #15151580;
 }
 .wordmark {
-  width: 124px;
+  width: 148px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 3px;
+}
+.wordmark img {
+  width: 51px;
   height: 40px;
   object-fit: contain;
-  filter: grayscale(1) invert(1) brightness(13);
-  mix-blend-mode: screen;
-  display: block;
-  margin: 14px 0 3px;
+}
+.wordmark span {
+  font-size: 13px;
+  letter-spacing: 3px;
+  font-weight: 700;
 }
 .hero h2 {
   font-size: 53px;

@@ -32,6 +32,7 @@ import type { Page } from "./api";
 import {
   desktop,
   message,
+  preferredRelease,
   request,
   type LauncherState,
   type Profile,
@@ -87,6 +88,7 @@ function App() {
     ),
     [editing, setEditing] = useState<Profile | null>(null);
   const lock = useRef(false);
+  const lastVersionCheck = useRef(0);
   const profile =
     state.profiles.find((p) => p.id === selected) || state.profiles[0];
   const account = state.accounts.find((a) => a.id === state.activeAccount);
@@ -124,17 +126,27 @@ function App() {
   function fail(e: unknown) {
     setNotice({ text: message(e), error: true });
   }
+  async function refreshVersions() {
+    lastVersionCheck.current = Date.now();
+    const result = await request<{
+      latest: { release: string };
+      versions: { id: string }[];
+    }>("versions");
+    setLatest(result.latest.release);
+    setVersions(result.versions.map((version) => version.id));
+  }
   useEffect(() => {
     if (!desktop) return;
     refresh().catch(fail);
-    request<{ latest: { release: string }; versions: { id: string }[] }>(
-      "versions",
-    )
-      .then((v) => {
-        setLatest(v.latest.release);
-        setVersions(v.versions.map((x) => x.id));
-      })
-      .catch(fail);
+    refreshVersions().catch(fail);
+    const onFocus = () => {
+      if (Date.now() - lastVersionCheck.current > 60_000)
+        refreshVersions().catch(fail);
+    };
+    const versionTimer = window.setInterval(() => {
+      if (document.visibilityState === "visible") onFocus();
+    }, 30 * 60_000);
+    window.addEventListener("focus", onFocus);
     let unlisten: undefined | (() => void);
     let cancelled = false;
     listen<Progress>("progress", (e) => {
@@ -147,16 +159,16 @@ function App() {
     return () => {
       cancelled = true;
       unlisten?.();
+      window.clearInterval(versionTimer);
+      window.removeEventListener("focus", onFocus);
     };
   }, []);
   const newProfile = () =>
     setEditing({
       id: "",
       name: "My installation",
-      version: versions.includes("1.21.9")
-        ? "1.21.9"
-        : latest || versions[0] || "",
-      loader: "fabric",
+      version: preferredRelease(latest, versions),
+      loader: "vanilla",
       loaderVersion: "",
       ram: 4096,
       java: "",
@@ -171,7 +183,7 @@ function App() {
           onClick={() => setPage("Home")}
           aria-label="AR Client home"
         >
-          <img src="/ar.jpg" alt="AR" />
+          <img src="/ar-mark.png" alt="AR" />
           <span>
             CLIENT<small>BY KINGAR1000</small>
           </span>
@@ -297,11 +309,10 @@ function App() {
                     <span className="status-dot" />
                     FREE. OPEN SOURCE. YOURS.
                   </div>
-                  <img
-                    className="wordmark"
-                    src="/ar-client.jpg"
-                    alt="AR Client"
-                  />
+                  <div className="wordmark" aria-label="AR Client">
+                    <img src="/ar-mark.png" alt="" />
+                    <span>CLIENT</span>
+                  </div>
                   <h2>
                     A better way
                     <br />
@@ -388,14 +399,15 @@ function App() {
                   </h3>
                   <p>
                     {latest
-                      ? "The latest release, verified against Mojang’s official manifest. Choose it when creating an installation."
+                      ? "The default for new installations, verified against Mojang’s official manifest. Older releases remain available from 1.21.9."
                       : "Connect the desktop launcher to check the latest official Minecraft release."}
                   </p>
                   <button
                     className="text-button"
-                    onClick={() => setPage("Updates")}
+                    onClick={newProfile}
+                    disabled={!!busy || !versions.length}
                   >
-                    Open update center <ArrowUpRight size={16} />
+                    Create latest installation <ArrowUpRight size={16} />
                   </button>
                   <div className="release-footer">
                     <ShieldCheck size={16} />
@@ -605,6 +617,7 @@ function App() {
               open={open}
               busy={!!busy}
               latest={latest}
+              refreshVersions={refreshVersions}
             />
           )}
           {page === "HUD Editor" && (
@@ -666,6 +679,7 @@ function App() {
         <ProfileEditor
           profile={editing}
           versions={versions}
+          latest={latest}
           close={() => setEditing(null)}
           save={(p) =>
             run("Save installation", async () => {

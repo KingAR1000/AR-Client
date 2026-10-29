@@ -2,14 +2,14 @@
 
 A free, GPL-3.0 Minecraft Java launcher by **KingAR1000**, with a black-and-white Tauri interface, Rust installation engine, and Fabric companion mod.
 
-**Development build — not yet a production-certified release.** The launcher supports official release discovery beginning with 1.21.9; Mojang's manifest reported 26.3 as latest on 2026-10-28. New Minecraft releases do not imply that every loader, mod, or companion build is compatible. No FPS improvement or hardware benchmark is claimed without measurement.
+**Development build — not yet a production-certified release.** New installations default to the **latest stable official Minecraft release**, currently **26.3**, using Mojang's manifest. **1.21.9 is the oldest supported release**, not the primary target. Existing installations keep their selected version. Official releases are checked on startup, on returning focus after a minute, every 30 minutes while visible, and through the Update Center. New Minecraft releases do not imply that every loader, mod, or companion build is compatible. No FPS improvement or hardware benchmark is claimed without measurement.
 
 ## Repository
 
 - `src/`: React/TypeScript desktop interface, skin viewer, HUD layout editor.
 - `src-tauri/`: Rust download, verification, authentication, installation, content, credential-vault and launch services. Core tests run without a desktop GUI.
 - `in-game/`: Fabric companion for **Minecraft 1.21.9**. Other game versions must not load this jar.
-- `website/index.html`: standalone landing page with embedded CSS/JS; intended for `client.kingar1000.xyz`.
+- `website/`: Vercel-ready website, embedded CSS/JS landing page, local assets, privacy/terms, and server-only catalog/release-metadata functions for `client.kingar1000.xyz`.
 - `.github/workflows/`: Windows installer builds, core tests, Fabric builds and opt-in signed releases.
 
 ## Build on Windows 11 x64
@@ -44,7 +44,7 @@ Linux development requires WebKitGTK 4.1, GTK 3, librsvg, libappindicator/ayatan
 1. Settings → read and accept Minecraft's EULA.
 2. AR Client’s registered public Microsoft client ID is bundled by default. Older builds can use `a638a66e-7242-4bbe-b197-631d1ce1d7fb` in Settings.
 3. Accounts → Add account → authorize the device code on Microsoft's own website.
-4. Create an installation, choose an officially listed game release and compatible modloader, and set RAM.
+4. Create an installation. The latest stable release with vanilla is preselected so a new Minecraft release does not depend on modloader availability. Choose a compatible loader if needed, and set RAM. Older supported releases remain selectable; existing worlds are never automatically upgraded.
 5. Install/repair or Launch Minecraft. Downloads are hashed before use. Java is fetched from Eclipse Temurin when no explicit executable is selected.
 6. Add compatible mods/packs from the catalogs. Apply performance presets explicitly from Settings.
 
@@ -66,7 +66,9 @@ The implementation uses Microsoft's device authorization endpoint, Xbox Live aut
 
 ## CurseForge and Modrinth
 
-Modrinth browsing requires no key. CurseForge requires an API key issued under its API terms. Add it through Settings; it goes into the OS vault. It is never placed in the renderer state, git, or a public build config.
+Modrinth browsing requires no key. CurseForge uses the AR Client catalog function at `https://client.kingar1000.xyz/api/curseforge`, with the project key stored only as Vercel's server-side `CURSEFORGE_API_KEY`. Set up the Vercel project as described in [website/HOSTING.md](website/HOSTING.md) before this service can work. The function allows only bounded read-only Minecraft mod/pack metadata queries to a fixed upstream. It rejects arbitrary hosts, redirects, writes and unexpected parameters, caches successful public responses, and redacts upstream errors.
+
+An optional personal CurseForge key in Settings overrides the shared service and connects directly; it stays in the OS vault. No project key is placed in the renderer state, git, public config, or desktop binary. The owner-supplied key was accepted by a live catalog request on 2026-10-29; deployment still requires the environment variable in Vercel. Configure Vercel firewall/rate limits appropriate to the project's upstream API quota.
 
 Author-disabled CurseForge downloads are rejected with an explanation. Dependency versions and game/loader compatibility are checked before content downloads. Catalog updates are explicit and isolated per installation. Imported jars/zips are user-provided and not represented as upstream-verified catalog downloads. Review mods before importing executable code.
 
@@ -80,7 +82,7 @@ Update signing is separate from Windows Authenticode signing. A project maintain
 2. Add the public key as repository variable `AR_UPDATER_PUBLIC_KEY`.
 3. Add `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` as protected release-environment secrets.
 4. Register a protected `release` environment, review a version tag, then manually run **Signed release** with that existing tag.
-5. The workflow creates a **draft prerelease**. Test the installed Windows build and updater before publishing. The first public stable release must include `latest.json` and signed installer assets for subsequent update discovery.
+5. The workflow creates a **draft release** (a prerelease when the version tag contains a prerelease suffix). Test the installed Windows build and updater before publishing. The first public stable release must include `latest.json` and signed installer assets for subsequent update discovery.
 
 Development builds have no updater public key and cannot accept an update. The updater reports missing configuration rather than silently downloading an unsigned executable. Publishing a website or installer does not provision Microsoft's application approval, CurseForge access, DNS, or code signing.
 
@@ -106,7 +108,7 @@ Account-dependent workflows require an approved application and real owner accou
 
 ## Website
 
-`website/index.html` is a standalone static page with embedded CSS and JavaScript. A public preview is deployed at https://ar-client-kingar1000.kingar-1000.chatgpt.site, with privacy and terms pages and the confirmed support address. `client.kingar1000.xyz` is registered with hosting and awaits Cloudflare DNS verification. See [website/HOSTING.md](website/HOSTING.md) for the exact records and existing project identity. The release link reads real GitHub releases; it does not advertise a nonexistent stable installer as downloadable.
+The redesigned `website/index.html` has embedded CSS/JS, locally served fonts and a flat transparent AR mark, procedural monochrome voxel artwork, and an actual browser-rendered launcher interface screenshot. The website also includes privacy/terms and two Vercel server functions. It requires no frontend framework or build step. Run `npm --prefix website run dev` for local preview. The owner selected **Vercel**; see [website/HOSTING.md](website/HOSTING.md) for import settings, the private environment variable, and domain setup. The older Sites preview does not contain this redesign and is no longer the intended host. Downloads resolve real published GitHub release assets and otherwise link to development builds.
 
 ## License and attribution
 

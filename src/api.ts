@@ -66,6 +66,11 @@ export function loaderChoices(data: unknown): string[] {
     .filter((v): v is string => typeof v === "string");
 }
 
+// Versions are ordered by Mojang, never by numeric comparison: 26.x follows 1.21.x.
+export function preferredRelease(latest: string, versions: string[]): string {
+  return versions.includes(latest) ? latest : versions[0] || "";
+}
+
 export type Page =
   | "Home"
   | "Play"

@@ -7,12 +7,14 @@ import { loaderChoices, request, type Profile } from "../api";
 export default function ProfileEditor({
   profile,
   versions,
+  latest,
   close,
   save,
   fail,
 }: {
   profile: Profile;
   versions: string[];
+  latest: string;
   close: () => void;
   save: (p: Profile) => unknown;
   fail: (e: unknown) => void;
@@ -22,12 +24,19 @@ export default function ProfileEditor({
     [loading, setLoading] = useState(false);
   useEffect(() => {
     let active = true;
+    setLoaders([]);
+    if (p.loader === "vanilla" || !p.version) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     request("loaders", { loader: p.loader, version: p.version })
       .then((v) => {
         if (active) setLoaders(loaderChoices(v));
       })
-      .catch(fail)
+      .catch((error) => {
+        if (active) fail(error);
+      })
       .finally(() => {
         if (active) setLoading(false);
       });
@@ -82,7 +91,14 @@ export default function ProfileEditor({
             >
               <option value="">Select official release</option>
               {versions.map((v) => (
-                <option key={v}>{v}</option>
+                <option key={v} value={v}>
+                  {v}
+                  {v === latest
+                    ? " — Latest stable"
+                    : v === "1.21.9"
+                      ? " — Oldest supported"
+                      : ""}
+                </option>
               ))}
             </select>
           </label>
@@ -101,6 +117,13 @@ export default function ProfileEditor({
             </select>
           </label>
         </div>
+        {!p.id && (
+          <p className="muted" style={{ marginTop: 12, fontSize: 12 }}>
+            New installations use the latest official stable release. Choose a
+            compatible modloader if you want mods; existing installations keep
+            their selected version.
+          </p>
+        )}
         {p.loader !== "vanilla" && (
           <label>
             Loader version

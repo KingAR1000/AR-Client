@@ -12,6 +12,7 @@ export default function Updates({
   open,
   busy,
   latest,
+  refreshVersions,
 }: {
   profile?: Profile;
   run: Run;
@@ -19,6 +20,7 @@ export default function Updates({
   open: (url: string) => void;
   busy: boolean;
   latest: string;
+  refreshVersions: () => Promise<void>;
 }) {
   const [releases, setReleases] = useState<any[]>([]),
     [updates, setUpdates] = useState<any[] | null>(null),
@@ -73,8 +75,18 @@ export default function Updates({
           <h3>{latest || "Official release channel"}</h3>
           <p className="muted">
             Minecraft upgrades use a separate installation to keep existing
-            worlds and mods safe.
+            worlds and mods safe. New installations default to the latest stable
+            release; 1.21.9 is the oldest supported version.
           </p>
+          <button
+            className="secondary"
+            disabled={busy}
+            onClick={() =>
+              run("Check official Minecraft releases", refreshVersions)
+            }
+          >
+            <RefreshCw size={16} /> Check official releases
+          </button>
           <button
             className="text-button"
             onClick={() => open("https://www.minecraft.net/en-us/articles")}
