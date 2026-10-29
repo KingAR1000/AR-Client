@@ -128,7 +128,7 @@ export default function Skins({
           </div>
           {!skins.length && (
             <Empty
-              title="A wardrobe of possibilities"
+              title="No saved skins"
               text="Import a 64×64 or 64×32 Minecraft PNG skin."
             />
           )}

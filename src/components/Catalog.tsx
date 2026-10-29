@@ -80,7 +80,7 @@ export default function Catalog({
     return (
       <section className="panel">
         <Empty
-          title="Choose a home for your content"
+          title="Select an installation first"
           text="Compatibility depends on the Minecraft version and modloader in your installation."
           action="Create installation"
           onClick={create}

@@ -46,8 +46,7 @@ export default function Updates({
           <span className="eyebrow">LAUNCHER</span>
           <h3>AR Client releases</h3>
           <p className="muted">
-            Signed updates are accepted only after the project’s release public
-            key is configured at build time.
+            Check for signed AR Client updates published on GitHub.
           </p>
           <button
             className="secondary"

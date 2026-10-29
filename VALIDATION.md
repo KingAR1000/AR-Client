@@ -9,6 +9,7 @@ Checks below were recorded on 28–29 October 2026. Installation and compilation
 - Windows x64 NSIS packaging and native startup; version-specific Fabric companion builds with JDK 25 / Gradle 9.8.0.
 - Launcher browser navigation and website layouts at 320, 390, 1280 and 1440px without uncaught errors or horizontal overflow.
 - Website navigation, local assets, FAQ controls and published-release download resolution.
+- Redesigned launcher previews used the real Rust core with a temporary 26.3 Fabric installation, live Mojang/Modrinth data, and no signed-in account. Layouts at 980, 1280 and 1440px passed overflow/error checks; settings and HUD controls were checked through the native command dispatcher.
 - Mojang release metadata reported **26.3**. Microsoft accepted a device authorization request for the bundled public app ID.
 - Live Modrinth downloads for Sodium, Lithium and Fabric API with hash verification; compatibility metadata from all four loaders.
 - Live CurseForge catalog requests, including a 26.3 query through the server handler, returned HTTP 200 without exposing the key.

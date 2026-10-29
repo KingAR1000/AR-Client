@@ -158,7 +158,7 @@ export default function Accounts({
         ))}
         {!state.accounts.length && !device && (
           <Empty
-            title="Your identity. Your worlds."
+            title="Sign in to Minecraft"
             text="Connect a Microsoft account that owns Minecraft Java Edition to start playing."
           />
         )}

@@ -18,8 +18,6 @@ import {
   Plus,
   RefreshCw,
   Settings,
-  ShieldCheck,
-  Terminal,
   Trash2,
   UserRound,
   Users,
@@ -45,6 +43,7 @@ import Hud from "./components/Hud";
 import Preferences from "./components/Preferences";
 import ProfileEditor from "./components/ProfileEditor";
 import Updates from "./components/Updates";
+import HomeScreen from "./components/Home";
 import "./style.css";
 const Skins = React.lazy(() => import("./components/Skins"));
 
@@ -191,27 +190,25 @@ function App() {
             CLIENT<small>BY KINGAR1000</small>
           </span>
         </button>
-        <div className="nav-label">YOUR SPACE</div>
-        <nav>
+        <nav aria-label="Main navigation">
           {nav.map(([name, Icon], i) => (
             <React.Fragment key={name}>
-              {i === 9 && <div className="nav-divider" />}
+              {(i === 3 || i === 7 || i === 9) && (
+                <div className="nav-divider" />
+              )}
               <button
                 className={`nav-item ${page === name ? "active" : ""}`}
+                aria-current={page === name ? "page" : undefined}
+                title={name}
                 onClick={() => setPage(name)}
               >
                 <Icon size={17} />
                 <span>{name}</span>
-                {page === name && <span className="nav-dot" />}
               </button>
             </React.Fragment>
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <div className="edition">
-            <span className="status-dot" />
-            JAVA EDITION <span>64-BIT</span>
-          </div>
           <button className="account-card" onClick={() => setPage("Accounts")}>
             <div className="avatar">
               {account?.name.slice(0, 2).toUpperCase() || (
@@ -219,9 +216,9 @@ function App() {
               )}
             </div>
             <span>
-              {account?.name || "Make yourself at home"}
+              {account?.name || "Not signed in"}
               <small>
-                {account ? "Microsoft account" : "Connect your account"}
+                {account ? "Microsoft account" : "Sign in with Microsoft"}
               </small>
             </span>
             <ChevronRight size={16} />
@@ -231,7 +228,9 @@ function App() {
       <main>
         <header className="topbar">
           <span>
-            AR CLIENT <span className="slash">/</span> <b>{page}</b>
+            <span className="topbar-name">AR Client</span>
+            <span className="slash">/</span>
+            <b>{page}</b>
           </span>
           <div>
             <span className="version-tag">v{state.version}</span>
@@ -253,163 +252,59 @@ function App() {
         </header>
         {!desktop && (
           <div className="environment-banner">
-            <Terminal size={16} />
-            Desktop runtime required. Run <code>npm run desktop</code> to
-            install, sign in, and play.
+            Browser preview · Sign-in, installs, and launching are available in
+            the desktop app.
           </div>
         )}
-        <div className="content">
-          <div className="page-heading">
-            <div>
-              <h1>
-                {page === "Home"
-                  ? `Welcome ${account ? "back, " + account.name : "to your next world"}.`
-                  : page}
-              </h1>
-              <p>{descriptions[page]}</p>
-            </div>
-            {page === "Installations" ? (
-              <button className="primary" onClick={newProfile}>
-                <Plus size={17} />
-                New installation
-              </button>
-            ) : (
-              <button
-                className="profile-switch"
-                onClick={() => setPage("Play")}
-              >
-                <span className="tiny-block" />
-                <span>
-                  {profile?.name || "Create an installation"}
-                  <small>
-                    {profile
-                      ? `${profile.version} · ${profile.loader}`
-                      : "Start with your Minecraft version"}
-                  </small>
-                </span>
-                <ChevronDown size={15} />
-              </button>
-            )}
-          </div>
-          {page === "Home" && (
-            <>
-              <section className="hero">
-                <div className="hero-grid" />
-                <div className="hero-geometry">
-                  <div />
-                  <div />
-                  <div />
-                  <div />
-                  <div />
-                </div>
-                <div className="hero-copy">
-                  <div className="pill">
-                    <span className="status-dot" />
-                    FREE. OPEN SOURCE. YOURS.
-                  </div>
-                  <div className="wordmark" aria-label="AR Client">
-                    <img src="/ar-mark.png" alt="" />
-                    <span>CLIENT</span>
-                  </div>
-                  <h2>
-                    A better way
-                    <br />
-                    to play.
-                  </h2>
-                  <p>Your worlds. Your mods. Nothing in the way.</p>
-                  <div className="hero-actions">
-                    <button
-                      className="primary play-button"
-                      disabled={
-                        !!busy ||
-                        (!!profile && state.running.includes(profile.id))
-                      }
-                      onClick={() =>
-                        profile
-                          ? run("Launch Minecraft", () =>
-                              request("launch", { id: profile.id }),
-                            )
-                          : newProfile()
-                      }
-                    >
-                      <Play size={18} fill="currentColor" />
-                      {profile ? "Launch Minecraft" : "Get started"}
-                      <ChevronRight size={18} />
-                    </button>
-                    <span>
-                      {profile
-                        ? `${profile.version} / ${profile.loader.toUpperCase()}`
-                        : "MINECRAFT JAVA EDITION"}
-                    </span>
-                  </div>
-                </div>
-              </section>
-              <div className="home-grid">
-                <section className="panel quick-panel">
-                  <div className="section-title">
-                    <h3>Ready when you are</h3>
-                    <span className="subtle">QUICK ACCESS</span>
-                  </div>
-                  <button
-                    className="quick-row"
-                    onClick={() => setPage("Installations")}
-                  >
-                    <Layers />
-                    <span>
-                      Your installations
-                      <small>
-                        {state.profiles.length} isolated{" "}
-                        {state.profiles.length === 1 ? "instance" : "instances"}
-                      </small>
-                    </span>
-                    <ChevronRight size={17} />
-                  </button>
-                  <button className="quick-row" onClick={() => setPage("Mods")}>
-                    <Box />
-                    <span>
-                      Make it your Minecraft
-                      <small>Discover mods on Modrinth & CurseForge</small>
-                    </span>
-                    <ChevronRight size={17} />
-                  </button>
-                  <button
-                    className="quick-row"
-                    onClick={() => setPage("Skins")}
-                  >
-                    <UserRound />
-                    <span>
-                      A look of your own
-                      <small>Manage skins and owned capes</small>
-                    </span>
-                    <ChevronRight size={17} />
-                  </button>
-                </section>
-                <section className="panel release-panel">
-                  <span className="eyebrow">FROM MOJANG</span>
-                  <h3>
-                    {latest
-                      ? `Minecraft ${latest}`
-                      : "Official release channel"}
-                  </h3>
-                  <p>
-                    {latest
-                      ? "The default for new installations, verified against Mojang’s official manifest. Older releases remain available from 1.21.9."
-                      : "Connect the desktop launcher to check the latest official Minecraft release."}
-                  </p>
-                  <button
-                    className="text-button"
-                    onClick={newProfile}
-                    disabled={!!busy || !versions.length}
-                  >
-                    Create latest installation <ArrowUpRight size={16} />
-                  </button>
-                  <div className="release-footer">
-                    <ShieldCheck size={16} />
-                    Verified downloads. Separate worlds.
-                  </div>
-                </section>
+        <div className={`content ${page === "Home" ? "home-content" : ""}`}>
+          {page !== "Home" && (
+            <div className="page-heading">
+              <div>
+                <h1>{page}</h1>
+                <p>{descriptions[page]}</p>
               </div>
-            </>
+              {page === "Installations" ? (
+                <button className="primary" onClick={newProfile}>
+                  <Plus size={17} />
+                  New installation
+                </button>
+              ) : (
+                <button
+                  className="profile-switch"
+                  onClick={() => setPage("Play")}
+                >
+                  <span className="tiny-block" />
+                  <span>
+                    {profile?.name || "Create an installation"}
+                    <small>
+                      {profile
+                        ? `${profile.version} · ${profile.loader}`
+                        : "Start with your Minecraft version"}
+                    </small>
+                  </span>
+                  <ChevronDown size={15} />
+                </button>
+              )}
+            </div>
+          )}
+          {page === "Home" && (
+            <HomeScreen
+              account={account}
+              profiles={state.profiles}
+              profile={profile}
+              latest={latest}
+              busy={busy}
+              running={state.running}
+              select={setSelected}
+              navigate={setPage}
+              create={newProfile}
+              launch={() =>
+                profile &&
+                run("Launch Minecraft", () =>
+                  request("launch", { id: profile.id }),
+                )
+              }
+            />
           )}
           {page === "Play" && (
             <section className="panel">
@@ -422,7 +317,7 @@ function App() {
               </div>
               {!state.profiles.length ? (
                 <Empty
-                  title="Your first world starts here"
+                  title="No installations yet"
                   text="Create an isolated installation, then connect your Microsoft account."
                   action="Create installation"
                   onClick={newProfile}
@@ -493,7 +388,7 @@ function App() {
             <section className="panel">
               {!state.profiles.length ? (
                 <Empty
-                  title="A place for every play style"
+                  title="No installations yet"
                   text="Keep survival, modpacks, and creative worlds separate."
                   action="Create installation"
                   onClick={newProfile}
@@ -601,7 +496,13 @@ function App() {
             </React.Suspense>
           )}
           {page === "Settings" && (
-            <Preferences state={state} run={run} open={open} busy={!!busy} />
+            <Preferences
+              state={state}
+              run={run}
+              open={open}
+              busy={!!busy}
+              configure={setEditing}
+            />
           )}
           {page === "Updates" && (
             <Updates
@@ -623,7 +524,7 @@ function App() {
             />
           )}
           <footer className="footer">
-            <span>Built for the game. Owned by the community.</span>
+            <span>Minecraft Java Edition</span>
             <button onClick={() => open("https://kingar1000.xyz")}>
               KINGAR1000 <ArrowUpRight size={12} />
             </button>
@@ -695,17 +596,17 @@ function App() {
   );
 }
 const descriptions: Record<Page, string> = {
-  Home: "Everything you need. Only what you want.",
-  Play: "Pick your world. We’ll handle the rest.",
-  Installations: "Different worlds. A space for each one.",
-  Mods: "Find your next favorite addition.",
-  "Resource Packs": "Change the way you see your world.",
-  Modpacks: "A whole new experience, in one collection.",
-  Skins: "Look like yourself. Or someone entirely different.",
+  Home: "Minecraft Java Edition",
+  Play: "Select an installation and launch Minecraft.",
+  Installations: "Manage game versions, modloaders, and instance settings.",
+  Mods: "Browse and manage compatible mods.",
+  "Resource Packs": "Browse, install, and reorder resource packs.",
+  Modpacks: "Discover modpacks for your installation.",
+  Skins: "Your skin library and owned capes.",
   Accounts: "Your Minecraft identities, securely stored.",
-  Updates: "Keep your entire setup in step.",
-  Settings: "The details that make it yours.",
-  "HUD Editor": "Put the essentials exactly where you want them.",
+  Updates: "Launcher releases and compatible content updates.",
+  Settings: "Performance, Java, and launcher preferences.",
+  "HUD Editor": "Position and customize your in-game widgets.",
 };
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

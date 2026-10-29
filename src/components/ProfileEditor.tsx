@@ -47,9 +47,37 @@ export default function ProfileEditor({
   const field = (key: keyof Profile, value: string | number) =>
     setP((s) => ({ ...s, [key]: value }));
   return (
-    <div className="modal-backdrop">
+    <div
+      className="modal-backdrop"
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          close();
+        }
+        if (e.key === "Tab") {
+          const elements = Array.from(
+            e.currentTarget.querySelectorAll<HTMLElement>(
+              'button:not(:disabled), input:not(:disabled), select:not(:disabled), [tabindex="0"]',
+            ),
+          );
+          const first = elements[0],
+            last = elements[elements.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last?.focus();
+          }
+          if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first?.focus();
+          }
+        }
+      }}
+    >
       <form
         className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="installation-dialog-title"
         onSubmit={(e) => {
           e.preventDefault();
           save(p);
@@ -57,7 +85,9 @@ export default function ProfileEditor({
       >
         <div className="section-title">
           <div>
-            <h2>{p.id ? "Configure installation" : "New installation"}</h2>
+            <h2 id="installation-dialog-title">
+              {p.id ? "Configure installation" : "New installation"}
+            </h2>
           </div>
           <button
             type="button"
@@ -68,122 +98,126 @@ export default function ProfileEditor({
             <X />
           </button>
         </div>
-        <label>
-          Name
-          <input
-            required
-            maxLength={80}
-            value={p.name}
-            onChange={(e) => field("name", e.target.value)}
-          />
-        </label>
-        <div className="form-grid">
+        <div className="modal-body">
           <label>
-            Minecraft version
-            <select
+            Name
+            <input
+              autoFocus
               required
-              value={p.version}
-              onChange={(e) => {
-                field("version", e.target.value);
-                field("loaderVersion", "");
-              }}
-            >
-              <option value="">Select official release</option>
-              {versions.map((v) => (
-                <option key={v} value={v}>
-                  {v}
-                  {v === latest
-                    ? " — Latest stable"
-                    : v === "1.21.9"
-                      ? " — Oldest supported"
-                      : ""}
+              maxLength={80}
+              value={p.name}
+              onChange={(e) => field("name", e.target.value)}
+            />
+          </label>
+          <div className="form-grid">
+            <label>
+              Minecraft version
+              <select
+                required
+                value={p.version}
+                onChange={(e) => {
+                  field("version", e.target.value);
+                  field("loaderVersion", "");
+                }}
+              >
+                <option value="">Select official release</option>
+                {versions.map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                    {v === latest
+                      ? " — Latest stable"
+                      : v === "1.21.9"
+                        ? " — Oldest supported"
+                        : ""}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Modloader
+              <select
+                value={p.loader}
+                onChange={(e) => {
+                  field("loader", e.target.value);
+                  field("loaderVersion", "");
+                }}
+              >
+                {["vanilla", "fabric", "forge", "neoforge", "quilt"].map(
+                  (v) => (
+                    <option key={v}>{v}</option>
+                  ),
+                )}
+              </select>
+            </label>
+          </div>
+          {!p.id && (
+            <p className="muted" style={{ marginTop: 12, fontSize: 12 }}>
+              New installations use the latest official stable release. Choose a
+              compatible modloader if you want mods; existing installations keep
+              their selected version.
+            </p>
+          )}
+          {p.loader !== "vanilla" && (
+            <label>
+              Loader version
+              <select
+                required
+                value={p.loaderVersion}
+                onChange={(e) => field("loaderVersion", e.target.value)}
+              >
+                <option value="">
+                  {loading
+                    ? "Checking compatibility…"
+                    : loaders.length
+                      ? "Select compatible loader"
+                      : "No compatible loader listed"}
                 </option>
-              ))}
-            </select>
+                {loaders.map((v) => (
+                  <option key={v}>{v}</option>
+                ))}
+              </select>
+            </label>
+          )}
+          <label>
+            Memory <span>{p.ram / 1024} GB</span>
+            <input
+              type="range"
+              min="1024"
+              max="16384"
+              step="512"
+              value={p.ram}
+              onChange={(e) => field("ram", +e.target.value)}
+            />
           </label>
           <label>
-            Modloader
+            Performance preset
             <select
-              value={p.loader}
-              onChange={(e) => {
-                field("loader", e.target.value);
-                field("loaderVersion", "");
-              }}
+              value={p.preset}
+              onChange={(e) => field("preset", e.target.value)}
             >
-              {["vanilla", "fabric", "forge", "neoforge", "quilt"].map((v) => (
-                <option key={v}>{v}</option>
-              ))}
+              {["Maximum FPS", "Balanced", "High Quality", "Custom"].map(
+                (v) => (
+                  <option key={v}>{v}</option>
+                ),
+              )}
             </select>
+            <small>Apply your preset from Settings after saving.</small>
           </label>
-        </div>
-        {!p.id && (
-          <p className="muted" style={{ marginTop: 12, fontSize: 12 }}>
-            New installations use the latest official stable release. Choose a
-            compatible modloader if you want mods; existing installations keep
-            their selected version.
-          </p>
-        )}
-        {p.loader !== "vanilla" && (
           <label>
-            Loader version
-            <select
-              required
-              value={p.loaderVersion}
-              onChange={(e) => field("loaderVersion", e.target.value)}
-            >
-              <option value="">
-                {loading
-                  ? "Checking compatibility…"
-                  : loaders.length
-                    ? "Select compatible loader"
-                    : "No compatible loader listed"}
-              </option>
-              {loaders.map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </select>
+            Custom Java executable <span>optional</span>
+            <input
+              value={p.java}
+              onChange={(e) => field("java", e.target.value)}
+              placeholder="Automatic — verified Eclipse Temurin runtime"
+            />
           </label>
-        )}
-        <label>
-          Memory <span>{p.ram / 1024} GB</span>
-          <input
-            type="range"
-            min="1024"
-            max="16384"
-            step="512"
-            value={p.ram}
-            onChange={(e) => field("ram", +e.target.value)}
-          />
-        </label>
-        <label>
-          Performance preset
-          <select
-            value={p.preset}
-            onChange={(e) => field("preset", e.target.value)}
-          >
-            {["Maximum FPS", "Balanced", "High Quality", "Custom"].map((v) => (
-              <option key={v}>{v}</option>
-            ))}
-          </select>
-          <small>
-            Apply your preset from Settings in the installation list below after
-            saving.
-          </small>
-        </label>
-        <label>
-          Custom Java executable <span>optional</span>
-          <input
-            value={p.java}
-            onChange={(e) => field("java", e.target.value)}
-            placeholder="Automatic — verified Eclipse Temurin runtime"
-          />
-        </label>
-        <div className="callout">
-          <ShieldCheck size={19} />
-          <span>
-            Each installation has its own worlds, mods, configuration, and game
-            files.
-          </span>
+          <div className="callout">
+            <ShieldCheck size={19} />
+            <span>
+              Each installation has its own worlds, mods, configuration, and
+              game files.
+            </span>
+          </div>
         </div>
         <div className="panel-footer">
           <button type="button" className="secondary" onClick={close}>
