@@ -35,7 +35,7 @@ public final class ArClient implements ClientModInitializer {
         public Widget(){} public Widget(String id,double y){this.id=id;this.y=y;}
     }
     public static class Layout {
-        public List<Widget> widgets=new ArrayList<>(); public boolean toggleSprint=false; public String zoomKey="C";
+        public List<Widget> widgets=new ArrayList<>(); public boolean toggleSprint=false;
         public boolean customCrosshair=false,hideScoreboard=false; public int crosshairSize=4,crosshairGap=2; public String crosshairColor="#ffffff"; public double chatOpacity=1;
         public Layout(){String[] names={"FPS","CPS","Keystrokes","Coordinates","Ping","Armor","Potions","Clock"};for(int i=0;i<names.length;i++)widgets.add(new Widget(names[i],.05+i*.09));}
     }

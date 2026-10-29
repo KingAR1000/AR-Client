@@ -6,7 +6,6 @@ authors = ["KingAR1000"]
 license = "GPL-3.0-only"
 [lib]
 name = "ar_core"
-crate-type = ["lib", "cdylib", "staticlib"]
 [[bin]]
 name = "ar-client"
 path = "src/main.rs"

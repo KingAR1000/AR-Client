@@ -258,11 +258,6 @@ function App() {
         <div className="content">
           <div className="page-heading">
             <div>
-              <div className="eyebrow">
-                {page === "Home"
-                  ? "LESS BETWEEN YOU AND THE GAME"
-                  : "YOUR CLIENT. YOUR WAY."}
-              </div>
               <h1>
                 {page === "Home"
                   ? `Welcome ${account ? "back, " + account.name : "to your next world"}.`
@@ -344,10 +339,6 @@ function App() {
                         : "MINECRAFT JAVA EDITION"}
                     </span>
                   </div>
-                </div>
-                <div className="hero-caption">
-                  <span>01 / YOUR NEXT ADVENTURE</span>
-                  <span>NO LIMITS. NO ADS.</span>
                 </div>
               </section>
               <div className="home-grid">

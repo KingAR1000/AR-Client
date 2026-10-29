@@ -43,7 +43,7 @@ impl Engine {
         }
     }
     pub async fn dispatch(&self, action: &str, a: Value) -> Result<Value> {
-        let read_only = ["versions", "loaders", "catalog", "news", "releases"];
+        let read_only = ["versions", "loaders", "catalog", "releases"];
         let _guard = if read_only.contains(&action) {
             None
         } else {
@@ -451,7 +451,7 @@ impl Engine {
                     .join("config/ar-client.json");
                 if action == "hud.load" {
                     if !path.exists() {
-                        return Ok(json!({"widgets":[],"zoomKey":"C","toggleSprint":false}));
+                        return Ok(json!({"widgets":[],"toggleSprint":false}));
                     }
                     return Ok(serde_json::from_slice(&std::fs::read(path)?)?);
                 }
@@ -549,13 +549,6 @@ impl Engine {
                         .error_for_status()?;
                 }
                 Ok(json!(true))
-            }
-            "news" => {
-                net::json(
-                    &self.client,
-                    "https://launchercontent.mojang.com/javaPatchNotes.json",
-                )
-                .await
             }
             "releases" => {
                 net::json(

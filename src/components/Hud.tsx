@@ -298,7 +298,7 @@ export default function Hud({
               run("Save HUD layout", () =>
                 request("hud.save", {
                   profile: profile.id,
-                  layout: { widgets, toggleSprint, zoomKey: "C", ...extras },
+                  layout: { widgets, toggleSprint, ...extras },
                 }),
               )
             }

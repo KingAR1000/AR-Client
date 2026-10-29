@@ -1,44 +1,33 @@
-# Website deployment on Vercel
+# Vercel deployment
 
-Deploy this folder on **Vercel**. Intended hostname: **client.kingar1000.xyz**. DNS provider: **Cloudflare**. Public support: **hello@kingar1000.xyz**.
+Import `KingAR1000/AR-Client` with these settings:
 
-## Project settings
+| Setting | Value |
+| --- | --- |
+| Production Branch | `main` |
+| Root Directory | `website` |
+| Framework Preset | Other |
+| Build Command | Empty |
+| Output Directory | `.` |
+| Node.js | 22.x |
 
-Import `KingAR1000/AR-Client` into the owner's Vercel account using **main** as the Production Branch. PR #1 has been merged. If the project was previously configured to use `feat/ar-client`, switch its Production Branch to **main** in Git settings and redeploy.
+No frontend build or dependencies are required. Vercel serves the HTML/assets and runs `api/curseforge.js` and `api/minecraft.js` as Node functions. The repository root builds the desktop renderer and must not be used as the website root.
 
-- Root Directory: **website**
-- Framework Preset: **Other**
-- Build Command: leave empty / override to no build
-- Output Directory: **.** (the project root)
-- Install Command: no dependencies are required; the default is sufficient
-- Node.js: **22.x**
+## CurseForge
 
-Do not use the repository root as this website's root: its Vite build is the desktop renderer. Vercel detects `api/curseforge.js` and `api/minecraft.js` as Node server functions. The website itself is plain HTML with embedded CSS/JS and local assets.
+Add **CURSEFORGE_API_KEY** in Vercel's environment settings, mark it Sensitive, and redeploy. Enable it for production and any previews needing catalog access. Never use a public-variable prefix or commit its value.
 
-No Vercel account credentials or integration are available in this session. Source preparation and local tests do not publish a Vercel deployment.
+The service accepts bounded, read-only Minecraft catalog queries against fixed CurseForge endpoints. Set Vercel firewall rate limits within the upstream API quota. A personal key saved in the launcher overrides the shared service and connects directly to CurseForge.
 
-Alternatively, in an up-to-date checkout of `main`, run `npx vercel` from this folder using the owner's Vercel login, then `npx vercel --prod` after configuration and preview verification.
+## Domain
 
-## Private CurseForge configuration
+Add **client.kingar1000.xyz** to the Vercel project. Copy its assigned DNS record into Cloudflare, using DNS only while verifying the hostname and HTTPS. The launcher uses this hostname for the shared catalog service.
 
-In Vercel **Project Settings → Environment Variables**, add **CURSEFORGE_API_KEY** with the owner-provided key. Mark it Sensitive for production; add preview availability if the owner wants preview catalog testing. Redeploy after changing environment variables. Never use a `VITE_`, `NEXT_PUBLIC_`, or other public prefix. Never put the value in `vercel.json`, Git, a URL, a build argument or chat again.
+## Check the deployment
 
-The supplied key passed a live upstream catalog search. The actual handler also passed a live filtered request for Minecraft 26.3 with that key; the response contained catalog data and no credential. The key was used in memory for those checks and is **not provisioned into a Vercel project yet**. It is never shipped in desktop binaries. A personal key saved in the launcher's OS vault overrides the shared service and connects directly to CurseForge.
+- `/api/minecraft` returns the latest official stable release.
+- `/api/curseforge?path=mods%2Fsearch&gameId=432&classId=6&gameVersion=26.3&pageSize=1` returns catalog data once the key is configured. Missing configuration returns 503.
+- Download links resolve real published Windows assets, falling back to GitHub Actions development builds when no stable release exists.
+- Privacy and terms pages use the support address **hello@kingar1000.xyz**.
 
-The proxy accepts only bounded GET metadata requests against fixed CurseForge Minecraft endpoints. It follows no redirects, forwards no player credentials or caller-supplied headers, caches only public successful data, and redacts failures. Set an appropriate rate limit in Vercel's firewall for `/api/curseforge`, within the upstream API quota, before public promotion. Do not use a process-local counter as a purported distributed limit.
-
-## Domain and Cloudflare
-
-After a successful Vercel deployment, add **client.kingar1000.xyz** under Project Settings → Domains. Copy the exact DNS record Vercel assigns into Cloudflare. Vercel may assign a project-specific CNAME, so do not guess the target. Use DNS only (grey cloud) while verifying the hostname and HTTPS.
-
-
-## Verification
-
-- Open the Vercel preview: logo should be a flat white monogram, with no glow or rectangular background.
-- `GET /api/minecraft` returns the latest official stable release from Mojang's manifest, currently `26.3`.
-- `GET /api/curseforge?path=mods%2Fsearch&gameId=432&classId=6&gameVersion=26.3&pageSize=1` returns a `data` array after the private key is configured.
-- Missing server configuration returns 503; errors do not expose keys. No secret should appear in public page source or response headers.
-- The download control uses a real published x64 Windows release asset when one exists. Otherwise it points to GitHub Actions development builds, with their sign-in requirement stated.
-- Confirm the custom hostname and certificate are valid before promoting it. The launcher uses the custom hostname for the shared CurseForge service; a preview hostname alone does not activate that route.
-
-Local checks: `npm test` inside this folder; `npm run dev` serves both HTML and real handlers on `http://127.0.0.1:8787`. For a local key, set `CURSEFORGE_API_KEY` through a private environment mechanism. `.env*` files are ignored. No key is needed for visual preview or mocked unit tests.
+For local preview, run `npm --prefix website run dev`; tests use `npm --prefix website test`. The local server runs on `http://127.0.0.1:8787`. Set `CURSEFORGE_API_KEY` privately for local catalog requests; visual preview and unit tests need no key.

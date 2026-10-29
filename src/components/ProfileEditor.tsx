@@ -57,7 +57,6 @@ export default function ProfileEditor({
       >
         <div className="section-title">
           <div>
-            <span className="eyebrow">YOUR NEXT ADVENTURE</span>
             <h2>{p.id ? "Configure installation" : "New installation"}</h2>
           </div>
           <button
