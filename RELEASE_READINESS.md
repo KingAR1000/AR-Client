@@ -6,7 +6,7 @@ The Windows development installer and startup checks pass. Public production rea
 
 - Windows test results, when the owner is available: whether Microsoft sign-in adds the correct Minecraft account; whether the latest stable release (currently 26.3) opens a playable world; and any error text. Use the personal Microsoft account that owns the game. Never send tokens or passwords. Test a restart/sign-in refresh, a multiplayer session and a normal exit as well. Test Fabric 1.21.9 separately for the currently version-limited companion HUD. Owner cannot test yet; these checks remain pending and do not block code or website preparation.
 - Minecraft Services application approval status if received. Device-code issuance for AR's public ID passed; that does not prove Xbox/Minecraft authorization. If a Minecraft Services approval error occurs, the owner must complete Microsoft's application process.
-- Owner confirmed Cloudflare DNS, Vercel hosting, and public support at hello@kingar1000.xyz. Import this repository's `website` root from `feat/ar-client` into Vercel, then attach client.kingar1000.xyz using the exact records Vercel assigns. The old Sites records are superseded. No Vercel account connection is available to this session, so project creation and private environment setup need the owner; see website/HOSTING.md.
+- Owner confirmed Cloudflare DNS, Vercel hosting, and public support at hello@kingar1000.xyz. Import this repository's `website` root from `main` into Vercel, then attach client.kingar1000.xyz using the exact records Vercel assigns. The old Sites records are superseded. No Vercel account connection is available to this session, so project creation and private environment setup need the owner; see website/HOSTING.md.
 - Owner supplied and authorized a working CurseForge key; the live catalog accepted it. Store it only in Vercel's server-side `CURSEFORGE_API_KEY`, never in a public variable, Git or the desktop build. The proxy implementation is complete; its public deployment awaits Vercel setup. A personal OS-vault override remains available. Modrinth needs no project key.
 - Updater signing setup through the local helper below. Keep the signing key and password privately backed up. These are separate from Windows Authenticode certificates.
 - An Authenticode signing provider/certificate only if a verified Windows publisher is required. It is optional for distributing an unsigned installer; unsigned builds must be described accurately. Do not send certificate private keys or PFX passwords in chat.
@@ -15,7 +15,7 @@ The Windows development installer and startup checks pass. Public production rea
 
 Prerequisites: Node.js, Git, GitHub CLI, and an authenticated GitHub account with administration rights on this repository. The chat GitHub connection cannot manage Actions Secrets or Variables (HTTP 403); this helper uses the owner's local GitHub session instead.
 
-From an up-to-date checkout of `feat/ar-client`:
+From an up-to-date checkout of `main`:
 
 ```text
 npm ci
@@ -33,7 +33,7 @@ Enter a nonempty password during Tauri's key-generation prompt, then enter that 
 - A new version/tag check rejects mismatched package, Tauri and Cargo versions and misleading tag names.
 - Tags containing a prerelease suffix produce prereleases; stable version tags produce stable draft releases. A published stable release is required for the configured `/releases/latest/download/latest.json` update channel.
 - Native updater signatures are distinct from Windows publisher signatures.
-- The workflow must be present on the default branch before GitHub exposes workflow_dispatch there. The implementation is currently in draft PR #1; a reviewed squash merge can give main one implementation commit while retaining the PR discussion.
+- PR #1 has been squash-merged into `main`, retaining the PR discussion and source branch. The release workflow is now present on the default branch for manual invocation; merging source does not publish a release or provision signing credentials.
 - Before publication: verify real ownership-based login/launch, skin changes, critical mod/pack workflows, release signatures, install/upgrade recovery and a real signed-update cycle. Retain logs with credentials redacted and record actual tested game/loader/hardware versions.
 - Complete or explicitly narrow the advertised scope of the unimplemented features listed in VALIDATION.md. The AR companion supports Fabric 1.21.9 only today.
 

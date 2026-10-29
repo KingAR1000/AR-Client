@@ -4,7 +4,7 @@ The owner selected **Vercel** on 2026-10-29. The redesigned source is in this fo
 
 ## Project settings
 
-Import `KingAR1000/AR-Client` into the owner's Vercel account. Until the implementation is merged, use the **feat/ar-client** branch (set it as the project's Production Branch in Git settings and redeploy if necessary).
+Import `KingAR1000/AR-Client` into the owner's Vercel account using **main** as the Production Branch. PR #1 has been merged. If the project was previously configured to use `feat/ar-client`, switch its Production Branch to **main** in Git settings and redeploy.
 
 - Root Directory: **website**
 - Framework Preset: **Other**

@@ -19,8 +19,6 @@ Install Node.js 22 LTS, stable Rust through rustup, Microsoft C++ Build Tools wi
 ```powershell
 git clone https://github.com/KingAR1000/AR-Client.git
 cd AR-Client
-# Until the implementation PR is merged:
-git switch feat/ar-client
 npm ci
 npm test
 cargo test --manifest-path src-tauri/Cargo.toml --no-default-features --locked
