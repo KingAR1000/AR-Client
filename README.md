@@ -113,3 +113,7 @@ Account-dependent workflows require an approved application and real owner accou
 GNU GPL version 3 only; see [LICENSE](LICENSE). AR artwork was provided by KingAR1000. Third-party dependencies retain their own licenses. See [THIRD_PARTY.md](THIRD_PARTY.md). Minecraft is a trademark of Mojang/Microsoft; AR Client is independent and is not an official Minecraft product.
 
 Creator: [kingar1000.xyz](https://kingar1000.xyz) · Source: [KingAR1000/AR-Client](https://github.com/KingAR1000/AR-Client)
+
+## Public launch setup
+
+See [RELEASE_READINESS.md](RELEASE_READINESS.md) for owner inputs, the local `npm run setup:release` credential helper, validation required before publication, and history cleanup boundaries. Never paste private keys or passwords into chat.

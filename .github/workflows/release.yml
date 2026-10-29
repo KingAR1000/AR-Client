@@ -29,6 +29,10 @@ jobs:
           gradle-version: "9.1.0"
       - run: gradle -p in-game build --no-daemon
       - run: node scripts/prepare-companion.mjs
+      - name: Validate release tag and package versions
+        run: node scripts/check-release.mjs
+        env:
+          AR_RELEASE_TAG: ${{ inputs.tag }}
       - run: npm ci
       - run: npm test
       - run: cargo test --manifest-path src-tauri/Cargo.toml --no-default-features --locked
@@ -46,5 +50,5 @@ jobs:
           releaseName: AR Client ${{ inputs.tag }}
           releaseBody: See the changelog and compatibility notes in the repository before installing.
           releaseDraft: true
-          prerelease: true
+          prerelease: ${{ contains(inputs.tag, '-') }}
           args: --config src-tauri/release.conf.json

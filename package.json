@@ -9,7 +9,8 @@
     "build": "tsc --noEmit && vite build",
     "desktop": "tauri dev",
     "bundle": "node scripts/prepare-companion.mjs && tauri build",
-    "test": "vitest run"
+    "test": "vitest run tests && node --test scripts/check-release.test.mjs",
+    "setup:release": "node scripts/setup-release.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.8.0",
