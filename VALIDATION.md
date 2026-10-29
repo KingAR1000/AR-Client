@@ -48,6 +48,6 @@ The workflow builds a Windows x64 NSIS installer, bundles the Fabric companion, 
 - HUD has position, scale, opacity, color, visibility, in-game keybinds, crosshair settings, scoreboard visibility and chat opacity; multiple named saved layouts, full theme management, advanced chat/scoreboard styling and animated resource-pack previews are absent.
 - Loader updates are selected through installation configuration, not automatically migrated in the Update Center. Minecraft upgrades use new installations rather than world migration.
 - Resource usage has not been benchmarked. “Maximum FPS” is a configurable preset with compatible Sodium/Lithium installation, not an FPS guarantee.
-- Website redesign and server functions are prepared for the owner's chosen Vercel deployment. The prior Sites preview remains separate and has not been replaced. Vercel import, private environment setup, domain attachment and HTTPS verification are pending; use Vercel's assigned DNS values, not the superseded Sites records. See website/HOSTING.md.
+- Website redesign and server functions are prepared for the owner's chosen Vercel deployment. Vercel import, private environment setup, domain attachment and HTTPS verification are pending; use Vercel's assigned DNS values. See website/HOSTING.md.
 
 This is substantial executable implementation work, but it is **not the complete production-ready application described in the original brief**. The remaining gaps are documented rather than hidden behind placeholder success states.

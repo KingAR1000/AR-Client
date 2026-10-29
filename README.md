@@ -106,7 +106,7 @@ Account-dependent workflows require an approved application and real owner accou
 
 ## Website
 
-The redesigned `website/index.html` has embedded CSS/JS, locally served fonts and a flat transparent AR mark, procedural monochrome voxel artwork, and an actual browser-rendered launcher interface screenshot. The website also includes privacy/terms and two Vercel server functions. It requires no frontend framework or build step. Run `npm --prefix website run dev` for local preview. The owner selected **Vercel**; see [website/HOSTING.md](website/HOSTING.md) for import settings, the private environment variable, and domain setup. The older Sites preview does not contain this redesign and is no longer the intended host. Downloads resolve real published GitHub release assets and otherwise link to development builds.
+The redesigned `website/index.html` has embedded CSS/JS, locally served fonts and a flat transparent AR mark, procedural monochrome voxel artwork, and an actual browser-rendered launcher interface screenshot. The website also includes privacy/terms and two Vercel server functions. It requires no frontend framework or build step. Run `npm --prefix website run dev` for local preview. The owner selected **Vercel**; see [website/HOSTING.md](website/HOSTING.md) for import settings, the private environment variable, and domain setup. Downloads resolve real published GitHub release assets and otherwise link to development builds.
 
 ## License and attribution
 
