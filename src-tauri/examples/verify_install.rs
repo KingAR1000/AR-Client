@@ -7,13 +7,20 @@ use std::{
 #[tokio::main]
 async fn main() -> ar_core::Result<()> {
     let args: Vec<String> = std::env::args().collect();
-    let version = args.get(1).map(String::as_str).unwrap_or("1.21.9");
+    let client = net::client();
+    let version = match args.get(1) {
+        Some(version) => version.clone(),
+        None => install::versions(&client).await?["latest"]["release"]
+            .as_str()
+            .ok_or("Official stable release missing")?
+            .to_owned(),
+    };
     let loader = args.get(2).map(String::as_str).unwrap_or("vanilla");
     let loader_version = args.get(3).cloned().unwrap_or_default();
     let p = Profile {
         id: "11111111-1111-4111-8111-111111111111".into(),
         name: "Integration verification".into(),
-        version: version.into(),
+        version,
         loader: loader.into(),
         loader_version,
         ram: 2048,
@@ -30,7 +37,7 @@ async fn main() -> ar_core::Result<()> {
         }
     });
     let i = install::install(
-        &net::client(),
+        &client,
         &PathBuf::from("/tmp/ar-install-verification"),
         &p,
         progress,

@@ -1024,10 +1024,10 @@
           <div>Forge <span>Modloader</span></div>
           <div>NeoForge <span>Modloader</span></div>
           <div>Quilt <span>Modloader</span></div>
-          <div>1.21.9+ <span>Release range</span></div>
+          <div>Latest stable <span>Default</span></div>
           <p class="compat-note">
-            Loader and mod availability depends on the selected game version.
-            The bundled AR HUD currently supports Fabric 1.21.9.
+            Supported range: 1.21.9 through the latest stable release. Loader
+            and mod availability depends on the selected game version.
           </p>
         </div>
       </section>
@@ -1095,10 +1095,11 @@
             <summary>Which Minecraft version should I use?</summary>
             <p>
               New installations default to the latest stable official release,
-              currently 26.3. You can select older supported releases down to
-              1.21.9. Existing installations keep their version so an update
-              cannot silently upgrade your worlds. Mods and loaders must support
-              the version you select.
+              currently <span id="faq-minecraft-version">26.3</span>. You can
+              select older supported releases down to 1.21.9. Existing
+              installations keep their version so an update cannot silently
+              upgrade your worlds. Mods and loaders must support the version you
+              select.
             </p>
           </details>
           <details>
@@ -1379,6 +1380,8 @@
           const version = await response.json();
           if (!/^[0-9][A-Za-z0-9._+-]{0,39}$/.test(version.release)) return;
           document.getElementById("minecraft-version").textContent =
+            version.release;
+          document.getElementById("faq-minecraft-version").textContent =
             version.release;
           document.getElementById("minecraft-note").textContent =
             "Latest stable release from Mojang’s official manifest. New installations start here. Older supported releases remain available from 1.21.9.";

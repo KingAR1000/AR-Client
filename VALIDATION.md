@@ -12,6 +12,8 @@ Checks below were recorded on 28–29 October 2026. Installation and compilation
 - Mojang release metadata reported **26.3**. Microsoft accepted a device authorization request for the bundled public app ID.
 - Live Modrinth downloads for Sodium, Lithium and Fabric API with hash verification; compatibility metadata from all four loaders.
 - Live CurseForge catalog requests, including a 26.3 query through the server handler, returned HTTP 200 without exposing the key.
+- Live `client.kingar1000.xyz` HTTPS, assets, privacy/terms, release metadata and CurseForge catalog service passed desktop/mobile checks. Invalid catalog routes return 400; writes return 405.
+- Latest-stable catalog verification installed Sodium, Lithium and Fabric API for 26.3 with hashes checked; all four loaders returned compatible metadata. Vanilla 26.3 installation was reverified successfully.
 
 ## Installation checks
 
@@ -31,8 +33,7 @@ To repeat a live installation check, run `cargo run --manifest-path src-tauri/Ca
 
 - Full Microsoft/Xbox/Minecraft login, refresh, entitlement handling, skin uploads and cape changes. Device-code issuance alone does not confirm Minecraft Services approval.
 - Authenticated Windows gameplay, Fabric mixins, multiplayer, graphics/input latency and long-running recovery.
-- Signed-update installation and upgrade recovery. No project updater key or stable release has been configured; Windows development installers are unsigned.
-- Public Vercel deployment, environment setup and custom-domain HTTPS; see [website/HOSTING.md](website/HOSTING.md).
+- Signed-update installation and upgrade recovery. No stable release is published; release-signing configuration remains unverified. Windows development installers are unsigned.
 - Full CurseForge install/update workflows and arbitrary third-party modpack compatibility.
 
 ## Current limits

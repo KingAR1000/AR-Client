@@ -2,7 +2,7 @@
 
 A free, open-source Minecraft Java launcher by [KingAR1000](https://kingar1000.xyz), licensed under GPL-3.0-only. Windows 11 x64 is the primary platform.
 
-New installations default to the latest stable release from Mojang's manifest, currently **26.3**. **1.21.9 is the oldest supported release.** Existing installations keep their versions. Loader and mod availability varies by game version. The bundled AR HUD supports **Fabric 1.21.9 only**.
+The primary target is always the **latest stable Minecraft release**, currently **26.3**. The launcher offers releases from **1.21.9 through the latest stable**, discovers new releases through Mojang's manifest, and selects the latest stable for new installations. Existing installations keep their versions. Loader and mod availability varies by game version.
 
 **Development build:** Windows packaging and startup checks pass; authenticated gameplay, signed updates, and performance benchmarks remain unverified. See [VALIDATION.md](VALIDATION.md) for tested behavior and limitations.
 

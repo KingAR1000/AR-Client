@@ -94,8 +94,8 @@ export default function Hud({
     return (
       <section className="panel">
         <Empty
-          title="This installation needs a different AR companion build"
-          text="The bundled AR HUD currently supports Fabric 1.21.9. Choose a Fabric 1.21.9 installation to edit its HUD; other game versions can still launch normally."
+          title="AR HUD is not available for this game version"
+          text="This installation can launch normally. Its game version does not yet have a compatible bundled AR HUD. The available HUD build supports Fabric 1.21.9."
         />
       </section>
     );
