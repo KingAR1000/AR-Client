@@ -1,0 +1,5 @@
+.openai
+tests
+HOSTING.md
+dev.mjs
+.env*

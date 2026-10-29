@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Privacy — AR Client</title>
+    <style>
+      body {
+        margin: 0;
+        background: #101010;
+        color: #eee;
+        font-family:
+          Segoe UI,
+          Arial,
+          sans-serif;
+        line-height: 1.8;
+      }
+      main {
+        max-width: 760px;
+        margin: 60px auto;
+        padding: 0 24px;
+      }
+      a {
+        color: #ccc;
+      }
+      h1 {
+        font-weight: 500;
+        font-size: 38px;
+        letter-spacing: -1px;
+      }
+      h2 {
+        font-size: 20px;
+        margin-top: 32px;
+      }
+      p,
+      li {
+        font-size: 14px;
+        color: #aaa;
+      }
+      nav {
+        border-bottom: 1px solid #333;
+        padding-bottom: 20px;
+        font-size: 13px;
+      }
+      footer {
+        border-top: 1px solid #333;
+        margin-top: 40px;
+        padding-top: 20px;
+        font-size: 12px;
+        color: #888;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <nav><a href="index.html">← AR Client</a></nav>
+      <h1>Privacy</h1>
+      <p>
+        Updated 29 October 2026. AR Client is maintained by KingAR1000. Contact
+        <a href="mailto:hello@kingar1000.xyz">hello@kingar1000.xyz</a>.
+      </p>
+      <h2>Information on your device</h2>
+      <p>
+        The launcher stores installation settings, Minecraft profile names and
+        IDs, skin references, and selected preferences in its local
+        application-data directory. Microsoft access and refresh credentials and
+        configured API keys are stored in the operating system credential vault.
+        Imported skins, game files, worlds, and game logs are also local.
+        Removing an installation moves it to the launcher’s trash folder so
+        worlds remain recoverable.
+      </p>
+      <h2>Microsoft sign-in</h2>
+      <p>
+        You authorize sign-in on Microsoft’s website. AR Client sends
+        authentication requests to Microsoft, Xbox, and Minecraft Services to
+        obtain your game profile and check access to Minecraft Java. The
+        launcher does not ask for your Microsoft password.
+      </p>
+      <h2>Online services</h2>
+      <p>
+        Version checks, downloads, catalogs, skin changes, and updates connect
+        to their relevant providers, including Microsoft/Mojang,
+        Modrinth, Adoptium, modloader distribution services, and GitHub.
+        CurseForge catalog requests use AR Client’s Vercel-hosted catalog
+        service unless you save a personal key, which connects directly to
+        CurseForge. The service forwards only supported public Minecraft
+        catalog queries; it does not receive Microsoft tokens or account
+        credentials. Content downloads use upstream download URLs.
+        These services receive the requests needed for the
+        feature and handle them under their own privacy policies.
+      </p>
+      <h2>Website</h2>
+      <p>
+        The website’s hosting and network providers process requests to serve
+        and protect the site. Vercel serves this website and its public catalog
+        service. Catalog query parameters, including search terms and selected
+        versions, reach the service and CurseForge; public metadata responses
+        may be cached. We do not add application request logging or an account
+        database to the service. Hosting providers may retain security and
+        operational logs, including network addresses.
+        The page requests public release information from
+        GitHub, which receives that request. We have not added advertising
+        trackers, analytics scripts, or tracking cookies. Hosting infrastructure
+        may maintain operational and security logs.
+      </p>
+      <h2>Telemetry and third-party mods</h2>
+      <p>
+        AR Client includes no advertising or analytics telemetry. Minecraft and
+        third-party mods are separate software with their own behavior and
+        privacy terms. If you send support logs or publish an issue, remove
+        account credentials and personal information first.
+      </p>
+      <h2>Your choices</h2>
+      <p>
+        You can remove saved accounts and skins from the launcher, delete local
+        data through your operating system, and revoke application access
+        through your Microsoft account. Operating-system credential entries may
+        need separate removal if you uninstall without first removing saved
+        accounts. For data sent voluntarily to support, contact the address
+        above.
+      </p>
+      <footer>AR Client · KingAR1000 · GPL v3</footer>
+    </main>
+  </body>
+</html>
