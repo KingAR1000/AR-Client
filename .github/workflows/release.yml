@@ -2,6 +2,10 @@ name: Signed release
 on:
   workflow_dispatch:
     inputs:
+      refresh_support:
+        description: Discover new official Minecraft releases before building
+        type: boolean
+        default: false
       tag:
         description: Existing reviewed version tag (for example v0.1.0)
         required: true
@@ -23,12 +27,14 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: "25"
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "9.1.0"
-      - run: gradle -p in-game build --no-daemon
-      - run: node scripts/prepare-companion.mjs
+          gradle-version: "9.8.0"
+      - if: inputs.refresh_support
+        run: npm run companion:refresh -- --write
+      - run: npm run companion:build
+      - run: npm run companion:prepare
       - name: Validate release tag and package versions
         run: node scripts/check-release.mjs
         env:

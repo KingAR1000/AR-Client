@@ -4,7 +4,7 @@ AR Client is maintained solely by **KingAR1000**. Outside code contributions are
 
 ## Maintainer checks
 
-Run `npm ci`, `npm test`, `npm run build`, and `cargo test --manifest-path src-tauri/Cargo.toml --no-default-features --locked`. Format Rust with `cargo fmt --manifest-path src-tauri/Cargo.toml`. Changes to native packaging or the companion also need a Windows installer build and `gradle -p in-game build --no-daemon`.
+Run `npm ci`, `npm test`, `npm run build`, and `cargo test --manifest-path src-tauri/Cargo.toml --no-default-features --locked`. Format Rust with `cargo fmt --manifest-path src-tauri/Cargo.toml`. Changes to native packaging or the companion also need a Windows installer build and `npm run companion:build` followed by `npm run companion:prepare`.
 
 Keep changes focused and record affected game/loader versions, tests and manual verification. Preserve ownership checks, hashes, managed-path validation, credential-vault storage and recoverable user data. Test version-specific mod builds before declaring compatibility. Add regression coverage for security fixes and nontrivial installation changes.
 

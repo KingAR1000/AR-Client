@@ -13,3 +13,5 @@ in-game/build/
 src-tauri/release.conf.json
 src-tauri/resources/*.jar
 src-tauri/resources/companion.json
+
+src-tauri/resources/companions/

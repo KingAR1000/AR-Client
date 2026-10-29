@@ -1,11 +1,10 @@
 {
   "required": true,
   "package": "xyz.kingar1000.ar.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_${java}",
   "client": [
     "MouseMixin",
-    "GameRendererMixin",
-    "InGameHudMixin"
+    "GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -31,6 +31,7 @@ import { createRoot } from "react-dom/client";
 import type { Page } from "./api";
 import {
   desktop,
+  defaultRuntime,
   message,
   preferredRelease,
   request,
@@ -68,6 +69,7 @@ const initial: LauncherState = {
   running: [],
   version: "0.1.0",
   curseforgeConfigured: false,
+  companions: [],
 };
 type Progress = {
   stage: string;
@@ -163,17 +165,18 @@ function App() {
       window.removeEventListener("focus", onFocus);
     };
   }, []);
-  const newProfile = () =>
+  const newProfile = () => {
+    const version = preferredRelease(latest, versions);
     setEditing({
       id: "",
       name: "My installation",
-      version: preferredRelease(latest, versions),
-      loader: "vanilla",
-      loaderVersion: "",
+      version,
+      ...defaultRuntime(version, state.companions),
       ram: 4096,
       java: "",
       preset: "Balanced",
     });
+  };
   const open = (url: string) => request("link.open", { url }).catch(fail);
   return (
     <div className="shell">
@@ -612,7 +615,12 @@ function App() {
             />
           )}
           {page === "HUD Editor" && (
-            <Hud profile={profile} run={run} fail={fail} />
+            <Hud
+              profile={profile}
+              companions={state.companions}
+              run={run}
+              fail={fail}
+            />
           )}
           <footer className="footer">
             <span>Built for the game. Owned by the community.</span>

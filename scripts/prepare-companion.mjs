@@ -3,41 +3,59 @@ import {
   writeFileSync,
   copyFileSync,
   mkdirSync,
-  readdirSync,
+  rmSync,
 } from "node:fs";
 import { createHash } from "node:crypto";
-const directory = "in-game/build/libs";
-let files;
-try {
-  files = readdirSync(directory);
-} catch {
-  throw new Error(
-    "Build the bundled Fabric companion first: gradle -p in-game build",
+const config = JSON.parse(readFileSync("in-game/versions.json", "utf8"));
+const pkg = JSON.parse(readFileSync("package.json", "utf8"));
+const output = "src-tauri/resources/companions";
+const builds = config.versions.map((profile) => {
+  const directory = `in-game/build/${profile.minecraft}`;
+  const proof = JSON.parse(
+    readFileSync(`${directory}/verified-mixins.json`, "utf8"),
   );
-}
-const jar = files.find(
-  (name) =>
-    /^ar-client-fabric-\d.*\.jar$/.test(name) &&
-    !name.includes("sources") &&
-    !name.includes("dev"),
-);
-if (!jar)
-  throw new Error(
-    "No distributable Fabric companion jar found. Run gradle -p in-game build.",
-  );
-const bytes = readFileSync(`${directory}/${jar}`);
+  if (proof.minecraft !== profile.minecraft || proof.targets.length !== 2)
+    throw new Error(`Invalid mixin validation for ${profile.minecraft}`);
+  const filename = `ar-client-fabric-${profile.minecraft}-${pkg.version}.jar`;
+  const bytes = readFileSync(`${directory}/libs/${filename}`);
+  if (createHash("sha256").update(bytes).digest("hex") !== proof.sha256)
+    throw new Error(
+      `The validated jar changed for ${profile.minecraft}; rebuild before packaging.`,
+    );
+  return {
+    profile,
+    filename,
+    bytes,
+    sha256: createHash("sha256").update(bytes).digest("hex"),
+  };
+});
+// Read/validate every input before replacing the bundle.
 mkdirSync("src-tauri/resources", { recursive: true });
-copyFileSync(`${directory}/${jar}`, "src-tauri/resources/ar-client-fabric.jar");
+rmSync(output, { recursive: true, force: true });
+mkdirSync(output);
+for (const build of builds)
+  copyFileSync(
+    `in-game/build/${build.profile.minecraft}/libs/${build.filename}`,
+    `${output}/${build.filename}`,
+  );
 writeFileSync(
   "src-tauri/resources/companion.json",
   JSON.stringify(
     {
-      minecraft: "1.21.9",
-      loader: "fabric",
-      sha256: createHash("sha256").update(bytes).digest("hex"),
+      format: 1,
+      builds: builds.map(({ profile, filename, sha256 }) => ({
+        minecraft: profile.minecraft,
+        loader: "fabric",
+        minLoader: profile.loader,
+        fabricApi: profile.fabricApi,
+        filename,
+        sha256,
+      })),
     },
     null,
     2,
   ),
 );
-console.log("Prepared checksum-verified Fabric 1.21.9 companion for bundling.");
+console.log(
+  `Prepared ${builds.length} version-specific, checksum-verified AR HUD builds.`,
+);

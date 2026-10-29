@@ -29,6 +29,7 @@ public final class ArClient implements ClientModInitializer {
     public static Layout layout=new Layout();
     public static KeyBinding zoom,sprint,sneak,editor;
     public static boolean sprintEnabled,sneakEnabled;
+    private static boolean chatConfigured;
     public static final ArrayDeque<Long> leftClicks=new ArrayDeque<>(),rightClicks=new ArrayDeque<>();
     public static class Widget {
         public String id="FPS",color="#ffffff"; public double x=.03,y=.05,scale=1,opacity=.85; public boolean enabled=true;
@@ -42,25 +43,40 @@ public final class ArClient implements ClientModInitializer {
     @Override public void onInitializeClient(){
         try {if(Files.exists(CONFIG)){Layout loaded=GSON.fromJson(Files.readString(CONFIG),Layout.class);if(loaded!=null&&loaded.widgets!=null)layout=loaded;}}catch(Exception e){LOG.warn("Could not read AR HUD layout; using defaults",e);}
         sanitize();sprintEnabled=layout.toggleSprint;
-        MinecraftClient.getInstance().options.getChatOpacity().setValue(clamp(layout.chatOpacity,0,1));
+
         KeyBinding.Category category=KeyBinding.Category.create(Identifier.of("ar_client","controls"));
         zoom=KeyBindingHelper.registerKeyBinding(new KeyBinding("key.ar_client.zoom",InputUtil.Type.KEYSYM,GLFW.GLFW_KEY_C,category));
         sprint=KeyBindingHelper.registerKeyBinding(new KeyBinding("key.ar_client.sprint",InputUtil.Type.KEYSYM,GLFW.GLFW_KEY_R,category));
         sneak=KeyBindingHelper.registerKeyBinding(new KeyBinding("key.ar_client.sneak",InputUtil.Type.KEYSYM,GLFW.GLFW_KEY_V,category));
         editor=KeyBindingHelper.registerKeyBinding(new KeyBinding("key.ar_client.editor",InputUtil.Type.KEYSYM,GLFW.GLFW_KEY_RIGHT_SHIFT,category));
         ClientTickEvents.END_CLIENT_TICK.register(client->{
+            if(!chatConfigured && client.options != null){client.options.getChatOpacity().setValue(clamp(layout.chatOpacity,0,1));chatConfigured=true;}
             while(sprint.wasPressed())sprintEnabled=!sprintEnabled;
             while(sneak.wasPressed()){sneakEnabled=!sneakEnabled;client.options.sneakKey.setPressed(sneakEnabled);}
             while(editor.wasPressed())client.setScreen(new HudEditor());
             if(client.player!=null&&client.currentScreen==null){if(sprintEnabled&&client.options.forwardKey.isPressed()&&!client.player.isSneaking())client.player.setSprinting(true);if(sneakEnabled)client.options.sneakKey.setPressed(true);}
             if(client.player==null&&sneakEnabled){sneakEnabled=false;client.options.sneakKey.setPressed(false);}
         });
+        HudElementRegistry.replaceElement(VanillaHudElements.CROSSHAIR, original -> (context, tick) -> {
+            if (!layout.customCrosshair) { original.render(context, tick); return; }
+            MinecraftClient client = MinecraftClient.getInstance();
+            if (client.player == null || !client.options.getPerspective().isFirstPerson()) return;
+            int x=context.getScaledWindowWidth()/2,y=context.getScaledWindowHeight()/2;
+            int size=(int)clamp(layout.crosshairSize,2,16),gap=(int)clamp(layout.crosshairGap,0,10);
+            int color=0xffffffff;
+            try { color=0xff000000|Integer.parseInt(layout.crosshairColor.substring(1),16); } catch(Exception ignored) {}
+            context.fill(x-gap-size,y,x-gap,y+1,color);context.fill(x+gap+1,y,x+gap+size+1,y+1,color);
+            context.fill(x,y-gap-size,x+1,y-gap,color);context.fill(x,y+gap+1,x+1,y+gap+size+1,color);
+        });
+        HudElementRegistry.replaceElement(VanillaHudElements.SCOREBOARD, original -> (context, tick) -> {
+            if (!layout.hideScoreboard) original.render(context, tick);
+        });
         HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT,Identifier.of("ar_client","hud"),(context,tick)->render(context,false));
     }
     public static void sanitize(){layout.widgets.removeIf(Objects::isNull);for(Widget w:layout.widgets){w.x=clamp(w.x,0,.95);w.y=clamp(w.y,0,.95);w.scale=clamp(w.scale,.5,3);w.opacity=clamp(w.opacity,.2,1);if(w.id==null)w.id="FPS";if(w.color==null||!w.color.matches("#[0-9a-fA-F]{6}"))w.color="#ffffff";}}
     public static double clamp(double v,double min,double max){return Double.isFinite(v)?Math.max(min,Math.min(max,v)):min;}
     public static void save(){sanitize();try{Files.createDirectories(CONFIG.getParent());Path tmp=CONFIG.resolveSibling("ar-client.json.tmp");Files.writeString(tmp,GSON.toJson(layout));Files.move(tmp,CONFIG,StandardCopyOption.REPLACE_EXISTING);}catch(Exception e){LOG.error("Could not save AR HUD layout",e);}}
-    public static void click(int button){if(MinecraftClient.getInstance().currentScreen!=null)return;if(button==0)leftClicks.addLast(System.nanoTime());if(button==1)rightClicks.addLast(System.nanoTime());}
+    public static void click(int button){if(MinecraftClient.getInstance().currentScreen!=null)return;if(button==0){leftClicks.addLast(System.nanoTime());cps(leftClicks);}if(button==1){rightClicks.addLast(System.nanoTime());cps(rightClicks);}}
     private static int cps(ArrayDeque<Long> clicks){long cutoff=System.nanoTime()-1_000_000_000L;while(!clicks.isEmpty()&&clicks.peekFirst()<cutoff)clicks.removeFirst();return clicks.size();}
     public static String text(Widget w){MinecraftClient c=MinecraftClient.getInstance();if(c.player==null)return w.id;return switch(w.id){
         case "FPS"->c.getCurrentFps()+" FPS";

@@ -18,10 +18,12 @@ const widgetNames = [
 ];
 export default function Hud({
   profile,
+  companions,
   run,
   fail,
 }: {
   profile?: Profile;
+  companions: { minecraft: string; minLoader: string }[];
   run: Run;
   fail: (e: unknown) => void;
 }) {
@@ -90,12 +92,21 @@ export default function Hud({
         />
       </section>
     );
-  if (profile.loader !== "fabric" || profile.version !== "1.21.9")
+  if (profile.loader !== "fabric")
+    return (
+      <section className="panel">
+        <Empty
+          title="AR HUD requires Fabric"
+          text="Choose Fabric for AR's in-game HUD. This installation can still launch with its current modloader."
+        />
+      </section>
+    );
+  if (!companions.some((build) => build.minecraft === profile.version))
     return (
       <section className="panel">
         <Empty
           title="AR HUD is not available for this game version"
-          text="This installation can launch normally. Its game version does not yet have a compatible bundled AR HUD. The available HUD build supports Fabric 1.21.9."
+          text="This installation can launch normally. Its game version does not yet have a compatible bundled AR HUD. Use a supported Fabric installation, or update AR Client for a newly released Minecraft version."
         />
       </section>
     );

@@ -1,15 +1,118 @@
-plugins { id 'fabric-loom' version '1.13.6' }
+import groovy.json.JsonSlurper
+
+buildscript {
+    def config = new groovy.json.JsonSlurper().parse(project.file('versions.json'))
+    repositories { maven { url = 'https://maven.fabricmc.net/' }; mavenCentral(); gradlePluginPortal() }
+    dependencies { classpath "net.fabricmc:fabric-loom:${config.loom}" }
+}
+
+def config = new JsonSlurper().parse(file('versions.json'))
+def selectedVersion = project.findProperty('minecraft_version') ?: config.versions.last().minecraft
+def target = config.versions.find { it.minecraft == selectedVersion }
+if (!target) throw new GradleException("No companion build configuration for ${selectedVersion}; refresh versions first.")
+def legacy = target.yarn != null
+apply plugin: legacy ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
 version = project.mod_version
 group = project.maven_group
-base { archivesName = 'ar-client-fabric' }
+base { archivesName = "ar-client-fabric-${target.minecraft}" }
+layout.buildDirectory = file("build/${target.minecraft}")
 repositories { mavenCentral() }
 dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    minecraft "com.mojang:minecraft:${target.minecraft}"
+    if (legacy) {
+        mappings "net.fabricmc:yarn:${target.yarn}:v2"
+        modImplementation "net.fabricmc:fabric-loader:${target.loader}"
+        modImplementation "net.fabricmc.fabric-api:fabric-api:${target.fabricApi}"
+    } else {
+        implementation "net.fabricmc:fabric-loader:${target.loader}"
+        implementation "net.fabricmc.fabric-api:fabric-api:${target.fabricApi}"
+    }
 }
-processResources { inputs.property 'version', project.version; filesMatching('fabric.mod.json') { expand 'version': project.version } }
-tasks.withType(JavaCompile).configureEach { options.release = 21 }
-java { withSourcesJar(); sourceCompatibility = JavaVersion.VERSION_21; targetCompatibility = JavaVersion.VERSION_21 }
+
+// 26.1 keeps the screen field; 26.2+ moves screen ownership into Gui.
+def modernSources = tasks.register('prepareModernSources', Sync) {
+    inputs.property('screenApi', target.screenApi)
+    inputs.property('inputApi', target.inputApi)
+    from('src/modern/java')
+    into(layout.buildDirectory.dir('generated/modern'))
+    filter { line ->
+        if (target.screenApi == 'field') line = line.replace('.gui.screen()', '.screen').replace('.gui.setScreen(', '.setScreen(').replace('.gui.hud.isHidden()', '.options.hideGui')
+        if (target.inputApi == 'glfw') line = line.replace('InputConstants.Type.KEYBOARD', 'InputConstants.Type.KEYSYM').replace('LEFT_BUTTON=1, RIGHT_BUTTON=3', 'LEFT_BUTTON=0, RIGHT_BUTTON=1')
+        line
+    }
+}
+sourceSets.main.java.setSrcDirs(legacy ? ['src/legacy/java'] : [modernSources.map { it.destinationDir }])
+if (!legacy) tasks.named('compileJava').configure { dependsOn(modernSources) }
+processResources {
+    inputs.properties(minecraft:target.minecraft, java:target.java, loader:target.loader, version:project.version)
+    filesMatching('fabric.mod.json') { expand(minecraft:target.minecraft, java:target.java, loader:target.loader, version:project.version) }
+    filesMatching('ar-client.mixins.json') { expand(java:target.java) }
+}
+tasks.withType(JavaCompile).configureEach { options.release = target.java as int }
+java { withSourcesJar(); sourceCompatibility = JavaVersion.toVersion(target.java); targetCompatibility = JavaVersion.toVersion(target.java) }
 jar { from('../LICENSE') { rename { "${it}_AR-Client" } } }
+
+// Check actual target bytecode: successful javac alone cannot validate mixin selectors.
+tasks.register('verifyMixinTargets') {
+    dependsOn tasks.named('classes')
+    doLast {
+        def urls = configurations.compileClasspath.files.collect { it.toURI().toURL() } as URL[]
+        def loader = new URLClassLoader(urls, (ClassLoader)null)
+        try {
+            def report = []
+            fileTree(layout.buildDirectory.dir('classes/java/main')).matching { include '**/mixin/*.class' }.each { source ->
+                def mixin = new org.objectweb.asm.tree.ClassNode()
+                new org.objectweb.asm.ClassReader(source.bytes).accept(mixin, 0)
+                def annotation = (mixin.invisibleAnnotations ?: []).find { it.desc == 'Lorg/spongepowered/asm/mixin/Mixin;' }
+                if (!annotation) annotation = (mixin.visibleAnnotations ?: []).find { it.desc == 'Lorg/spongepowered/asm/mixin/Mixin;' }
+                if (!annotation) throw new GradleException("Missing mixin target in ${source}")
+                def values = [:]; annotation.values.collate(2).each { values[it[0]] = it[1] }
+                values.value.each { targetType ->
+                    def stream = loader.getResourceAsStream(targetType.internalName + '.class')
+                    if (!stream) throw new GradleException("Missing Minecraft class ${targetType}")
+                    def bytecode = new org.objectweb.asm.tree.ClassNode()
+                    stream.withCloseable { new org.objectweb.asm.ClassReader(it).accept(bytecode, 0) }
+                    mixin.methods.each { method ->
+                        def injection = ((method.visibleAnnotations ?: []) + (method.invisibleAnnotations ?: [])).find { it.desc == 'Lorg/spongepowered/asm/mixin/injection/Inject;' }
+                        if (!injection) return
+                        def attrs = [:]; injection.values.collate(2).each { attrs[it[0]] = it[1] }
+                        attrs.method.each { selector ->
+                            def targets = bytecode.methods.findAll { selector.contains('(') ? it.name + it.desc == selector : it.name == selector }
+                            if (targets.size() != 1) throw new GradleException("Mixin selector ${targetType.className}.${selector} must resolve exactly once")
+                            def callbackArgs = org.objectweb.asm.Type.getArgumentTypes(method.desc).toList()
+                            def expectedArgs = org.objectweb.asm.Type.getArgumentTypes(targets[0].desc).toList()
+                            if (callbackArgs.take(callbackArgs.size()-1) != expectedArgs) throw new GradleException("Mixin argument mismatch for ${selector}: ${method.desc} versus ${targets[0].desc}")
+                            report.add(targetType.className + '.' + targets[0].name + targets[0].desc)
+                        }
+                    }
+                }
+            }
+            if (report.size() != 2) throw new GradleException("Expected mouse and zoom mixin checks, found ${report.size()}")
+            def output = layout.buildDirectory.file('verified-mixins.json').get().asFile
+            output.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson([minecraft:target.minecraft, targets:report]))
+            logger.lifecycle("Validated mixin targets for ${target.minecraft}: ${report.join(', ')}")
+        } finally { loader.close() }
+    }
+}
+tasks.named('check') { dependsOn tasks.named('verifyMixinTargets') }
+
+tasks.register('verifyCompanionJar') {
+    dependsOn tasks.named('verifyMixinTargets'), tasks.named(legacy ? 'remapJar' : 'jar')
+    doLast {
+        def artifact = tasks.named(legacy ? 'remapJar' : 'jar').get().archiveFile.get().asFile
+        new java.util.zip.ZipFile(artifact).withCloseable { archive ->
+            def metadata = new JsonSlurper().parse(archive.getInputStream(archive.getEntry('fabric.mod.json')))
+            if (metadata.id != 'ar_client' || metadata.depends.minecraft != target.minecraft || metadata.version != project.version.toString()) {
+                throw new GradleException("Companion jar metadata does not match the selected build")
+            }
+            def header = archive.getInputStream(archive.getEntry('xyz/kingar1000/ar/ArClient.class')).withCloseable { it.readNBytes(8) }
+            def major = ((header[6] & 255) << 8) | (header[7] & 255)
+            if (major != (target.java as int) + 44) throw new GradleException("Unexpected Java bytecode version ${major}")
+        }
+        def report = layout.buildDirectory.file('verified-mixins.json').get().asFile
+        def proof = new JsonSlurper().parse(report)
+        proof.sha256 = java.security.MessageDigest.getInstance('SHA-256').digest(artifact.bytes).encodeHex().toString()
+        report.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(proof))
+    }
+}
+tasks.named('check') { dependsOn tasks.named('verifyCompanionJar') }

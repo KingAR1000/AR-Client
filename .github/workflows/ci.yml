@@ -1,6 +1,11 @@
 name: Build and test
 on:
   workflow_dispatch:
+    inputs:
+      refresh_support:
+        description: Discover new official Minecraft releases before building
+        type: boolean
+        default: false
 concurrency:
   group: build-${{ github.ref_name }}
   cancel-in-progress: true
@@ -27,8 +32,8 @@ jobs:
       - run: cargo test --manifest-path src-tauri/Cargo.toml --no-default-features --locked
       - uses: actions/download-artifact@v4
         with:
-          name: AR-Client-Fabric-1.21.9
-          path: in-game/build/libs
+          name: AR-Client-Companions
+          path: src-tauri/resources
       - run: npm run bundle
       - name: Verify desktop starts without service credentials
         shell: pwsh
@@ -54,12 +59,18 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: "25"
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "9.1.0"
-      - run: gradle -p in-game build --no-daemon
+          gradle-version: "9.8.0"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - if: inputs.refresh_support
+        run: npm run companion:refresh -- --write
+      - run: npm run companion:build
+      - run: npm run companion:prepare
       - uses: actions/upload-artifact@v4
         with:
-          name: AR-Client-Fabric-1.21.9
-          path: in-game/build/libs/*.jar
+          name: AR-Client-Companions
+          path: src-tauri/resources/

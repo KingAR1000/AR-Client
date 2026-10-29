@@ -27,6 +27,7 @@ export type LauncherState = {
   running: string[];
   version: string;
   curseforgeConfigured: boolean;
+  companions: { minecraft: string; minLoader: string }[];
 };
 export type Content = {
   source: string;
@@ -69,6 +70,17 @@ export function loaderChoices(data: unknown): string[] {
 // Versions are ordered by Mojang, never by numeric comparison: 26.x follows 1.21.x.
 export function preferredRelease(latest: string, versions: string[]): string {
   return versions.includes(latest) ? latest : versions[0] || "";
+}
+
+export function defaultRuntime(
+  version: string,
+  companions: { minecraft: string; minLoader: string }[],
+) {
+  const build = companions.find((candidate) => candidate.minecraft === version);
+  return {
+    loader: build ? "fabric" : "vanilla",
+    loaderVersion: build?.minLoader || "",
+  };
 }
 
 export type Page =

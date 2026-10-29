@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { loaderChoices, message, preferredRelease, request } from "../src/api";
+import {
+  defaultRuntime,
+  loaderChoices,
+  message,
+  preferredRelease,
+  request,
+} from "../src/api";
 describe("catalog loader responses", () => {
   it("normalizes real Fabric metadata and Maven version lists", () => {
     expect(
@@ -18,6 +24,28 @@ describe("desktop boundary", () => {
     expect(message(new Error("Checksum mismatch"))).toBe("Checksum mismatch"));
 });
 describe("latest stable release preference", () => {
+  it("uses the exact companion build and never downgrades a new game to get a HUD", () => {
+    const builds = [
+      { minecraft: "1.21.9", minLoader: "0.20.1" },
+      { minecraft: "26.3", minLoader: "0.20.1" },
+    ];
+    expect(defaultRuntime("26.3", builds)).toEqual({
+      loader: "fabric",
+      loaderVersion: "0.20.1",
+    });
+    expect(defaultRuntime("1.21.9", builds)).toEqual({
+      loader: "fabric",
+      loaderVersion: "0.20.1",
+    });
+    expect(defaultRuntime("26.4", builds)).toEqual({
+      loader: "vanilla",
+      loaderVersion: "",
+    });
+    expect(defaultRuntime("26.3", [])).toEqual({
+      loader: "vanilla",
+      loaderVersion: "",
+    });
+  });
   it("defaults to the official release instead of the companion's older version", () => {
     expect(preferredRelease("26.3", ["26.3", "26.2", "1.21.9"])).toBe("26.3");
     expect(preferredRelease("26.4", ["26.4", "26.3", "1.21.9"])).toBe("26.4");

@@ -4,9 +4,9 @@ Checks below were recorded on 28–29 October 2026. Installation and compilation
 
 ## Passed
 
-- 20 Rust tests: managed paths, hashes, version metadata, command validation, profile recovery, content rollback, skin decoding and client-ID defaults.
-- 6 frontend tests, 4 release-policy tests and 8 catalog-service tests; TypeScript production build.
-- Windows x64 NSIS packaging and native startup; Fabric companion build with JDK 21 / Gradle 9.1.0.
+- 24 Rust tests: managed paths, hashes, version metadata, command validation, profile recovery, content rollback, skin decoding and client-ID defaults.
+- 7 frontend tests, 4 release-policy tests and 8 catalog-service tests; TypeScript production build.
+- Windows x64 NSIS packaging and native startup; version-specific Fabric companion builds with JDK 25 / Gradle 9.8.0.
 - Launcher browser navigation and website layouts at 320, 390, 1280 and 1440px without uncaught errors or horizontal overflow.
 - Website navigation, local assets, FAQ controls and published-release download resolution.
 - Mojang release metadata reported **26.3**. Microsoft accepted a device authorization request for the bundled public app ID.
@@ -14,6 +14,8 @@ Checks below were recorded on 28–29 October 2026. Installation and compilation
 - Live CurseForge catalog requests, including a 26.3 query through the server handler, returned HTTP 200 without exposing the key.
 - Live `client.kingar1000.xyz` HTTPS, assets, privacy/terms, release metadata and CurseForge catalog service passed desktop/mobile checks. Invalid catalog routes return 400; writes return 405.
 - Latest-stable catalog verification installed Sodium, Lithium and Fabric API for 26.3 with hashes checked; all four loaders returned compatible metadata. Vanilla 26.3 installation was reverified successfully.
+
+- Companion builds validate actual mouse/zoom injection targets and argument descriptors, exact game metadata, Java bytecode level and packaged jar hashes. Rust regressions cover exact-version selection, minimum loader versions, manifest traversal/duplicates, tampered bundles and stale-jar retirement. Frontend coverage prevents a newer game being downgraded to obtain a HUD.
 
 ## Installation checks
 
@@ -38,7 +40,7 @@ To repeat a live installation check, run `cargo run --manifest-path src-tauri/Ca
 
 ## Current limits
 
-- The bundled companion supports **Fabric 1.21.9 only**. New launcher installations still default to the latest stable Minecraft release.
+- AR HUD requires Fabric and an exact matching bundled build. The build matrix covers 1.21.9, 1.21.10, 1.21.11, 26.1, 26.1.1, 26.1.2, 26.2 and 26.3. Future versions require successful compilation, mixin/jar checks and distribution through an AR Client update; compatibility with unreleased APIs is not guaranteed.
 - Modpacks support imports, not full lifecycle tracking/updating or transactional rollback of pack overrides. Use isolated installations.
 - Catalog changes use staged downloads and rollback on ordinary file failures, not crash-proof transactions.
 - Downloads report stages and verified file counts; cancellation and byte-level progress are absent.

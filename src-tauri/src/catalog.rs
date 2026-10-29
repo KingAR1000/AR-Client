@@ -167,6 +167,21 @@ pub async fn install(
     kind: &str,
     progress: Progress,
 ) -> Result<Value> {
+    install_with_version(c, root, p, source, id, kind, None, progress).await
+}
+pub async fn install_with_version(
+    c: &reqwest::Client,
+    root: &Path,
+    p: &Profile,
+    source: &str,
+    id: &str,
+    kind: &str,
+    version: Option<&str>,
+    progress: Progress,
+) -> Result<Value> {
+    if version.is_some() && source != "modrinth" {
+        return Err(Error::msg("Exact catalog versions require Modrinth"));
+    }
     if kind == "mod" && p.loader == "vanilla" {
         return Err(Error::msg(
             "Choose a modloader installation before adding mods",
@@ -176,7 +191,7 @@ pub async fn install(
         return Err(Error::msg("Invalid content type"));
     }
     std::fs::create_dir_all(root)?;
-    let mut pending = vec![(id.to_string(), None::<String>)];
+    let mut pending = vec![(id.to_string(), version.map(str::to_owned))];
     let mut selected = std::collections::BTreeMap::<String, Value>::new();
     let mut pins = std::collections::HashMap::<String, String>::new();
     let mut visited = HashSet::<String>::new();

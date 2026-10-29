@@ -1,0 +1,77 @@
+{
+  "loom": "1.19.3",
+  "versions": [
+    {
+      "minecraft": "1.21.9",
+      "java": 21,
+      "yarn": "1.21.9+build.1",
+      "loader": "0.20.1",
+      "fabricApi": "0.134.1+1.21.9",
+      "screenApi": "gui",
+      "inputApi": "glfw"
+    },
+    {
+      "minecraft": "1.21.10",
+      "java": 21,
+      "yarn": "1.21.10+build.3",
+      "loader": "0.20.1",
+      "fabricApi": "0.138.4+1.21.10",
+      "screenApi": "gui",
+      "inputApi": "glfw"
+    },
+    {
+      "minecraft": "1.21.11",
+      "java": 21,
+      "yarn": "1.21.11+build.6",
+      "loader": "0.20.1",
+      "fabricApi": "0.141.6+1.21.11",
+      "screenApi": "gui",
+      "inputApi": "glfw"
+    },
+    {
+      "minecraft": "26.1",
+      "java": 25,
+      "yarn": null,
+      "loader": "0.20.1",
+      "fabricApi": "0.155.3+26.1.2",
+      "screenApi": "field",
+      "inputApi": "glfw"
+    },
+    {
+      "minecraft": "26.1.1",
+      "java": 25,
+      "yarn": null,
+      "loader": "0.20.1",
+      "fabricApi": "0.155.3+26.1.2",
+      "screenApi": "field",
+      "inputApi": "glfw"
+    },
+    {
+      "minecraft": "26.1.2",
+      "java": 25,
+      "yarn": null,
+      "loader": "0.20.1",
+      "fabricApi": "0.155.3+26.1.2",
+      "screenApi": "field",
+      "inputApi": "glfw"
+    },
+    {
+      "minecraft": "26.2",
+      "java": 25,
+      "yarn": null,
+      "loader": "0.20.1",
+      "fabricApi": "0.161.0+26.2",
+      "screenApi": "gui",
+      "inputApi": "glfw"
+    },
+    {
+      "minecraft": "26.3",
+      "java": 25,
+      "yarn": null,
+      "loader": "0.20.1",
+      "fabricApi": "0.165.0+26.3",
+      "screenApi": "gui",
+      "inputApi": "sdl"
+    }
+  ]
+}

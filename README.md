@@ -18,7 +18,7 @@ Outside contributions are not currently accepted; see [CONTRIBUTING.md](CONTRIBU
 
 ## Build on Windows
 
-Install Node.js 22, stable Rust, Microsoft C++ Build Tools with the Desktop development with C++ workload, Windows SDK, WebView2 Runtime, JDK 21 and Gradle 9.1.0.
+Install Node.js 22, stable Rust, Microsoft C++ Build Tools with the Desktop development with C++ workload, Windows SDK, WebView2 Runtime, JDK 25 and Gradle 9.8.0.
 
 ```powershell
 git clone https://github.com/KingAR1000/AR-Client.git
@@ -26,22 +26,28 @@ cd AR-Client
 npm ci
 npm test
 cargo test --manifest-path src-tauri/Cargo.toml --no-default-features --locked
-gradle -p in-game build --no-daemon
-node scripts/prepare-companion.mjs
+npm run companion:build
+npm run companion:prepare
 npm run desktop
 ```
 
 Run `npm run bundle` to create the Windows installer under `src-tauri/target/release/bundle/nsis/`. All GitHub workflows are manual: open **Actions → select a workflow → Run workflow**. **Build and test** uploads the installer as **AR-Client-Windows-x64**. Development installers are unsigned and may trigger Windows SmartScreen.
 
-Packaged builds install the companion and Fabric API into compatible Fabric 1.21.9 instances. For manual installation, use `in-game/build/libs/ar-client-fabric-0.1.0.jar` and Fabric API. Right Shift opens the HUD editor; C zooms, R toggles sprint and V toggles sneak. Rebind controls in Minecraft's Controls menu.
+Packaged builds include a separate Fabric companion for every supported release from 1.21.9 through 26.3. The launcher installs only the exact game-version match, its tested Fabric API version, and checks the required loader version. For manual installation, use `in-game/build/<game>/libs/ar-client-fabric-<game>-0.1.0.jar` with the matching Fabric API and Fabric 0.20.1 or newer. Right Shift opens the HUD editor; C zooms, R toggles sprint and V toggles sneak. Rebind controls in Minecraft's Controls menu.
 
 Linux development also requires WebKitGTK 4.1, GTK 3, librsvg, libappindicator/ayatana development packages and a running Secret Service vault. Linux distribution packages are not configured.
+
+## New Minecraft releases
+
+`in-game/versions.json` pins the game, Java, mappings, Fabric loader and API for each build. `npm run companion:refresh` checks Mojang's official release manifest; add `-- --write` to generate recipes for new stable releases, then run `companion:build` and `companion:prepare`. Both manual build/release workflows have a **refresh_support** option for this process.
+
+Every build compiles against its actual game/API dependencies and validates mixin method signatures, jar metadata, Java bytecode and hashes. An incompatible new release fails the build; it is not advertised as HUD-compatible. Publish a new signed launcher release to distribute validated new HUD jars. The launcher can discover and install new Minecraft releases independently, but never reuses an older HUD jar for an unsupported version. Managed stale HUD jars are preserved under `disabled-mods/` when switching to a version without a build. Runtime gameplay checks remain necessary after upstream API changes.
 
 ## First launch
 
 1. Read and accept Minecraft's EULA in Settings.
 2. Add an account and authorize it on Microsoft's website. Minecraft Java access is required.
-3. Create an installation, select a compatible loader if needed, and set memory.
+3. Create an installation. The latest stable release uses Fabric when a matching AR HUD is bundled; other loaders remain selectable. Set memory as needed.
 4. Launch Minecraft or use Install/repair. Game files are verified against upstream hashes; Eclipse Temurin supplies Java when no custom executable is selected.
 5. Install mods and packs from the catalogs. Apply performance presets explicitly in Settings.
 

@@ -1,1 +1,30 @@
-{"schemaVersion":1,"id":"ar_client","version":"${version}","name":"AR Client","description":"Client-side HUD, zoom, and controls for AR Client.","authors":["KingAR1000"],"contact":{"homepage":"https://kingar1000.xyz","sources":"https://github.com/KingAR1000/AR-Client"},"license":"GPL-3.0-only","environment":"client","entrypoints":{"client":["xyz.kingar1000.ar.ArClient"]},"mixins":["ar-client.mixins.json"],"depends":{"fabricloader":">=0.17.2","minecraft":"1.21.9","java":">=21","fabric-api":"*"}}
+{
+  "schemaVersion": 1,
+  "id": "ar_client",
+  "version": "${version}",
+  "name": "AR Client",
+  "description": "Client-side HUD, zoom, and controls for AR Client.",
+  "authors": [
+    "KingAR1000"
+  ],
+  "contact": {
+    "homepage": "https://kingar1000.xyz",
+    "sources": "https://github.com/KingAR1000/AR-Client"
+  },
+  "license": "GPL-3.0-only",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "xyz.kingar1000.ar.ArClient"
+    ]
+  },
+  "mixins": [
+    "ar-client.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader}",
+    "minecraft": "${minecraft}",
+    "java": ">=${java}",
+    "fabric-api": "*"
+  }
+}

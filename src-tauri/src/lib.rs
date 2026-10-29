@@ -1,5 +1,6 @@
 pub mod auth;
 pub mod catalog;
+pub mod companion;
 pub mod install;
 pub mod net;
 pub mod state;
@@ -64,6 +65,13 @@ impl Engine {
                 v["running"] = json!(*self.running.lock().await);
                 v["version"] = json!(env!("CARGO_PKG_VERSION"));
                 v["curseforgeConfigured"] = json!(state::secret_get("curseforge").is_ok());
+                v["companions"] = json!(self
+                    .companion
+                    .as_ref()
+                    .map(|root| companion::read(root))
+                    .transpose()?
+                    .map(|manifest| manifest.builds)
+                    .unwrap_or_default());
                 Ok(v)
             }
             "versions" => install::versions(&self.client).await,
@@ -231,30 +239,33 @@ impl Engine {
                 };
                 let installed =
                     install::install(&self.client, &self.root, &p, self.progress.clone()).await?;
-                if p.loader == "fabric" && p.version == "1.21.9" {
-                    if let Some(resources) = &self.companion {
-                        let metadata: Value = serde_json::from_slice(&std::fs::read(
-                            resources.join("companion.json"),
-                        )?)?;
-                        let jar = resources.join("ar-client-fabric.jar");
-                        if !net::verify(&jar, metadata["sha256"].as_str().unwrap_or(""), "sha256")
-                            .await?
-                        {
-                            return Err(Error::msg(
-                                "Bundled AR companion failed integrity verification",
-                            ));
-                        }
-                        catalog::install(
+                if let Some(resources) = &self.companion {
+                    let manifest = companion::read(resources)?;
+                    if let Some(build) = companion::select(&manifest, &p)? {
+                        let api_versions = catalog::project_versions(
+                            &self.client,
+                            "modrinth",
+                            "fabric-api",
+                            &p,
+                            "mod",
+                        )
+                        .await?;
+                        let api_id = api_versions.as_array().and_then(|versions| versions.iter().find(|v| v["version_number"] == build.fabric_api))
+                            .and_then(|v| v["id"].as_str()).ok_or_else(|| Error::msg("The Fabric API version required by this AR HUD build is unavailable"))?;
+                        catalog::install_with_version(
                             &self.client,
                             &installed.root,
                             &p,
                             "modrinth",
                             "fabric-api",
                             "mod",
+                            Some(api_id),
                             self.progress.clone(),
                         )
                         .await?;
-                        std::fs::copy(jar, installed.root.join("mods/ar-client-fabric.jar"))?;
+                        companion::install(resources, &installed.root, build).await?;
+                    } else {
+                        companion::retire(&installed.root).await?;
                     }
                 }
                 if let Some((account, token)) = credentials {

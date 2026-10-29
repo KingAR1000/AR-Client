@@ -8,7 +8,10 @@
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
     "desktop": "tauri dev",
-    "bundle": "node scripts/prepare-companion.mjs && tauri build",
+    "bundle": "tauri build",
+    "companion:build": "node scripts/build-companions.mjs",
+    "companion:prepare": "node scripts/prepare-companion.mjs",
+    "companion:refresh": "node scripts/refresh-companions.mjs",
     "test": "vitest run && node --test scripts/check-release.test.mjs website/tests/*.test.mjs",
     "setup:release": "node scripts/setup-release.mjs"
   },
