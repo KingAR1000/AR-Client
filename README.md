@@ -106,7 +106,7 @@ Account-dependent workflows require an approved application and real owner accou
 
 ## Website
 
-`website/index.html` is a standalone static page with embedded CSS and JavaScript. Serve it through your preferred static host. To use `client.kingar1000.xyz`, configure that host's custom domain and the corresponding DNS record in your domain provider. Its release link reads real GitHub releases; it does not advertise a nonexistent installer as downloadable.
+`website/index.html` is a standalone static page with embedded CSS and JavaScript. A public preview is deployed at https://ar-client-kingar1000.kingar-1000.chatgpt.site, with privacy and terms pages and the confirmed support address. `client.kingar1000.xyz` is registered with hosting and awaits Cloudflare DNS verification. See [website/HOSTING.md](website/HOSTING.md) for the exact records and existing project identity. The release link reads real GitHub releases; it does not advertise a nonexistent stable installer as downloadable.
 
 ## License and attribution
 
