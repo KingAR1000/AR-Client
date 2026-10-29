@@ -35,10 +35,23 @@ jobs:
           name: AR-Client-Companions
           path: src-tauri/resources
       - run: npm run bundle
-      - name: Verify desktop starts without service credentials
+      - name: Verify installed desktop and bundled HUDs
         shell: pwsh
         run: |
-          $process = Start-Process -FilePath "src-tauri/target/release/ar-client.exe" -PassThru
+          $installer = Get-ChildItem "src-tauri/target/release/bundle/nsis/*.exe" | Select-Object -First 1
+          $destination = Join-Path $env:RUNNER_TEMP "ar-client-installed"
+          $install = Start-Process -FilePath $installer.FullName -ArgumentList @("/S", "/D=$destination") -Wait -PassThru
+          if ($install.ExitCode -ne 0) { throw "Installer failed (code $($install.ExitCode))" }
+          $manifest = Get-Content (Join-Path $destination "resources/companion.json") -Raw | ConvertFrom-Json
+          $expected = (Get-Content "in-game/versions.json" -Raw | ConvertFrom-Json).versions.minecraft
+          foreach ($version in $expected) {
+            if ($version -notin $manifest.builds.minecraft) { throw "Missing HUD build for $version" }
+          }
+          foreach ($build in $manifest.builds) {
+            $jar = Join-Path $destination "resources/companions/$($build.filename)"
+            if ((Get-FileHash $jar -Algorithm SHA256).Hash -ne $build.sha256) { throw "Invalid HUD checksum for $($build.minecraft)" }
+          }
+          $process = Start-Process -FilePath (Join-Path $destination "ar-client.exe") -PassThru
           Start-Sleep -Seconds 8
           if ($process.HasExited) { throw "AR Client exited during startup (code $($process.ExitCode))" }
           Stop-Process -Id $process.Id
