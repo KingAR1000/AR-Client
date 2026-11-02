@@ -11,7 +11,7 @@ The primary target is always the **latest stable Minecraft release**, currently 
 - `src/`: React/TypeScript launcher interface, skin viewer and HUD editor.
 - `src-tauri/`: Rust authentication, installation, content and launch services.
 - `in-game/`: Fabric companion mod.
-- `website/`: Vercel website and server functions; see [hosting instructions](website/HOSTING.md).
+- `website/`: Cloudflare Free website and API worker; see [hosting instructions](website/HOSTING.md).
 - `scripts/` and `.github/workflows/`: packaging, release signing and checks.
 
 Outside contributions are not currently accepted; see [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -51,7 +51,9 @@ Every build compiles against its actual game/API dependencies and validates mixi
 4. Launch Minecraft or use Install/repair. Game files are verified against upstream hashes; Eclipse Temurin supplies Java when no custom executable is selected.
 5. Install mods and packs from the catalogs. Apply performance presets explicitly in Settings.
 
-The browser view cannot install or launch games; use the desktop application. Releases are checked at startup, on returning focus after a minute, every 30 minutes while visible, and manually in the Update Center.
+The browser view cannot install or launch games; use the desktop application. Only free hosting services are authorized. The website uses Cloudflare Static Assets and Workers Free; friends/chat targets Workers/D1 Free, with hard quotas and no paid fallback. No cloud Minecraft machines are provisioned. Live Cloudflare deployment still requires restoring the connection; see [hosting instructions](website/HOSTING.md).
+
+Releases are checked at startup, on returning focus after a minute, every 30 minutes while visible, and manually in the Update Center.
 
 ## Authentication and catalogs
 
@@ -59,7 +61,7 @@ The public Microsoft application ID is bundled. A custom registration can be set
 
 Microsoft/Xbox/Minecraft access and refresh credentials use Windows Credential Manager or Linux Secret Service. Passwords are entered on Microsoft's website. Vault failures have no plaintext fallback.
 
-Modrinth requires no key. CurseForge uses `https://client.kingar1000.xyz/api/curseforge`; its project key belongs only in Vercel's private `CURSEFORGE_API_KEY` environment variable. An optional personal key in Settings uses the OS vault and connects directly. See [website/HOSTING.md](website/HOSTING.md).
+Modrinth requires no key. CurseForge uses `https://client.kingar1000.xyz/api/curseforge`; its project key belongs only in the Cloudflare Worker’s private `CURSEFORGE_API_KEY` secret. An optional personal key in Settings uses the OS vault and connects directly. See [website/HOSTING.md](website/HOSTING.md).
 
 Catalog installations check compatibility, required dependencies and hashes. Author-disabled downloads are rejected. Imported files remain local/untracked; use separate installations for modpacks. Full modpack lifecycle updates are not implemented.
 

@@ -25,6 +25,12 @@ Checks below were recorded on 28 October–2 November 2026. Installation and com
 - Local Workers/D1 integration tests passed for authentication refusal, friend acceptance, friend-only messages, outsider denial, blocking/unblocking, input limits and social profile/session revocation. No production social service was deployed: Cloudflare D1 creation was denied for missing write scopes.
 - Minecraft login 403 is now actionable and regression-tested for secret redaction. App registration approval remains an owner-side requirement, and authenticated gameplay is still unverified.
 
+## Cloudflare migration preparation
+
+- Website bundle compiles for Workers Static Assets. Eleven website/API adapter tests pass, including bounded catalog routes, missing secrets, security headers and method rejection.
+- Local workerd serves Home, Privacy, Terms and logo assets with expected security headers. Invalid API routes return 404/400, and missing CurseForge configuration returns 503. Mojang's manifest request returned 502 in the local proxy-bound workerd environment, so that upstream call has not been validated on Cloudflare production.
+- No deployment or DNS migration has occurred. Cloudflare OAuth can read the domain/Workers but billing subscription reads return 403; the account's Workers Free plan still requires dashboard verification. The existing live site remains in place during preparation.
+
 ## Installation checks
 
 These downloaded and verified upstream game files, assets and libraries, ran loader installers where required, and assembled classpaths. They did not authenticate or launch a game session.

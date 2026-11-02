@@ -4,7 +4,7 @@ Cloudflare Worker + D1 for Minecraft-verified friends and chat. This is a separa
 
 ## Deploy as the project owner
 
-The connected Cloudflare app currently lacks D1 write access. Reconnect with **D1 Edit** and **Workers Scripts Edit**, or use an authenticated local Wrangler installation:
+Local Wrangler is unauthenticated. The Cloudflare connection provides reads, but cannot read Workers billing subscriptions via OAuth. Verify Workers Free in the dashboard before deployment. Earlier D1 creation was rejected for missing write access. Reconnect with **D1 Edit** and **Workers Scripts Edit**, or use an authenticated local Wrangler installation:
 
 ```text
 cd social
@@ -15,7 +15,7 @@ npx wrangler d1 migrations apply ar-client-social --remote
 npm run deploy
 ```
 
-Creation writes the real database ID to `wrangler.jsonc`; retain it for future migrations/deployments. If the database already exists, use its existing ID instead of creating another. Select the existing account on the free plan; do not upgrade it to deploy this service. Free-plan request/storage limits still apply and may require operational limits or capacity decisions as usage grows. No paid hosting is provisioned by the application.
+Creation writes the real database ID to `wrangler.jsonc`; retain it for future migrations/deployments. If the database already exists, use its existing ID instead of creating another. Verify that the account is on **Workers Free**, then select that account; do not upgrade it to deploy this service. Free-plan request/storage limits still apply and may require operational limits or capacity decisions as usage grows. No paid hosting is provisioned by the application. Never enable paid overages or upgrade automatically: free-quota exhaustion must stop or throttle requests. The configured 10 ms CPU cap is not a billing-plan selector.
 
 Check the returned URL's `/health` endpoint, then test two real Minecraft-owning accounts. Do not call public deployment verified until this succeeds. Reconnect the Cloudflare app if you want the agent to perform these steps instead. The provided configuration enables a daily data-retention cleanup; it does not enable scheduled GitHub workflows.
 

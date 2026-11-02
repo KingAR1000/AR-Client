@@ -11,6 +11,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - run: npm ci --prefix social
       - run: npm --prefix website test
+      - run: npm --prefix website run cloudflare:check
       - run: node --check website/api/curseforge.js
       - run: node --check website/api/minecraft.js

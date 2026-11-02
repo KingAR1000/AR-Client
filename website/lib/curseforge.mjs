@@ -127,10 +127,10 @@ export function createCatalogHandler({
       const payload = await response.json();
       if (!payload || !Object.hasOwn(payload, "data"))
         throw new Error("Invalid upstream response");
-      // Cache public catalog metadata at Vercel; never cache errors or credentials.
+      // Cache public catalog metadata at the edge; never cache errors or credentials.
       res.setHeader("Cache-Control", "public, max-age=30");
       res.setHeader(
-        "Vercel-CDN-Cache-Control",
+        "CDN-Cache-Control",
         "public, s-maxage=120, stale-while-revalidate=300",
       );
       return res

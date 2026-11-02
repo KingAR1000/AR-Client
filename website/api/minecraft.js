@@ -19,7 +19,7 @@ export default async function handler(req, res) {
       throw new Error("Invalid manifest");
     res.setHeader("Cache-Control", "public, max-age=60");
     res.setHeader(
-      "Vercel-CDN-Cache-Control",
+      "CDN-Cache-Control",
       "public, s-maxage=300, stale-while-revalidate=600",
     );
     return res.status(200).json({ release });

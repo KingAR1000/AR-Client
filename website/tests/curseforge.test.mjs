@@ -90,7 +90,7 @@ test("keeps the credential in the upstream header and only returns catalog data"
     pagination: { totalCount: 1 },
   });
   assert.ok(!JSON.stringify(res).includes("test-private-key"));
-  assert.match(res.headers["Vercel-CDN-Cache-Control"], /s-maxage=120/);
+  assert.match(res.headers["CDN-Cache-Control"], /s-maxage=120/);
 });
 test("fails clearly without a configured key and does not contact upstream", async () => {
   const res = response();
