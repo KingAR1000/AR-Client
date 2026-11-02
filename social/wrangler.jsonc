@@ -5,17 +5,12 @@
   "compatibility_date": "2026-11-02",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
-  "limits": { "cpu_ms": 10 },
-  "observability": {
-    "enabled": true,
-    "head_sampling_rate": 0.1,
-    "logs": { "enabled": true, "invocation_logs": false },
-    "traces": { "enabled": false },
-  },
+  "observability": { "enabled": false },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "ar-client-social",
+      "database_id": "771aff69-4495-4998-b489-7ee9fc59781f",
       "migrations_dir": "migrations",
     },
   ],

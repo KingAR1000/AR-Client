@@ -67,7 +67,7 @@ test("keeps the credential in the upstream header and only returns catalog data"
     key: () => "test-private-key",
     fetch: async (url, options) => {
       assert.equal(options.headers["x-api-key"], "test-private-key");
-      assert.equal(options.redirect, "error");
+      assert.equal(options.redirect, "manual");
       assert.equal(url.origin, "https://api.curseforge.com");
       return {
         ok: true,
@@ -134,4 +134,31 @@ test("preserves rate limiting without caching or exposing upstream responses", a
   })({ method: "GET", url: "/api/curseforge?path=mods/search" }, res);
   assert.equal(res.code, 429);
   assert.equal(res.headers["Retry-After"], "60");
+});
+
+test("rejects redirects without forwarding the API key to another host", async () => {
+  const handler = createCatalogHandler({
+    key: () => "test-only-key",
+    fetch: async (_url, options) => {
+      assert.equal(options.redirect, "manual");
+      return { ok: false, status: 302 };
+    },
+  });
+  const response = {
+    code: 0,
+    setHeader() {},
+    status(code) {
+      this.code = code;
+      return this;
+    },
+    json(body) {
+      this.body = body;
+      return this;
+    },
+  };
+  await handler(
+    { method: "GET", url: "/api/curseforge?path=mods/search" },
+    response,
+  );
+  assert.equal(response.code, 502);
 });

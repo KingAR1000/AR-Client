@@ -22,14 +22,15 @@ Checks below were recorded on 28 October–2 November 2026. Installation and com
 
 - Live local Minecraft 26.3 dedicated server: verified server/Java downloads, startup, console command, graceful stop and saved `world/level.dat` passed on Linux.
 - Actual Horizon Nightly `2026-11-01 · c9d474d`: Linux archive SHA-256, signed-checksum verification and actual client/preparer option contracts passed. The published preparer lacks `--launch-api`; its real help and research-lock fallback were checked. This does not establish Windows Rust gameplay or successful resource preparation.
-- Local Workers/D1 integration tests passed for authentication refusal, friend acceptance, friend-only messages, outsider denial, blocking/unblocking, input limits and social profile/session revocation. No production social service was deployed: Cloudflare D1 creation was denied for missing write scopes.
+- Local Workers/D1 integration tests passed for authentication refusal, friend acceptance, friend-only messages, outsider denial, blocking/unblocking, input limits and social profile/session revocation. The social service is now deployed on D1/Workers Free; health returns 200 and unauthenticated calls return 401. Full real-account chat is still unverified.
 - Minecraft login 403 is now actionable and regression-tested for secret redaction. App registration approval remains an owner-side requirement, and authenticated gameplay is still unverified.
 
-## Cloudflare migration preparation
+## Cloudflare production deployment
 
-- Website bundle compiles for Workers Static Assets. Eleven website/API adapter tests pass, including bounded catalog routes, missing secrets, security headers and method rejection.
-- Local workerd serves Home, Privacy, Terms and logo assets with expected security headers. Invalid API routes return 404/400, and missing CurseForge configuration returns 503. Mojang's manifest request returned 502 in the local proxy-bound workerd environment, so that upstream call has not been validated on Cloudflare production.
-- No deployment or DNS migration has occurred. Cloudflare OAuth can read the domain/Workers but billing subscription reads return 403; the account's Workers Free plan still requires dashboard verification. The existing live site remains in place during preparation.
+- Deployed `ar-client-website` and attached `client.kingar1000.xyz` on 2 November 2026. Live Home/Privacy/Terms, logo SHA-256, Minecraft release metadata (26.3), and a 26.3 CurseForge catalog request passed over HTTPS.
+- Cloudflare API explicitly reported Workers Free when rejecting a custom CPU-limit setting. Custom limits were removed, preserving the free plan's built-in cap. No paid plan was enabled.
+- Worker fetch uses `redirect: manual` and rejects non-success statuses, since Workers does not support `redirect: error`. The production preview caught and resolved this runtime difference; no API credentials are forwarded on redirects.
+- Social database schema and migration history are installed, retention cleanup is scheduled daily, `/health` returns 200 and unauthenticated requests return 401. No fake users or messages were inserted into production.
 
 ## Installation checks
 

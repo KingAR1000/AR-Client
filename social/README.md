@@ -1,10 +1,12 @@
 # AR Client social service
 
-Cloudflare Worker + D1 for Minecraft-verified friends and chat. This is a separate deployment from the Vercel website. The launcher defaults to `https://ar-client-social.hi-helllloooo-hi123-e9f.workers.dev/`; use the build-time `AR_SOCIAL_URL` for another trusted deployment.
+Cloudflare Worker + D1 for Minecraft-verified friends and chat. This is a separate deployment from the Cloudflare Static Assets website. The launcher defaults to `https://ar-client-social.hi-helllloooo-hi123-e9f.workers.dev/`; use the build-time `AR_SOCIAL_URL` for another trusted deployment.
 
 ## Deploy as the project owner
 
-Local Wrangler is unauthenticated. The Cloudflare connection provides reads, but cannot read Workers billing subscriptions via OAuth. Verify Workers Free in the dashboard before deployment. Earlier D1 creation was rejected for missing write access. Reconnect with **D1 Edit** and **Workers Scripts Edit**, or use an authenticated local Wrangler installation:
+Deployed on Workers/D1 Free on 2 November 2026. Database `771aff69-4495-4998-b489-7ee9fc59781f` has the initial schema applied and recorded in `d1_migrations`. The `/health` endpoint returns 200; unauthenticated social calls return 401. Daily retention cleanup is scheduled at 01:00 UTC. Full Minecraft-verified session and two-player chat remain unverified until real-account login succeeds.
+
+For subsequent deployment, use the existing database ID in the checked-in configuration. A fresh fork can create its own database after verifying Workers Free:
 
 ```text
 cd social
@@ -15,9 +17,9 @@ npx wrangler d1 migrations apply ar-client-social --remote
 npm run deploy
 ```
 
-Creation writes the real database ID to `wrangler.jsonc`; retain it for future migrations/deployments. If the database already exists, use its existing ID instead of creating another. Verify that the account is on **Workers Free**, then select that account; do not upgrade it to deploy this service. Free-plan request/storage limits still apply and may require operational limits or capacity decisions as usage grows. No paid hosting is provisioned by the application. Never enable paid overages or upgrade automatically: free-quota exhaustion must stop or throttle requests. The configured 10 ms CPU cap is not a billing-plan selector.
+Creation writes the real database ID to `wrangler.jsonc`; retain it for future migrations/deployments. If the database already exists, use its existing ID instead of creating another. Verify that the account is on **Workers Free**, then select that account; do not upgrade it to deploy this service. Free-plan request/storage limits still apply and may require operational limits or capacity decisions as usage grows. No paid hosting is provisioned by the application. Never enable paid overages or upgrade automatically: free-quota exhaustion must stop or throttle requests. Workers Free enforces its built-in CPU limit; do not configure custom CPU limits, which require Paid.
 
-Check the returned URL's `/health` endpoint, then test two real Minecraft-owning accounts. Do not call public deployment verified until this succeeds. Reconnect the Cloudflare app if you want the agent to perform these steps instead. The provided configuration enables a daily data-retention cleanup; it does not enable scheduled GitHub workflows.
+Check the returned URL's `/health` endpoint, then test two real Minecraft-owning accounts. Do not call public deployment verified until this succeeds. The provided configuration enables a daily data-retention cleanup; it does not enable scheduled GitHub workflows.
 
 ## Local validation
 

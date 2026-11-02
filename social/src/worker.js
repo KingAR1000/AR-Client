@@ -69,7 +69,7 @@ async function identity(request, env, action) {
       "https://api.minecraftservices.com/minecraft/profile",
       {
         headers: { Authorization: `Bearer ${bearer}` },
-        redirect: "error",
+        redirect: "manual",
         signal: AbortSignal.timeout(10000),
       },
     );
@@ -159,7 +159,7 @@ export async function handle(request, env) {
     const lookup = await fetch(
       "https://api.mojang.com/users/profiles/minecraft/" +
         encodeURIComponent(target),
-      { redirect: "error", signal: AbortSignal.timeout(10000) },
+      { redirect: "manual", signal: AbortSignal.timeout(10000) },
     );
     if (!lookup.ok)
       throw new Problem(

@@ -96,16 +96,14 @@ export function createCatalogHandler({
     }
     const credential = key();
     if (!credential)
-      return res
-        .status(503)
-        .json({
-          error:
-            "CurseForge is not configured on the AR Client service. Modrinth remains available.",
-        });
+      return res.status(503).json({
+        error:
+          "CurseForge is not configured on the AR Client service. Modrinth remains available.",
+      });
     try {
       const response = await fetcher(upstream, {
         headers: { "x-api-key": credential, Accept: "application/json" },
-        redirect: "error",
+        redirect: "manual",
         signal: AbortSignal.timeout(15000),
       });
       if (!response.ok) {
@@ -113,16 +111,14 @@ export function createCatalogHandler({
           ? response.status
           : 502;
         if (status === 429) res.setHeader("Retry-After", "60");
-        return res
-          .status(status)
-          .json({
-            error:
-              status === 404
-                ? "Catalog file not found."
-                : status === 429
-                  ? "Catalog request limit reached. Try again shortly."
-                  : "The CurseForge catalog is temporarily unavailable.",
-          });
+        return res.status(status).json({
+          error:
+            status === 404
+              ? "Catalog file not found."
+              : status === 429
+                ? "Catalog request limit reached. Try again shortly."
+                : "The CurseForge catalog is temporarily unavailable.",
+        });
       }
       const payload = await response.json();
       if (!payload || !Object.hasOwn(payload, "data"))
@@ -133,19 +129,15 @@ export function createCatalogHandler({
         "CDN-Cache-Control",
         "public, s-maxage=120, stale-while-revalidate=300",
       );
-      return res
-        .status(200)
-        .json({
-          data: payload.data,
-          ...(payload.pagination ? { pagination: payload.pagination } : {}),
-        });
+      return res.status(200).json({
+        data: payload.data,
+        ...(payload.pagination ? { pagination: payload.pagination } : {}),
+      });
     } catch {
-      return res
-        .status(502)
-        .json({
-          error:
-            "The CurseForge catalog could not be reached. Try again shortly.",
-        });
+      return res.status(502).json({
+        error:
+          "The CurseForge catalog could not be reached. Try again shortly.",
+      });
     }
   };
 }

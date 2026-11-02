@@ -51,7 +51,7 @@ Every build compiles against its actual game/API dependencies and validates mixi
 4. Launch Minecraft or use Install/repair. Game files are verified against upstream hashes; Eclipse Temurin supplies Java when no custom executable is selected.
 5. Install mods and packs from the catalogs. Apply performance presets explicitly in Settings.
 
-The browser view cannot install or launch games; use the desktop application. Only free hosting services are authorized. The website uses Cloudflare Static Assets and Workers Free; friends/chat targets Workers/D1 Free, with hard quotas and no paid fallback. No cloud Minecraft machines are provisioned. Live Cloudflare deployment still requires restoring the connection; see [hosting instructions](website/HOSTING.md).
+The browser view cannot install or launch games; use the desktop application. Only free hosting services are authorized. The website uses Cloudflare Static Assets and Workers Free; friends/chat targets Workers/D1 Free, with hard quotas and no paid fallback. No cloud Minecraft machines are provisioned. The website and social backend are deployed on Cloudflare Free; see [hosting instructions](website/HOSTING.md).
 
 Releases are checked at startup, on returning focus after a minute, every 30 minutes while visible, and manually in the Update Center.
 
@@ -75,7 +75,7 @@ The project owner must submit/review **a638a66e-7242-4bbe-b197-631d1ce1d7fb** at
 
 The Friends screen connects verified Minecraft identities, sends and accepts requests, removes friends, blocks players, and exchanges messages only between accepted friends. It supports recent-message polling, older-message retrieval and social-account deletion. Messages expire after 30 days and are not end-to-end encrypted. The Minecraft access token is used transiently to verify identity; the service stores only hashed, expiring social-session tokens. Native social-session tokens stay in memory. Microsoft refresh tokens remain in the OS vault.
 
-The Cloudflare Worker and D1 schema are in [`social/`](social/README.md). The service must be deployed before public friends/chat works. In this session the Cloudflare connection could read account data but rejected D1 creation for missing write permissions; no production social database was created. Reconnect with D1 Edit and Workers Scripts Edit to deploy it. A build can override the default service URL with `AR_SOCIAL_URL`; do not direct account tokens to an untrusted service.
+The Cloudflare Worker and D1 schema are in [`social/`](social/README.md). The backend is now deployed on Workers/D1 Free. Health and unauthenticated rejection checks pass; real-account friends/chat still requires successful Minecraft login and end-to-end validation. A build can override the default service URL with `AR_SOCIAL_URL`; do not direct account tokens to an untrusted service.
 
 ## Host a server
 

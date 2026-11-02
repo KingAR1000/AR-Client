@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   try {
     const response = await fetch(
       "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json",
-      { signal: AbortSignal.timeout(10000), redirect: "error" },
+      { signal: AbortSignal.timeout(10000), redirect: "manual" },
     );
     if (!response.ok) throw new Error("Manifest unavailable");
     const manifest = await response.json();

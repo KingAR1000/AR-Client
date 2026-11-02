@@ -2,11 +2,13 @@
 
 Use **Workers Free**, with Static Assets for the website and a small Worker for `/api/minecraft` and `/api/curseforge`. Static asset requests bypass Worker execution. Only the allowlisted HTML, images, fonts and security headers enter `dist/`; source files, credentials and configuration are excluded.
 
-Do not enable Workers Paid, paid add-ons, R2, Spectrum, rented Minecraft servers or a paid database. Free-plan limits are hard limits: APIs may become unavailable when a quota is exhausted. A 10 ms CPU cap also bounds both Worker configurations; it does not select the account's billing plan. Verify the account uses **Workers Free** before deploying. Free-plan capacity is not unlimited.
+Do not enable Workers Paid, paid add-ons, R2, Spectrum, rented Minecraft servers or a paid database. Free-plan limits are hard limits: APIs may become unavailable when a quota is exhausted. Workers Free supplies its built-in CPU cap; setting a custom CPU limit is a Paid-only feature. Verify the account uses **Workers Free** before deploying. Free-plan capacity is not unlimited.
 
 ## Deployment
 
-The Cloudflare connection now provides account, domain and Workers reads, but its billing/subscriptions API returns 403 because OAuth connections cannot read billing subscriptions. Workers account settings report `standard`, which does not identify whether the account is Free or Paid; the domain's Free Website plan also does not establish the Workers plan. Verify **Workers Free** in the dashboard before deploying. Deployment and DNS migration have not been performed. No paid plan or upgrade is authorized.
+Deployed on 2 November 2026: **https://client.kingar1000.xyz/**, Worker `ar-client-website`, account `e9fef78eaadc935dacc244a9ab036c87`. The Workers Free plan was confirmed by Cloudflare's API rejecting a custom CPU limit as unsupported on Free. No plan was upgraded. The configuration uses the free plan's built-in CPU limit; custom `limits.cpu_ms` must remain omitted because it requires Paid.
+
+Live Home, Privacy, Terms, logo integrity, latest Minecraft metadata (26.3), and CurseForge catalog requests passed. The catalog key is stored as a secret binding. The custom domain is attached directly to this Worker. The preview is `https://ar-client-website.hi-helllloooo-hi123-e9f.workers.dev`.
 
 An owner can also deploy using local Wrangler:
 
