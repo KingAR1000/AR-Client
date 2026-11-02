@@ -48,3 +48,16 @@ References: https://developers.cloudflare.com/workers/platform/pricing/ and http
 - GitHub workflows remain manual. Website checks now validate both API handlers and the Cloudflare bundle.
 
 Local static preview: `npm --prefix website run dev`. Actual Cloudflare runtime preview after installing the shared tooling: `cd website` then `node ../social/node_modules/wrangler/bin/wrangler.js dev`.
+
+## GitHub deployments
+
+Cloudflare Workers Builds connects `KingAR1000/AR-Client`, production branch `main`, to both Workers. Branch previews are disabled. GitHub Actions remain manual; Cloudflare deploys only relevant source changes.
+
+| Worker | Root directory | Build command | Deploy command | Watched paths |
+| --- | --- | --- | --- | --- |
+| `ar-client-website` | `/website` | `npm ci --prefix ../social && npm test` | `node ../social/node_modules/wrangler/bin/wrangler.js deploy --keep-vars` | `website/**`, `social/package.json`, `social/package-lock.json` |
+| `ar-client` | `/social` | `npm test` | `npx wrangler d1 migrations apply DB --remote && npx wrangler deploy` | `social/**` |
+
+Markdown-only changes are excluded. The backend deploy applies versioned D1 migrations before publishing. Runtime secrets remain in Cloudflare; never put them into build variables. Keep Workers Builds on its free allowance. If it is exhausted, wait for renewal or deploy locally using the commands above; do not upgrade.
+
+To deploy an unchanged commit again, use the Worker's **Settings → Builds → Build history → Retry build** in Cloudflare. The social endpoint is **https://social.client.kingar1000.xyz/**; the existing database and daily retention schedule are preserved.

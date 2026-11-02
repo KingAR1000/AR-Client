@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use tokio::sync::Mutex;
 const URL: &str = match option_env!("AR_SOCIAL_URL") {
     Some(url) => url,
-    None => "https://ar-client-social.hi-helllloooo-hi123-e9f.workers.dev/",
+    None => "https://social.client.kingar1000.xyz/",
 };
 #[derive(Default)]
 pub struct Social {

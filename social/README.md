@@ -1,6 +1,6 @@
 # AR Client social service
 
-Cloudflare Worker + D1 for Minecraft-verified friends and chat. This is a separate deployment from the Cloudflare Static Assets website. The launcher defaults to `https://ar-client-social.hi-helllloooo-hi123-e9f.workers.dev/`; use the build-time `AR_SOCIAL_URL` for another trusted deployment.
+Cloudflare Worker + D1 for Minecraft-verified friends and chat. This is a separate deployment from the Cloudflare Static Assets website. The launcher defaults to `https://social.client.kingar1000.xyz/`; use the build-time `AR_SOCIAL_URL` for another trusted deployment.
 
 ## Deploy as the project owner
 
@@ -37,3 +37,5 @@ Only session establishment accepts a Minecraft access token; it verifies the pro
 Friends must accept before messages are permitted. Both sides' blocks are enforced, including an atomic check during message insertion. Friend requests resolve usernames through Mojang to avoid directing requests to reassigned, stale usernames. Conversations are bounded and paginated, messages expire after 30 days, and deleting a profile cascades through its relationships/messages/sessions. The API limits message sizes, friendships and request rates. Chat is not end-to-end encrypted. No application logs contain message bodies or tokens; invocation logs and traces are disabled in the Worker configuration.
 
 All application/database source is GPL-3.0-only under the repository LICENSE.
+
+Production Worker: `ar-client`. Its D1 database remains `ar-client-social`; renaming a Worker does not require renaming or replacing its database. The stable custom domain keeps launcher configuration independent of the Worker name.

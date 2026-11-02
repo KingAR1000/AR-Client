@@ -75,7 +75,7 @@ The project owner must submit/review **a638a66e-7242-4bbe-b197-631d1ce1d7fb** at
 
 The Friends screen connects verified Minecraft identities, sends and accepts requests, removes friends, blocks players, and exchanges messages only between accepted friends. It supports recent-message polling, older-message retrieval and social-account deletion. Messages expire after 30 days and are not end-to-end encrypted. The Minecraft access token is used transiently to verify identity; the service stores only hashed, expiring social-session tokens. Native social-session tokens stay in memory. Microsoft refresh tokens remain in the OS vault.
 
-The Cloudflare Worker and D1 schema are in [`social/`](social/README.md). The backend is now deployed on Workers/D1 Free. Health and unauthenticated rejection checks pass; real-account friends/chat still requires successful Minecraft login and end-to-end validation. A build can override the default service URL with `AR_SOCIAL_URL`; do not direct account tokens to an untrusted service.
+The Cloudflare Worker and D1 schema are in [`social/`](social/README.md). The backend Worker `ar-client` is deployed at `https://social.client.kingar1000.xyz/` on Workers/D1 Free. Health and unauthenticated rejection checks pass; real-account friends/chat still requires successful Minecraft login and end-to-end validation. A build can override the default service URL with `AR_SOCIAL_URL`; do not direct account tokens to an untrusted service.
 
 ## Host a server
 
