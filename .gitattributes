@@ -1,0 +1,3 @@
+# Signature fixtures must preserve the exact upstream bytes on every platform.
+src-tauri/tests/fixtures/horizon-nightly.SHA256SUMS -text
+src-tauri/tests/fixtures/horizon-nightly.sig -text
