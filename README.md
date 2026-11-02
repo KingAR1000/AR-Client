@@ -63,6 +63,36 @@ Modrinth requires no key. CurseForge uses `https://client.kingar1000.xyz/api/cur
 
 Catalog installations check compatibility, required dependencies and hashes. Author-disabled downloads are rejected. Imported files remain local/untracked; use separate installations for modpacks. Full modpack lifecycle updates are not implemented.
 
+## Minecraft sign-in returns HTTP 403
+
+A successful Microsoft device login does not establish Minecraft API approval for the launcher. If `authentication/login_with_xbox` returns 403, the launcher now reports `AR_AUTH_APP_APPROVAL` with the registration review link rather than an opaque network error. A 403 alone is not proof of the exact upstream rejection reason.
+
+The project owner must submit/review **a638a66e-7242-4bbe-b197-631d1ce1d7fb** at **https://aka.ms/mce-reviewappid**, with AR Client's name, https://github.com/KingAR1000/AR-Client and https://client.kingar1000.xyz. Microsoft/Mojang approval cannot be granted or bypassed by launcher code. After approval, retry Microsoft sign-in. Changing passwords, reinstalling Minecraft, or borrowing another launcher's client ID does not solve registration approval.
+
+## Friends and chat
+
+The Friends screen connects verified Minecraft identities, sends and accepts requests, removes friends, blocks players, and exchanges messages only between accepted friends. It supports recent-message polling, older-message retrieval and social-account deletion. Messages expire after 30 days and are not end-to-end encrypted. The Minecraft access token is used transiently to verify identity; the service stores only hashed, expiring social-session tokens. Native social-session tokens stay in memory. Microsoft refresh tokens remain in the OS vault.
+
+The Cloudflare Worker and D1 schema are in [`social/`](social/README.md). The service must be deployed before public friends/chat works. In this session the Cloudflare connection could read account data but rejected D1 creation for missing write permissions; no production social database was created. Reconnect with D1 Edit and Workers Scripts Edit to deploy it. A build can override the default service URL with `AR_SOCIAL_URL`; do not direct account tokens to an untrusted service.
+
+## Host a server
+
+Servers creates isolated, local Java dedicated servers using the same official release range as the launcher. Start verifies the official server jar and Java runtime; console input, rolling output, whitelist commands, graceful Stop, and folder access are available in the launcher. Accept Minecraft's EULA in Settings first. Online authentication, whitelist enforcement and disabled RCON/query are the defaults. Add the host and friends with `whitelist add PlayerName` in the server console.
+
+The computer must stay awake and AR Client must remain open. Closing AR Client requests a graceful stop and waits for the server to save. An OS crash or forced termination can interrupt saving, so back up worlds. LAN players use the host's local IP and configured port. Internet players need a private VPN or deliberate router/firewall configuration; AR Client does not open ports, install a VPN or provide rented cloud machines.
+
+`cargo run --manifest-path src-tauri/Cargo.toml --no-default-features --example verify_server -- --accept-eula` runs a real, loopback-only startup/console/save check after downloading the server and Java.
+
+## Rust Edition (Horizon)
+
+The Rust Edition screen integrates **Horizon**, an independent **unofficial**, MIT-licensed implementation targeting Minecraft 26.3. It is not a Mojang release or a new official Minecraft edition. Its upstream README documents substantial unimplemented behavior; Nightlies are explicitly experimental. Java mod jars, Fabric HUDs and Java modloaders do not run in this implementation.
+
+Select a 26.3 installation, accept the experimental Nightly notice, and use Install/verify or Play Rust Edition. An owning Microsoft account is required before preparation or launching. AR verifies Horizon's Ed25519-signed Nightly checksums against the embedded upstream public key, verifies the downloaded archive's SHA-256, checks the actual client/preparer contracts, installs the owner's vanilla files from Mojang, and prepares resources locally. Current published preparers predate `--launch-api`; those are checked against their real help output and signed `research-lock.json` instead.
+
+The session is passed over standard input. Saves and settings use `rust-instances/<profile UUID>/`, separate from Java instances. `horizon/` contains builds/resources and `horizon-support/` holds verified vanilla preparation inputs. Native Rust mods are not managed by AR's Java mod catalogs. GPU support requires Vulkan or DirectX 12 on Windows. Resource preparation and authenticated Rust gameplay still need end-user validation after Minecraft API approval.
+
+To inspect an already verified Horizon archive without starting Minecraft: `cargo run --manifest-path src-tauri/Cargo.toml --no-default-features --example verify_horizon -- PATH_TO_HORIZON`.
+
 ## Signed releases
 
 Updater signing and Windows publisher signing are separate. To configure updater credentials, install GitHub CLI, sign in with repository administration access, then run from this checkout:

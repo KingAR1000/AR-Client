@@ -1,10 +1,10 @@
 # Validation
 
-Checks below were recorded on 28–29 October 2026. Installation and compilation checks do not establish authenticated gameplay or performance.
+Checks below were recorded on 28 October–2 November 2026. Installation and compilation checks do not establish authenticated gameplay or performance.
 
 ## Passed
 
-- 24 Rust tests: managed paths, hashes, version metadata, command validation, profile recovery, content rollback, skin decoding and client-ID defaults.
+- 33 Rust tests: managed paths, hashes, version metadata, command validation, profile recovery, content rollback, skin decoding and client-ID defaults, login diagnostics, Horizon ownership/signature guards and server validation.
 - 7 frontend tests, 4 release-policy tests and 8 catalog-service tests; TypeScript production build.
 - Windows x64 NSIS packaging and native startup; version-specific Fabric companion builds with JDK 25 / Gradle 9.8.0.
 - Launcher browser navigation and website layouts at 320, 390, 1280 and 1440px without uncaught errors or horizontal overflow.
@@ -17,6 +17,13 @@ Checks below were recorded on 28–29 October 2026. Installation and compilation
 - Latest-stable catalog verification installed Sodium, Lithium and Fabric API for 26.3 with hashes checked; all four loaders returned compatible metadata. Vanilla 26.3 installation was reverified successfully.
 
 - Companion builds validate actual mouse/zoom injection targets and argument descriptors, exact game metadata, Java bytecode level and packaged jar hashes. Rust regressions cover exact-version selection, minimum loader versions, manifest traversal/duplicates, tampered bundles and stale-jar retirement. Frontend coverage prevents a newer game being downgraded to obtain a HUD.
+
+## 2 November additions
+
+- Live local Minecraft 26.3 dedicated server: verified server/Java downloads, startup, console command, graceful stop and saved `world/level.dat` passed on Linux.
+- Actual Horizon Nightly `2026-11-01 · c9d474d`: Linux archive SHA-256, signed-checksum verification and actual client/preparer option contracts passed. The published preparer lacks `--launch-api`; its real help and research-lock fallback were checked. This does not establish Windows Rust gameplay or successful resource preparation.
+- Local Workers/D1 integration tests passed for authentication refusal, friend acceptance, friend-only messages, outsider denial, blocking/unblocking, input limits and social profile/session revocation. No production social service was deployed: Cloudflare D1 creation was denied for missing write scopes.
+- Minecraft login 403 is now actionable and regression-tested for secret redaction. App registration approval remains an owner-side requirement, and authenticated gameplay is still unverified.
 
 ## Installation checks
 

@@ -15,3 +15,6 @@ src-tauri/resources/*.jar
 src-tauri/resources/companion.json
 
 src-tauri/resources/companions/
+
+.wrangler/
+.dev.vars*

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { ArrowUpRight, Plus, ShieldCheck, Trash2 } from "lucide-react";
 
-import { request, type LauncherState } from "../api";
+import { message, request, type LauncherState } from "../api";
 
 import type { Run } from "../api";
 import Empty from "./Empty";
@@ -27,7 +27,8 @@ export default function Accounts({
       interval: number;
       expiresIn: number;
     } | null>(null),
-    [polling, setPolling] = useState(false);
+    [polling, setPolling] = useState(false),
+    [problem, setProblem] = useState("");
   useEffect(() => {
     if (!device) return;
     let cancelled = false;
@@ -52,6 +53,7 @@ export default function Accounts({
       } catch (e) {
         if (!cancelled) {
           setDevice(null);
+          setProblem(message(e));
           fail(e);
         }
       }
@@ -64,6 +66,25 @@ export default function Accounts({
   }, [device]);
   return (
     <>
+      {problem.includes("AR_AUTH_APP_APPROVAL") && (
+        <div className="callout error">
+          <div>
+            <h3>Microsoft signed in. Minecraft refused AR Client.</h3>
+            <p>
+              The AR Client app registration may need Mojang API approval.
+              Reinstalling or changing your password will not resolve an
+              unapproved registration. The project owner must complete the App
+              ID review.
+            </p>
+            <button
+              className="text-button"
+              onClick={() => open("https://aka.ms/mce-reviewappid")}
+            >
+              Minecraft App ID review <ArrowUpRight size={14} />
+            </button>
+          </div>
+        </div>
+      )}
       <section className="panel">
         <div className="section-title">
           <h3>Microsoft accounts</h3>
@@ -78,10 +99,12 @@ export default function Accounts({
                 );
                 return;
               }
+              setProblem("");
               setPolling(true);
               try {
                 setDevice(await request("auth.start"));
               } catch (e) {
+                setProblem(message(e));
                 fail(e);
               } finally {
                 setPolling(false);

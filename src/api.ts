@@ -94,7 +94,10 @@ export type Page =
   | "Accounts"
   | "Updates"
   | "Settings"
-  | "HUD Editor";
+  | "HUD Editor"
+  | "Friends"
+  | "Servers"
+  | "Rust Edition";
 export type Run = <T>(
   label: string,
   fn: () => Promise<T>,

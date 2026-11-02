@@ -9,6 +9,9 @@ import {
   Download,
   Folder,
   Home,
+  MessageSquare,
+  Server,
+  Cpu,
   Image,
   Layers,
   LoaderCircle,
@@ -44,6 +47,9 @@ import Preferences from "./components/Preferences";
 import ProfileEditor from "./components/ProfileEditor";
 import Updates from "./components/Updates";
 import HomeScreen from "./components/Home";
+import Friends from "./components/Friends";
+import Servers from "./components/Servers";
+import RustEdition from "./components/RustEdition";
 import "./style.css";
 const Skins = React.lazy(() => import("./components/Skins"));
 
@@ -57,6 +63,9 @@ const nav: [Page, typeof Home][] = [
   ["Skins", UserRound],
   ["Accounts", Users],
   ["HUD Editor", Move],
+  ["Friends", MessageSquare],
+  ["Servers", Server],
+  ["Rust Edition", Cpu],
   ["Updates", Download],
   ["Settings", Settings],
 ];
@@ -193,7 +202,7 @@ function App() {
         <nav aria-label="Main navigation">
           {nav.map(([name, Icon], i) => (
             <React.Fragment key={name}>
-              {(i === 3 || i === 7 || i === 9) && (
+              {(i === 3 || i === 7 || i === 12) && (
                 <div className="nav-divider" />
               )}
               <button
@@ -478,6 +487,33 @@ function App() {
               create={newProfile}
             />
           )}
+          {page === "Friends" && (
+            <Friends
+              key={state.activeAccount}
+              state={state}
+              accounts={() => setPage("Accounts")}
+            />
+          )}
+          {page === "Servers" && (
+            <Servers
+              playerName={account?.name}
+              versions={versions}
+              latest={latest}
+              run={run}
+              fail={fail}
+              busy={!!busy}
+            />
+          )}
+          {page === "Rust Edition" && (
+            <RustEdition
+              state={state}
+              profile={profile}
+              run={run}
+              busy={!!busy}
+              open={open}
+              navigate={() => setPage("Play")}
+            />
+          )}
           {page === "Accounts" && (
             <Accounts
               state={state}
@@ -597,6 +633,10 @@ function App() {
 }
 const descriptions: Record<Page, string> = {
   Home: "Minecraft Java Edition",
+  Friends: "Verified Minecraft friends and private messages.",
+  Servers: "Create and manage a server on this computer.",
+  "Rust Edition":
+    "Minecraft 26.3 powered by Horizon, an unofficial Rust implementation.",
   Play: "Select an installation and launch Minecraft.",
   Installations: "Manage game versions, modloaders, and instance settings.",
   Mods: "Browse and manage compatible mods.",

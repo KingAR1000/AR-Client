@@ -1,8 +1,11 @@
 pub mod auth;
 pub mod catalog;
 pub mod companion;
+pub mod horizon;
+pub mod hosting;
 pub mod install;
 pub mod net;
+pub mod social;
 pub mod state;
 use base64::Engine as _;
 use serde_json::{json, Value};
@@ -27,6 +30,8 @@ pub struct Engine {
     pub companion: Option<PathBuf>,
     pub client: reqwest::Client,
     pub progress: install::Progress,
+    hosting: hosting::Hosting,
+    social: social::Social,
     device: tokio::sync::Mutex<Option<Value>>,
     mutation: tokio::sync::Mutex<()>,
     running: Arc<tokio::sync::Mutex<std::collections::HashSet<String>>>,
@@ -35,6 +40,8 @@ impl Engine {
     pub fn new(root: PathBuf, progress: install::Progress) -> Self {
         Self {
             root,
+            hosting: hosting::Hosting::default(),
+            social: social::Social::default(),
             companion: None,
             client: net::client(),
             progress,
@@ -44,7 +51,14 @@ impl Engine {
         }
     }
     pub async fn dispatch(&self, action: &str, a: Value) -> Result<Value> {
-        let read_only = ["versions", "loaders", "catalog", "releases"];
+        let read_only = [
+            "versions",
+            "loaders",
+            "catalog",
+            "releases",
+            "server.list",
+            "server.logs",
+        ];
         let _guard = if read_only.contains(&action) {
             None
         } else {
@@ -59,6 +73,77 @@ impl Engine {
                 .cloned()
                 .ok_or_else(|| Error::msg("Installation not found"))
         };
+        if action == "social" {
+            let id = social::active(&state)?;
+            return self
+                .social
+                .call(
+                    &self.client,
+                    id,
+                    state.settings["microsoftClientId"].as_str().unwrap_or(""),
+                    a,
+                )
+                .await;
+        }
+        if action.starts_with("server.") {
+            return self
+                .hosting
+                .dispatch(
+                    &self.root,
+                    &self.client,
+                    action,
+                    &a,
+                    state.settings["eulaAccepted"] == true,
+                    self.progress.clone(),
+                )
+                .await;
+        }
+        if action == "horizon.prepare" || action == "horizon.launch" {
+            if a["nightlyAccepted"] != true {
+                return Err(Error::msg("Horizon is experimental third-party software. Accept the Nightly notice before installing."));
+            }
+            if state.settings["eulaAccepted"] != true {
+                return Err(Error::msg(
+                    "Read and accept Minecraft's EULA in Settings first",
+                ));
+            }
+            let p = find(text(&a, "id")?)?;
+            let key = format!("horizon:{}", p.id);
+            if self.running.lock().await.contains(&key) {
+                return Err(Error::msg("This Rust installation is already running"));
+            }
+            let id = state.active_account.as_deref().ok_or_else(|| {
+                Error::msg("Sign in with an account that owns Minecraft Java Edition first")
+            })?;
+            let account = state
+                .accounts
+                .iter()
+                .find(|account| account.id == id)
+                .ok_or("Active account missing")?;
+            let token = auth::access(
+                &self.client,
+                state.settings["microsoftClientId"].as_str().unwrap_or(""),
+                id,
+            )
+            .await?;
+            let (exe, prepared) =
+                horizon::prepare(&self.client, &self.root, &p, self.progress.clone()).await?;
+            if action == "horizon.launch" {
+                let mut child =
+                    horizon::launch(&exe, &prepared, &self.root, &p, account, &token).await?;
+                self.running.lock().await.insert(key.clone());
+                let running = self.running.clone();
+                let progress = self.progress.clone();
+                tokio::spawn(async move {
+                    let result = child.wait().await;
+                    running.lock().await.remove(&key);
+                    progress(
+                        json!({"stage":if result.is_ok_and(|s|s.success()){"Horizon closed"}else{"Horizon exited with an error. Check rust-instances/<installation>/horizon-output.log."},"current":1,"total":1,"exited":key}),
+                    );
+                });
+            }
+            return Ok(json!(true));
+        }
         match action {
             "state" => {
                 let mut v = serde_json::to_value(state)?;
@@ -209,6 +294,7 @@ impl Engine {
                     state.active_account = Some(id.into());
                 } else {
                     state::secret_delete(id)?;
+                    self.social.forget(id).await;
                     state.accounts.retain(|x| x.id != id);
                     if state.active_account.as_deref() == Some(id) {
                         state.active_account = state.accounts.first().map(|x| x.id.clone());
@@ -583,6 +669,8 @@ impl Engine {
                 let link = text(&a, "url")?;
                 let u = net::https(link)?;
                 if ![
+                    "aka.ms",
+                    "playhorizon.dev",
                     "www.minecraft.net",
                     "minecraft.net",
                     "www.microsoft.com",
@@ -692,6 +780,21 @@ pub fn run() {
             app.manage(engine);
             Ok(())
         })
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                api.prevent_close();
+                let handle = window.app_handle().clone();
+                tauri::async_runtime::spawn(async move {
+                    let engine = handle.state::<Engine>();
+                    match engine.hosting.shutdown().await {
+                        Ok(()) => handle.exit(0),
+                        Err(e) => {
+                            (engine.progress)(json!({"stage":e.to_string(),"current":0,"total":1}))
+                        }
+                    }
+                });
+            }
+        })
         .invoke_handler(tauri::generate_handler![request])
         .run(tauri::generate_context!())
         .expect("AR Client failed to start");
@@ -760,6 +863,36 @@ mod command_tests {
             .await
             .unwrap_err();
         assert!(err.to_string().contains("EULA"));
+    }
+    #[tokio::test]
+    async fn rust_edition_cannot_prepare_or_launch_without_owner_login() {
+        let d = tempfile::tempdir().unwrap();
+        let e = engine(d.path().into());
+        let p = e
+            .dispatch(
+                "profile.save",
+                json!({"id":"","name":"Rust","version":"26.3","loader":"vanilla","ram":2048}),
+            )
+            .await
+            .unwrap();
+        assert!(e
+            .dispatch("horizon.launch", json!({"id":p["id"]}))
+            .await
+            .unwrap_err()
+            .to_string()
+            .contains("experimental"));
+        let mut state = state::read(d.path()).unwrap();
+        state.settings["eulaAccepted"] = json!(true);
+        state::write(d.path(), &state).unwrap();
+        for command in ["horizon.prepare", "horizon.launch"] {
+            assert!(e
+                .dispatch(command, json!({"id":p["id"],"nightlyAccepted":true}))
+                .await
+                .unwrap_err()
+                .to_string()
+                .contains("Sign in"));
+        }
+        assert!(!d.path().join("horizon").exists());
     }
     #[test]
     fn skin_dimensions_are_validated() {

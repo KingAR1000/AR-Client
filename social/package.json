@@ -1,0 +1,21 @@
+{
+  "name": "ar-client-social",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "wrangler deploy --dry-run",
+    "types": "wrangler types --include-runtime false",
+    "test": "node --test tests/*.test.mjs",
+    "deploy": "wrangler deploy"
+  },
+  "license": "GPL-3.0-only",
+  "type": "module",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261102.1",
+    "@types/node": "^26.6.6",
+    "miniflare": "^5.20261101.0-beta",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.156.1"
+  },
+  "private": true
+}

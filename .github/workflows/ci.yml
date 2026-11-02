@@ -14,6 +14,21 @@ permissions:
 env:
   AR_MICROSOFT_CLIENT_ID: ${{ vars.AR_MICROSOFT_CLIENT_ID }}
 jobs:
+  social:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: social/package-lock.json
+      - run: npm ci
+        working-directory: social
+      - run: npm test
+        working-directory: social
+      - run: npm run build
+        working-directory: social
   launcher:
     needs: fabric
     runs-on: windows-latest

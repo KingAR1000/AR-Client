@@ -69,6 +69,7 @@ dependencies = [
  "keyring",
  "png 0.17.16",
  "reqwest 0.12.28",
+ "ring",
  "serde",
  "serde_json",
  "sha1",
