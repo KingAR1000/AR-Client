@@ -5,6 +5,8 @@
   "compatibility_date": "2026-11-02",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
+  "preview_urls": false,
+  "send_metrics": false,
   "routes": [{ "pattern": "client.kingar1000.xyz", "custom_domain": true }],
   "build": { "command": "node build.mjs" },
   "assets": {

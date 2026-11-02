@@ -30,6 +30,8 @@ Checks below were recorded on 28 October–2 November 2026. Installation and com
 - Deployed `ar-client-website` and attached `client.kingar1000.xyz` on 2 November 2026. Live Home/Privacy/Terms, logo SHA-256, Minecraft release metadata (26.3), and a 26.3 CurseForge catalog request passed over HTTPS.
 - Cloudflare API explicitly reported Workers Free when rejecting a custom CPU-limit setting. Custom limits were removed, preserving the free plan's built-in cap. No paid plan was enabled.
 - Worker fetch uses `redirect: manual` and rejects non-success statuses, since Workers does not support `redirect: error`. The production preview caught and resolved this runtime difference; no API credentials are forwarded on redirects.
+- The renamed social Worker `ar-client` serves `https://social.client.kingar1000.xyz/`; the launcher default and checked-in deployment name match. Existing D1 data and the daily cleanup schedule were retained.
+- Cloudflare Workers Builds is connected to GitHub `main` for both Workers with relevant path filters and branch previews disabled. A push-triggered website deployment and a backend deployment with D1 migrations completed successfully on Free. GitHub Actions remain manual.
 - Social database schema and migration history are installed, retention cleanup is scheduled daily, `/health` returns 200 and unauthenticated requests return 401. No fake users or messages were inserted into production.
 
 ## Installation checks
