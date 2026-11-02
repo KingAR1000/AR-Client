@@ -226,7 +226,7 @@ export default function Friends({
               value={target}
               onChange={(e) => setTarget(e.target.value)}
               required
-              minLength={3}
+              minLength={1}
               maxLength={16}
               pattern="[A-Za-z0-9_]+"
               placeholder="Exact Minecraft username"

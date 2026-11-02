@@ -79,7 +79,7 @@ async function identity(request, env, action) {
         401,
       );
     const profile = await boundedJson(response);
-    if (!/^[a-f0-9]{32}$/i.test(profile.id) || !/^\w{3,16}$/.test(profile.name))
+    if (!/^[a-f0-9]{32}$/i.test(profile.id) || !/^\w{1,16}$/.test(profile.name))
       throw new Problem("Invalid Minecraft profile", 401);
     const id = profile.id.toLowerCase();
     await env.DB.prepare(
@@ -151,7 +151,7 @@ export async function handle(request, env) {
     return reply({ id: me.id, peers: peers.results, blocks: blocks.results });
   }
   const target = typeof body.target === "string" ? body.target.trim() : "";
-  if (!/^(?:[a-f0-9]{32}|[A-Za-z0-9_]{3,16})$/i.test(target))
+  if (!/^(?:[a-f0-9]{32}|[A-Za-z0-9_]{1,16})$/i.test(target))
     throw new Problem("Enter an exact Minecraft username.");
   if (action === "request") await rate(env.DB, "invite-lookups:" + me.id, 10);
   let targetId = target.toLowerCase();
