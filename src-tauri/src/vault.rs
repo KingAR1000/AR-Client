@@ -6,8 +6,9 @@ use std::sync::Mutex;
 
 const SERVICE: &str = "xyz.kingar1000.arclient";
 const PREFIX: &str = "AR_CLIENT_VAULT_V1:";
-// 1,500 bytes become 2,000 ASCII characters, below Windows' 2,560 UTF-16 limit.
-const CHUNK_BYTES: usize = 1500;
+// 750 bytes become 1,000 ASCII characters (2,000 UTF-16 bytes), safely
+// below the keyring Windows backend's 2,560-byte credential-blob limit.
+const CHUNK_BYTES: usize = 750;
 const MAX_BYTES: usize = 256 * 1024;
 static LOCK: Mutex<()> = Mutex::new(());
 
@@ -82,7 +83,7 @@ fn put(store: &impl Store, id: &str, value: &str) -> Result<()> {
         .as_deref()
         .and_then(|v| Manifest::parse(v).ok())
         .flatten();
-    if value.encode_utf16().count() <= 2000 && !value.starts_with(PREFIX) {
+    if value.encode_utf16().count() <= 1000 && !value.starts_with(PREFIX) {
         store.set(id, value)?;
     } else {
         let next = Manifest {
@@ -118,7 +119,7 @@ fn get(store: &impl Store, id: &str) -> Result<String> {
     let mut bytes = Vec::with_capacity(m.bytes);
     for i in 0..m.count() {
         let encoded = store.get(&m.key(i))?.ok_or_else(invalid)?;
-        if encoded.len() > 2000 {
+        if encoded.len() > 1000 {
             return Err(invalid());
         }
         let chunk = STANDARD.decode(encoded).map_err(|_| invalid())?;
@@ -180,7 +181,7 @@ mod tests {
         }
         fn set(&self, id: &str, value: &str) -> Result<()> {
             // Model the actual Windows limit, including surrogate pairs.
-            assert!(value.encode_utf16().count() <= 2560);
+            assert!(value.encode_utf16().count() * 2 <= 2560);
             let n = self.writes.get();
             self.writes.set(n + 1);
             if self.fail_at.get() == Some(n) {
@@ -228,7 +229,7 @@ mod tests {
     }
     #[test]
     fn failed_chunk_or_manifest_write_preserves_previous_credentials() {
-        for failed_write in 0..=4 {
+        for failed_write in 0..=8 {
             let store = Memory::default();
             put(&store, "account", &"old".repeat(3000)).unwrap();
             let original = store.values.borrow().clone();
