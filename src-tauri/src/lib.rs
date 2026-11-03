@@ -7,6 +7,7 @@ pub mod install;
 pub mod net;
 pub mod social;
 pub mod state;
+mod vault;
 use base64::Engine as _;
 use serde_json::{json, Value};
 use std::{path::PathBuf, sync::Arc};

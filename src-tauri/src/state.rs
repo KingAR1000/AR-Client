@@ -135,17 +135,13 @@ pub fn write(root: &Path, s: &State) -> Result<()> {
     Ok(())
 }
 pub fn secret_set(id: &str, value: &str) -> Result<()> {
-    keyring::Entry::new("xyz.kingar1000.arclient", id)?.set_password(value)?;
-    Ok(())
+    crate::vault::set(id, value)
 }
 pub fn secret_get(id: &str) -> Result<String> {
-    Ok(keyring::Entry::new("xyz.kingar1000.arclient", id)?.get_password()?)
+    crate::vault::read(id)
 }
 pub fn secret_delete(id: &str) -> Result<()> {
-    match keyring::Entry::new("xyz.kingar1000.arclient", id)?.delete_credential() {
-        Ok(()) | Err(keyring::Error::NoEntry) => Ok(()),
-        Err(e) => Err(e.into()),
-    }
+    crate::vault::delete(id)
 }
 #[cfg(test)]
 mod tests {
