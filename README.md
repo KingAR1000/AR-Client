@@ -57,7 +57,7 @@ Releases are checked at startup, on returning focus after a minute, every 30 min
 
 ## Authentication and catalogs
 
-The public Microsoft application ID is bundled. A custom registration can be set in Settings or at build time through `AR_MICROSOFT_CLIENT_ID`. Registrations must support personal accounts and public-client device authorization, with any required Minecraft Services approval. No Microsoft client secret belongs in the launcher.
+The public Microsoft application ID is bundled. A custom registration can be set in Settings or at build time through `AR_MICROSOFT_CLIENT_ID`. Registrations must support personal accounts and public-client device authorization, with any required Minecraft Services approval. No Microsoft client secret belongs in the launcher. Tokens are stored in the OS credential vault. Windows uses size-bounded entries for long OAuth token bundles, with a final manifest commit so failed saves preserve the previous credential.
 
 Microsoft/Xbox/Minecraft access and refresh credentials use Windows Credential Manager or Linux Secret Service. Passwords are entered on Microsoft's website. Vault failures have no plaintext fallback.
 

@@ -1,10 +1,10 @@
 # Validation
 
-Checks below were recorded on 28 October–2 November 2026. Installation and compilation checks do not establish authenticated gameplay or performance.
+Checks below were recorded on 28 October–3 November 2026. Installation and compilation checks do not establish authenticated gameplay or performance.
 
 ## Passed
 
-- 33 Rust tests: managed paths, hashes, version metadata, command validation, profile recovery, content rollback, skin decoding and client-ID defaults, login diagnostics, Horizon ownership/signature guards and server validation.
+- 37 Rust tests on Linux and 38 on Windows (including a real Windows credential-vault integration test): managed paths, hashes, version metadata, command validation, profile recovery, content rollback, skin decoding and client-ID defaults, login diagnostics, Horizon ownership/signature guards and server validation.
 - 7 frontend tests, 4 release-policy tests and 8 catalog-service tests; TypeScript production build.
 - Windows x64 NSIS packaging and native startup; version-specific Fabric companion builds with JDK 25 / Gradle 9.8.0.
 - Launcher browser navigation and website layouts at 320, 390, 1280 and 1440px without uncaught errors or horizontal overflow.
@@ -23,7 +23,14 @@ Checks below were recorded on 28 October–2 November 2026. Installation and com
 - Live local Minecraft 26.3 dedicated server: verified server/Java downloads, startup, console command, graceful stop and saved `world/level.dat` passed on Linux.
 - Actual Horizon Nightly `2026-11-01 · c9d474d`: Linux archive SHA-256, signed-checksum verification and actual client/preparer option contracts passed. The published preparer lacks `--launch-api`; its real help and research-lock fallback were checked. This does not establish Windows Rust gameplay or successful resource preparation.
 - Local Workers/D1 integration tests passed for authentication refusal, friend acceptance, friend-only messages, outsider denial, blocking/unblocking, input limits and social profile/session revocation. The social service is now deployed on D1/Workers Free; health returns 200 and unauthenticated calls return 401. Full real-account chat is still unverified.
-- Minecraft login 403 is now actionable and regression-tested for secret redaction. App registration approval remains an owner-side requirement, and authenticated gameplay is still unverified.
+- Minecraft login 403 is now actionable and regression-tested for secret redaction. The owner reported app registration approval on 3 November; authenticated gameplay is still unverified.
+
+## 3 November credential storage fix
+
+- Reproduced the Windows credential size failure in a real Windows vault test. The keyring backend limits UTF-16 credential blobs by bytes, despite the error wording referring to characters.
+- Large token bundles now use generation-based, size-bounded OS-vault entries. A small manifest is committed only after every piece is saved; failed writes preserve the previous credential. Existing single-entry credentials remain readable, and logout removes the stored pieces.
+- Regression coverage passed for large tokens, Unicode, size boundaries, account isolation, old credentials, refresh replacement, deletion, failed chunk/manifest writes, missing pieces, malformed metadata and oversize rejection. The actual Windows-vault save/read/refresh/logout test passed in GitHub Actions.
+- The owner must retry Microsoft sign-in using the corrected installer to verify the complete account flow. This automated storage test does not establish authenticated gameplay.
 
 ## Cloudflare production deployment
 
