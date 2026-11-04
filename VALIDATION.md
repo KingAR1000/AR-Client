@@ -38,6 +38,13 @@ Checks below were recorded on 28 October–4 November 2026. Installation and com
 - Browser checks passed for all navigation routes, the Client/Server switch, installation creation dialog and dropdown closure. Home was checked at widths 600, 980, 1280 and 1440 without horizontal overflow; no uncaught browser errors occurred. Screenshots use the browser preview with no fabricated accounts or installations.
 - Generated a contrasting dark-tile AR app icon and rebuilt the configured 32/128/256px PNGs and multi-resolution Windows ICO. The 32px rendering was visually inspected.
 
+## Horizon Night adaptation
+
+- Replaced the earlier quiet-layout interpretation with Horizon Night's instance sidebar, 56px top bar, stepped controls, contextual instance tabs and stacked settings rows, following the owner's screenshots.
+- Adapted layout tokens and cloud/skyline sprites from Horizon commit `63eccfc` (`launcher/src/theme.rs`, `plate.rs`, `sky.rs`) into React/CSS and a static monochrome SVG. Bricolage font builds and Bricolage/Geist OFL notices are bundled; full Horizon MIT notices ship with both launcher and website assets.
+- Browser checks passed for primary and library navigation, installation creation and Home/Settings at 600, 980, 1280 and 1440px. No horizontal overflow or uncaught browser errors occurred.
+- The website uses matching sky artwork, typography, stepped buttons and a new screenshot of the actual browser-rendered interface. Website checks passed at 390, 600, 1280 and 1440px.
+
 ## Cloudflare production deployment
 
 - Deployed `ar-client-website` and attached `client.kingar1000.xyz` on 2 November 2026. Live Home/Privacy/Terms, logo SHA-256, Minecraft release metadata (26.3), and a 26.3 CurseForge catalog request passed over HTTPS.
