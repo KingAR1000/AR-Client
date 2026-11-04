@@ -1,15 +1,5 @@
-import {
-  ArrowRight,
-  Box,
-  ChevronDown,
-  Layers,
-  Move,
-  Play,
-  Plus,
-  UserRound,
-} from "lucide-react";
+import { ArrowUpRight, ChevronDown, Play, Plus } from "lucide-react";
 import type { Account, Page, Profile } from "../api";
-import World from "./World";
 
 export default function HomeScreen({
   account,
@@ -35,131 +25,120 @@ export default function HomeScreen({
   launch: () => unknown;
 }) {
   const isRunning = !!profile && running.includes(profile.id);
+  const rows = [
+    {
+      title: "Installation",
+      detail: profile
+        ? `${profile.name} · ${profile.version} · ${profile.loader}`
+        : "Choose a version and modloader to get started.",
+      action: profile ? "Manage" : "Create installation",
+      click: profile ? () => navigate("Installations") : create,
+    },
+    {
+      title: "Playing as",
+      detail: account
+        ? account.name
+        : "Connect the Microsoft account that owns Minecraft.",
+      action: account ? "Switch account" : "Sign in",
+      click: () => navigate("Accounts"),
+    },
+    {
+      title: "Mods & resource packs",
+      detail: "Make your installation your own.",
+      action: "Browse mods",
+      click: () => navigate("Mods"),
+    },
+    {
+      title: "In-game HUD",
+      detail: "Your widgets, keybinds and layout.",
+      action: "Customize",
+      click: () => navigate("HUD Editor"),
+    },
+  ];
   return (
-    <>
-      <div className="home-heading">
-        <div>
-          <span className="eyebrow">YOUR LAUNCHER</span>
-          <h1>{account ? `Hey, ${account.name}.` : "Let’s play."}</h1>
-        </div>
-        <button
-          className="text-button"
-          onClick={() => navigate("Installations")}
-        >
-          <Layers size={15} /> Manage installations <ArrowRight size={14} />
-        </button>
-      </div>
-      <section className="game-stage" aria-label="Minecraft Java Edition">
-        <World />
-        <div className="stage-shade" />
-        <div className="stage-topline">
+    <section className="launch-home">
+      <div className="launch-intro">
+        <div className="release-meta">
+          <span>MINECRAFT {profile?.version || latest || "JAVA EDITION"}</span>
+          <span className="meta-dot">·</span>
           <span>
-            <span className="status-dot" /> JAVA EDITION
-          </span>
-          <span>AR CLIENT</span>
-        </div>
-        <div className="stage-title">
-          <h2>MINECRAFT</h2>
-          <p>Java Edition</p>
-          <span className="release-label">
-            {latest
-              ? `${latest} · Latest stable release`
-              : "Official release channel"}
-          </span>
-        </div>
-      </section>
-      <section className="launch-dock" aria-label="Launch Minecraft">
-        <div className="dock-profile">
-          <div className="instance-mark">
-            <Box size={23} strokeWidth={1.4} />
-          </div>
-          <div>
-            <span className="field-caption">INSTALLATION</span>
-            {profile ? (
-              <div className="dock-select">
-                <select
-                  aria-label="Active installation"
-                  value={profile.id}
-                  onChange={(e) => select(e.target.value)}
-                >
-                  {profiles.map((p) => (
-                    <option value={p.id} key={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown size={14} />
-              </div>
-            ) : (
-              <button className="create-instance" onClick={create}>
-                Create your first installation <Plus size={14} />
-              </button>
-            )}
-            <small>
-              {profile
-                ? `${profile.version} · ${profile.loader.charAt(0).toUpperCase() + profile.loader.slice(1)}`
-                : "Latest stable Minecraft by default"}
-            </small>
-          </div>
-        </div>
-        {profile && (
-          <div className="dock-memory">
-            <span className="field-caption">MEMORY</span>
-            <strong>
-              {profile.ram / 1024} <span>GB</span>
-            </strong>
-          </div>
-        )}
-        <button
-          className="primary launch-button"
-          disabled={!!busy || isRunning}
-          onClick={
-            profile ? (account ? launch : () => navigate("Accounts")) : create
-          }
-        >
-          <Play size={18} fill="currentColor" />
-          {busy ||
-            (isRunning
-              ? "Running"
+            {isRunning
+              ? "RUNNING"
               : profile
-                ? account
-                  ? "Play"
-                  : "Sign in to play"
-                : "Set up Minecraft")}
-        </button>
-      </section>
-      {!account && (
-        <div className="sign-in-nudge">
-          <UserRound size={15} />
-          <span>Connect your Microsoft account to play.</span>
-          <button onClick={() => navigate("Accounts")}>
-            Sign in <ArrowRight size={14} />
+                ? "JAVA EDITION"
+                : "OFFICIAL RELEASES"}
+          </span>
+        </div>
+        <h1>AR Client</h1>
+        <p>
+          Your Minecraft. Your setup.
+          <br />
+          Versions, mods and friends. All in one place.
+        </p>
+      </div>
+      <div className="launch-controls">
+        <div className="edition-toggle" aria-label="Game mode">
+          <span className="selected">Client</span>
+          <button onClick={() => navigate("Servers")}>Server</button>
+        </div>
+        <div className="launch-actions">
+          {profile ? (
+            <div className="installation-picker">
+              <select
+                aria-label="Active installation"
+                value={profile.id}
+                onChange={(e) => select(e.target.value)}
+              >
+                {profiles.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} · {p.version}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown size={13} />
+            </div>
+          ) : (
+            <button className="installation-picker" onClick={create}>
+              <Plus size={14} /> Installation
+            </button>
+          )}
+          <button
+            className="primary launch-button"
+            disabled={!!busy || isRunning}
+            onClick={
+              profile ? (account ? launch : () => navigate("Accounts")) : create
+            }
+          >
+            <Play size={14} fill="currentColor" />
+            {busy ||
+              (isRunning
+                ? "Running"
+                : profile
+                  ? account
+                    ? "Play"
+                    : "Sign in to play"
+                  : "Set up Minecraft")}
           </button>
         </div>
-      )}
-      <div className="home-section-heading">
-        <h3>Customize</h3>
       </div>
-      <div className="shortcut-grid">
-        {(
-          [
-            ["Mods", Box, "Mods", "Browse compatible projects."],
-            ["Skins", UserRound, "Skins", "Manage skins and owned capes."],
-            ["HUD Editor", Move, "HUD editor", "Arrange your in-game widgets."],
-          ] as const
-        ).map(([page, Icon, title, subtitle]) => (
-          <button
-            className="shortcut"
-            key={page}
-            onClick={() => navigate(page)}
-          >
-            <Icon size={22} strokeWidth={1.4} />
-            <h3>{title}</h3>
-            <p>{subtitle}</p>
-            <ArrowRight className="shortcut-arrow" size={17} />
-          </button>
+      <div className="launch-rows">
+        {rows.map((row, i) => (
+          <div className="launch-row" key={row.title}>
+            <span className="row-index">0{i + 1}</span>
+            <div>
+              <h3>{row.title}</h3>
+              <p>{row.detail}</p>
+            </div>
+            <button className="row-action" onClick={row.click}>
+              {row.action}
+              <ArrowUpRight size={13} />
+            </button>
+          </div>
         ))}
       </div>
-    </>
+      <div className="home-wordmark" aria-hidden="true">
+        ar client
+      </div>
+    </section>
   );
 }

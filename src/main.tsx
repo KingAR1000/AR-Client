@@ -4,7 +4,6 @@ import {
   Box,
   Check,
   ChevronDown,
-  ChevronRight,
   Copy,
   Download,
   Folder,
@@ -188,77 +187,108 @@ function App() {
   const open = (url: string) => request("link.open", { url }).catch(fail);
   return (
     <div className="shell">
-      <aside className="sidebar">
+      <header className="app-header">
         <button
           className="brand"
           onClick={() => setPage("Home")}
           aria-label="AR Client home"
         >
-          <img src="/ar-mark.png" alt="AR" />
-          <span>
-            CLIENT<small>BY KINGAR1000</small>
-          </span>
+          <img src="/ar-mark.png" alt="" />
+          <span>AR Client</span>
         </button>
-        <nav aria-label="Main navigation">
-          {nav.map(([name, Icon], i) => (
-            <React.Fragment key={name}>
-              {(i === 3 || i === 7 || i === 12) && (
-                <div className="nav-divider" />
-              )}
+        <nav className="header-nav" aria-label="Main navigation">
+          {nav
+            .filter(([name]) =>
+              ["Home", "Installations", "Mods", "Friends"].includes(name),
+            )
+            .map(([name]) => (
               <button
-                className={`nav-item ${page === name ? "active" : ""}`}
+                key={name}
+                className={page === name ? "active" : ""}
                 aria-current={page === name ? "page" : undefined}
-                title={name}
                 onClick={() => setPage(name)}
               >
-                <Icon size={17} />
-                <span>{name}</span>
+                {name === "Home" ? "Play" : name}
               </button>
-            </React.Fragment>
-          ))}
-        </nav>
-        <div className="sidebar-bottom">
-          <button className="account-card" onClick={() => setPage("Accounts")}>
-            <div className="avatar">
-              {account?.name.slice(0, 2).toUpperCase() || (
-                <UserRound size={20} />
-              )}
+            ))}
+          <details
+            className="more-nav"
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node | null))
+                e.currentTarget.removeAttribute("open");
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                e.currentTarget.removeAttribute("open");
+                e.currentTarget.querySelector("summary")?.focus();
+              }
+            }}
+          >
+            <summary
+              className={
+                ![
+                  "Home",
+                  "Installations",
+                  "Mods",
+                  "Friends",
+                  "Settings",
+                ].includes(page)
+                  ? "active"
+                  : ""
+              }
+            >
+              More <ChevronDown size={12} />
+            </summary>
+            <div className="nav-menu">
+              {nav
+                .filter(
+                  ([name]) =>
+                    ![
+                      "Home",
+                      "Installations",
+                      "Mods",
+                      "Friends",
+                      "Settings",
+                    ].includes(name),
+                )
+                .map(([name, Icon]) => (
+                  <button
+                    key={name}
+                    aria-current={page === name ? "page" : undefined}
+                    onClick={(e) => {
+                      setPage(name);
+                      e.currentTarget
+                        .closest("details")
+                        ?.removeAttribute("open");
+                    }}
+                  >
+                    <Icon size={15} />
+                    {name}
+                  </button>
+                ))}
             </div>
-            <span>
-              {account?.name || "Not signed in"}
-              <small>
-                {account ? "Microsoft account" : "Sign in with Microsoft"}
-              </small>
-            </span>
-            <ChevronRight size={16} />
+          </details>
+          <button
+            className={page === "Settings" ? "active" : ""}
+            aria-current={page === "Settings" ? "page" : undefined}
+            onClick={() => setPage("Settings")}
+          >
+            Settings
           </button>
-        </div>
-      </aside>
+        </nav>
+        <button
+          className="header-account"
+          title={account?.name || "Sign in with Microsoft"}
+          onClick={() => setPage("Accounts")}
+          aria-label={
+            account ? `Account: ${account.name}` : "Sign in with Microsoft"
+          }
+        >
+          <UserRound size={16} />
+          <span>{account?.name || "Sign in"}</span>
+        </button>
+      </header>
       <main>
-        <header className="topbar">
-          <span>
-            <span className="topbar-name">AR Client</span>
-            <span className="slash">/</span>
-            <b>{page}</b>
-          </span>
-          <div>
-            <span className="version-tag">v{state.version}</span>
-            <button
-              className="icon-button"
-              title="Open data folder"
-              onClick={() => request("folder.open").catch(fail)}
-            >
-              <Folder size={17} />
-            </button>
-            <button
-              className="icon-button"
-              title="Project on GitHub"
-              onClick={() => open("https://github.com/KingAR1000/AR-Client")}
-            >
-              <ArrowUpRight size={18} />
-            </button>
-          </div>
-        </header>
         {!desktop && (
           <div className="environment-banner">
             Browser preview · Sign-in, installs, and launching are available in
@@ -560,7 +590,17 @@ function App() {
             />
           )}
           <footer className="footer">
-            <span>Minecraft Java Edition</span>
+            <span>AR CLIENT {state.version}</span>
+            <div className="footer-links">
+              <button onClick={() => request("folder.open").catch(fail)}>
+                Data folder
+              </button>
+              <button
+                onClick={() => open("https://github.com/KingAR1000/AR-Client")}
+              >
+                GitHub <ArrowUpRight size={12} />
+              </button>
+            </div>
             <button onClick={() => open("https://kingar1000.xyz")}>
               KINGAR1000 <ArrowUpRight size={12} />
             </button>

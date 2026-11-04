@@ -8,14 +8,14 @@
 :root {
   font-family: "DM Sans", "Segoe UI", sans-serif;
   color: #eee;
-  background: #101010;
+  background: #101012;
   font-synthesis: none;
   font-size: 13px;
   color-scheme: dark;
   --muted: #969696;
-  --border: #292929;
+  --border: #29292d;
   --surface: #171717;
-  --sidebar-width: 204px;
+  --sidebar-width: 0px;
 }
 * {
   box-sizing: border-box;
@@ -141,167 +141,120 @@ code {
   background: #eee;
   color: #111;
 }
+/* Navigation and spacing follow Horizon's restrained launcher layout. */
 .shell {
-  display: flex;
   min-height: 100vh;
-}
-.sidebar {
-  width: var(--sidebar-width);
-  background: #141414;
-  border-right: 1px solid #252525;
-  position: fixed;
-  inset: 0 auto 0 0;
   display: flex;
   flex-direction: column;
-  padding: 28px 14px 14px;
-  z-index: 10;
-  overflow-y: auto;
+}
+main {
+  width: 100%;
+  flex: 1;
+  min-width: 0;
+}
+.app-header {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px 48px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
 }
 .brand {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 9px;
-  margin-bottom: 35px;
-  text-align: left;
-}
-.brand img {
-  width: 48px;
-  height: 41px;
-  object-fit: contain;
-}
-.brand > span {
-  font-weight: 600;
-  font-size: 14px;
-  letter-spacing: 3px;
-}
-.brand small {
-  display: block;
-  font-size: 7px;
-  letter-spacing: 1.15px;
-  margin-top: 5px;
-  color: #8b8b8b;
-}
-.nav-item {
-  width: 100%;
-  height: 37px;
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  padding: 0 13px;
-  margin: 3px 0;
-  color: #aaa;
-  border-radius: 6px;
-  font-size: 12px;
-  text-align: left;
-  position: relative;
-}
-.nav-item svg {
-  stroke-width: 1.5;
-  width: 16px;
-}
-.nav-item:hover {
-  background: #202020;
-  color: #eee;
-}
-.nav-item.active {
-  background: #282828;
-  color: white;
-}
-.nav-item.active::before {
-  content: "";
-  position: absolute;
-  left: -14px;
-  top: 11px;
-  bottom: 11px;
-  width: 2px;
-  border-radius: 2px;
-  background: #eee;
-}
-.nav-divider {
-  height: 1px;
-  background: #292929;
-  margin: 14px 13px;
-}
-.sidebar-bottom {
-  margin-top: auto;
-  padding-top: 26px;
-}
-.account-card {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  border-top: 1px solid #303030;
-  width: 100%;
-  padding: 16px 3px 3px;
-  text-align: left;
-}
-.account-card > span {
-  font-size: 11px;
-  font-weight: 500;
-  flex: 1;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.account-card small {
-  display: block;
-  font-size: 9px;
-  margin-top: 3px;
-}
-.account-card > svg {
-  color: #777;
-  width: 13px;
-}
-.avatar {
-  width: 32px;
-  height: 32px;
-  border: 1px solid #3c3c3c;
-  border-radius: 7px;
-  background: #252525;
-  display: grid;
-  place-items: center;
-  font-size: 12px;
-  font-weight: 600;
+  padding: 0;
   flex-shrink: 0;
 }
-main {
-  margin-left: var(--sidebar-width);
-  width: calc(100% - var(--sidebar-width));
-  padding-bottom: 12px;
+.brand img {
+  width: 30px;
+  height: 28px;
+  object-fit: contain;
 }
-.topbar {
-  height: 64px;
-  border-bottom: 1px solid #252525;
+.brand span {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+.header-nav {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 32px;
-  color: #777;
-  font-size: 11px;
+  gap: 3px;
+  margin-left: auto;
 }
-.topbar b {
+.header-nav > button,
+.more-nav summary {
+  padding: 9px 14px;
+  border-radius: 24px;
+  color: var(--muted);
   font-size: 12px;
-  font-weight: 400;
-  color: #ccc;
+  white-space: nowrap;
 }
-.topbar-name {
+.header-nav > button:hover,
+.more-nav summary:hover {
+  color: #fff;
+}
+.header-nav .active {
+  background: #202023;
+  color: #f5f5f5;
+}
+.more-nav {
+  position: relative;
+}
+.more-nav summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  list-style: none;
+}
+.more-nav summary::-webkit-details-marker {
+  display: none;
+}
+.nav-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 30;
+  width: 210px;
+  padding: 7px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #18181b;
+  box-shadow: 0 12px 36px #0008;
+}
+.nav-menu button {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  padding: 11px 12px;
+  border-radius: 6px;
   color: #aaa;
 }
-.topbar > div {
+.nav-menu button:hover,
+.nav-menu button[aria-current] {
+  color: #fff;
+  background: #252528;
+}
+.header-account {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
+  color: #aaa;
+  font-size: 11px;
+  max-width: 150px;
 }
-.slash {
-  margin: 0 14px;
-  color: #4a4a4a;
+.header-account span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.version-tag {
-  font-size: 10px;
-  letter-spacing: 0.3px;
-  padding: 5px 8px;
-  margin-right: 8px;
-  color: #969696;
+.header-account:hover {
+  color: white;
 }
 .icon-button {
   display: inline-flex;
@@ -320,9 +273,9 @@ main {
   color: #ff9999;
 }
 .content {
-  max-width: 1440px;
+  max-width: 1280px;
   margin: auto;
-  padding: 32px 32px 0;
+  padding: 26px 48px 0;
 }
 .page-heading {
   display: flex;
@@ -448,276 +401,166 @@ main {
   background: #d6d6d6;
   border-radius: 50%;
 }
-.home-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 24px;
-  gap: 20px;
-}
-.home-heading h1 {
-  margin-top: 6px;
-  font-size: 28px;
-}
-.home-heading .eyebrow {
-  font-size: 8px;
-}
-.home-heading .text-button {
-  padding-bottom: 4px;
-}
-.game-stage {
-  height: clamp(220px, 32vh, 350px);
+.launch-home {
   position: relative;
-  border: 1px solid #343434;
-  border-bottom: 0;
-  border-radius: 10px 10px 0 0;
-  overflow: hidden;
-  isolation: isolate;
-  background: #181818;
-}
-.world-art {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.stage-shade {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, #151515 0%, #151515e8 25%, #15151522 62%, #15151500),
-    linear-gradient(0deg, #111a, transparent 35%);
-}
-.stage-topline {
-  position: absolute;
-  left: 28px;
-  right: 28px;
+  min-height: 610px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 8px;
-  letter-spacing: 1.7px;
+  flex-direction: column;
 }
-.stage-topline {
-  top: 24px;
-  color: #bcbcbc;
+.launch-intro {
+  padding: 24px 0 22px;
 }
-.stage-topline > span:first-child {
+.release-meta {
   display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.stage-topline > span:last-child {
-  color: #dfdfdf;
-  font-weight: 600;
-  letter-spacing: 2px;
-}
-.stage-title {
-  position: absolute;
-  left: 28px;
-  top: 50%;
-  transform: translateY(-45%);
-}
-.stage-title h2 {
-  font-size: clamp(30px, 3.6vw, 51px);
-  letter-spacing: -1.7px;
-  line-height: 1;
-  font-weight: 800;
-}
-.stage-title > p {
-  font-size: 17px;
-  font-weight: 400;
-  letter-spacing: 0.3px;
-  color: #b9b9b9;
-  margin-top: 8px;
-}
-.release-label {
-  display: block;
-  margin-top: 22px;
-  font-size: 11px;
+  gap: 12px;
+  font:
+    10px ui-monospace,
+    Consolas,
+    monospace;
   color: #999;
 }
-.launch-dock {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  min-height: 90px;
-  padding: 18px 22px;
-  border: 1px solid #383838;
-  border-radius: 0 0 10px 10px;
-  background: #1d1d1d;
+.meta-dot {
+  color: #505054;
 }
-.dock-profile {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 0;
-  flex: 1;
-}
-.dock-profile > div:last-child {
-  min-width: 0;
-}
-.instance-mark {
-  width: 44px;
-  height: 44px;
-  background: #2c2c2c;
-  border: 1px solid #454545;
-  border-radius: 8px;
-  display: grid;
-  place-items: center;
-  color: #ccc;
-  flex-shrink: 0;
-}
-.field-caption {
-  display: block;
-  color: #929292;
-  font-size: 8px;
-  letter-spacing: 1.1px;
-  margin-bottom: 5px;
-}
-.dock-profile small {
-  display: block;
-  font-size: 10px;
-  color: #999;
-}
-.create-instance {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 0;
-  font-size: 13px;
+.launch-intro h1 {
+  font-size: 48px;
   font-weight: 500;
-  margin-bottom: 5px;
-  text-align: left;
+  letter-spacing: -1.8px;
+  margin: 16px 0 12px;
 }
-.create-instance:hover {
-  color: #fff;
+.launch-intro > p {
+  color: #929296;
+  font-size: 15px;
+  line-height: 1.7;
 }
-.create-instance svg {
-  color: #999;
-}
-.dock-select {
+.launch-controls {
   display: flex;
   align-items: center;
-  position: relative;
-  margin-bottom: 4px;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 6px 0 30px;
 }
-.dock-select select {
+.edition-toggle {
+  display: flex;
+  background: #1e1e21;
+  border-radius: 24px;
+  padding: 3px;
+}
+.edition-toggle button,
+.edition-toggle > span {
+  border-radius: 20px;
+  padding: 7px 18px;
+  color: #999;
+  font-size: 12px;
+}
+.edition-toggle .selected {
+  background: #eee;
+  color: #111;
+}
+.launch-actions {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  min-width: 0;
+}
+.installation-picker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  background: #1e1e21;
+  border-radius: 24px;
+  padding: 0 17px;
+  height: 42px;
+  color: #c9c9cc;
+  font-size: 12px;
+}
+.installation-picker select {
   appearance: none;
   border: 0;
   background: transparent;
-  font-size: 14px;
-  font-weight: 500;
-  padding: 0 26px 0 0;
-  border-radius: 0;
-  max-width: 280px;
+  padding: 0 20px 0 0;
+  max-width: 260px;
+  width: 100%;
+  font-size: 12px;
 }
-.dock-select > svg {
-  position: absolute;
-  right: 2px;
+.installation-picker > svg:last-child {
   pointer-events: none;
-  color: #999;
 }
-.dock-select option {
-  background: #222;
-}
-.dock-memory {
-  border-left: 1px solid #3b3b3b;
-  padding-left: 24px;
-  margin-right: 8px;
-}
-.dock-memory strong {
-  font-size: 16px;
-  font-weight: 500;
-}
-.dock-memory strong span {
-  font-size: 10px;
-  color: #999;
-  font-weight: 400;
+.installation-picker select + svg {
+  position: absolute;
+  right: 15px;
 }
 .launch-button {
-  min-width: 172px;
-  min-height: 48px;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 12px 22px;
-  gap: 12px;
+  min-width: 144px;
+  min-height: 42px;
+  border-radius: 24px;
+  gap: 10px;
+  padding: 10px 22px;
 }
-.sign-in-nudge {
+.launch-rows {
+  border-top: 1px solid var(--border);
+}
+.launch-row {
   display: flex;
   align-items: center;
-  gap: 9px;
-  color: #999;
-  font-size: 11px;
-  padding: 16px 1px 0;
+  gap: 32px;
+  min-height: 66px;
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
 }
-.sign-in-nudge > svg {
+.row-index {
+  font:
+    10px ui-monospace,
+    Consolas,
+    monospace;
   color: #777;
+  width: 24px;
+  flex-shrink: 0;
 }
-.sign-in-nudge button {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  color: #ddd;
-  padding: 0;
-  margin-left: 5px;
+.launch-row > div {
+  min-width: 0;
 }
-.sign-in-nudge button:hover {
-  color: #fff;
-}
-.home-section-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 28px 0 15px;
-}
-.home-section-heading h3 {
+.launch-row h3 {
   font-weight: 500;
   font-size: 13px;
-  color: #ddd;
 }
-.shortcut-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-.shortcut {
-  padding: 20px;
-  border: 1px solid #2c2c2c;
-  background: #181818;
-  border-radius: 8px;
-  position: relative;
-  text-align: left;
-}
-.shortcut > svg:first-child {
-  color: #aaa;
-  margin-bottom: 18px;
-}
-.shortcut h3 {
+.launch-row p {
   font-size: 12px;
-  font-weight: 500;
+  color: #8d8d93;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
 }
-.shortcut p {
-  font-size: 11px;
-  margin-top: 5px;
-  color: #909090;
+.row-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  color: #9e9ea4;
+  font-size: 12px;
+  white-space: nowrap;
+  padding: 10px 0 10px 15px;
 }
-.shortcut-arrow {
-  position: absolute;
-  right: 19px;
-  top: 22px;
-  color: #777;
+.row-action:hover {
+  color: #fff;
 }
-.shortcut:hover {
-  border-color: #4a4a4a;
-  background: #1e1e1e;
+.home-wordmark {
+  margin-top: auto;
+  padding-top: 26px;
+  height: 120px;
+  overflow: hidden;
+  font-size: clamp(70px, 12vw, 160px);
+  line-height: 1;
+  letter-spacing: -9px;
+  font-weight: 700;
+  color: #1b1b1e;
+  user-select: none;
 }
-.shortcut:hover .shortcut-arrow {
-  color: #eee;
-  transform: translateX(3px);
-  transition: transform 0.16s;
+.footer-links {
+  display: flex;
+  gap: 22px;
+  margin-left: auto;
+  margin-right: 28px;
 }
 .footer {
   display: flex;
@@ -1289,39 +1132,7 @@ main {
   }
 }
 
-@media (max-height: 740px) and (min-width: 761px) {
-  .sidebar {
-    padding-top: 20px;
-  }
-  .brand {
-    margin-bottom: 22px;
-  }
-  .nav-item {
-    height: 33px;
-  }
-  .nav-divider {
-    margin: 10px 13px;
-  }
-  .sidebar-bottom {
-    padding-top: 12px;
-  }
-  .home-content {
-    padding-top: 22px;
-  }
-  .home-heading {
-    margin-bottom: 18px;
-  }
-  .shortcut {
-    padding: 16px 18px;
-  }
-  .shortcut > svg:first-child {
-    margin-bottom: 12px;
-  }
-}
 @media (max-width: 1100px) {
-  :root {
-    --sidebar-width: 184px;
-  }
   .content {
     padding: 26px 24px 0;
   }
@@ -1340,12 +1151,6 @@ main {
   .hud-layout {
     grid-template-columns: 1fr 210px;
   }
-  .dock-memory {
-    display: none;
-  }
-  .launch-button {
-    min-width: 155px;
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -1357,37 +1162,6 @@ main {
   }
 }
 @media (max-width: 760px) {
-  :root {
-    --sidebar-width: 64px;
-  }
-  .sidebar {
-    padding: 20px 7px;
-  }
-  .brand {
-    padding: 0;
-    margin-bottom: 24px;
-  }
-  .brand img {
-    width: 48px;
-  }
-  .brand > span,
-  .nav-item span,
-  .sidebar-bottom {
-    display: none;
-  }
-  .nav-item {
-    justify-content: center;
-    padding: 0;
-  }
-  .nav-item.active::before {
-    left: -7px;
-  }
-  .nav-item svg {
-    width: 20px;
-  }
-  .nav-divider {
-    margin: 15px 5px;
-  }
   .content {
     padding: 24px 16px 0;
   }
@@ -1451,62 +1225,6 @@ main {
   }
   .download-bar .subtle {
     display: none;
-  }
-  .home-heading {
-    align-items: flex-start;
-  }
-  .home-heading h1 {
-    font-size: 25px;
-  }
-  .home-heading > .text-button {
-    font-size: 10px;
-    gap: 6px;
-    margin-top: 15px;
-  }
-  .home-heading > .text-button svg:first-child {
-    display: none;
-  }
-  .game-stage {
-    height: 245px;
-  }
-  .stage-topline {
-    left: 20px;
-    right: 20px;
-  }
-  .stage-title {
-    left: 20px;
-  }
-  .stage-title h2 {
-    font-size: 34px;
-  }
-  .launch-dock {
-    flex-wrap: wrap;
-    gap: 18px;
-    padding: 18px;
-  }
-  .dock-profile {
-    min-width: 200px;
-  }
-  .launch-button {
-    width: 100%;
-  }
-  .sign-in-nudge {
-    flex-wrap: wrap;
-    font-size: 10px;
-  }
-  .shortcut-grid {
-    grid-template-columns: 1fr;
-  }
-  .shortcut {
-    padding: 18px 20px 18px 60px;
-  }
-  .shortcut > svg:first-child {
-    position: absolute;
-    left: 20px;
-    top: 22px;
-  }
-  .shortcut-arrow {
-    top: 24px;
   }
 }
 .settings-title {
@@ -1579,25 +1297,7 @@ main {
 .hud-save .primary {
   margin: 0;
 }
-@media (max-height: 740px) and (min-width: 761px) {
-  .game-stage {
-    height: 180px;
-  }
-  .home-section-heading {
-    margin-top: 22px;
-  }
-  .home-content .footer {
-    padding-top: 18px;
-  }
-}
-.sidebar nav {
-  min-height: 0;
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
-.sidebar-bottom {
-  flex-shrink: 0;
-}
+
 .server-layout {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);
@@ -1768,4 +1468,64 @@ main {
 }
 .server-console .section-title .row {
   flex-wrap: wrap;
+}
+
+@media (max-width: 1000px) {
+  .app-header {
+    padding: 20px 24px;
+    gap: 16px;
+  }
+  .header-account span {
+    display: none;
+  }
+  .header-nav > button,
+  .more-nav summary {
+    padding: 9px 11px;
+  }
+}
+@media (max-width: 760px) {
+  .app-header {
+    padding: 18px 16px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .header-account {
+    margin-left: auto;
+  }
+  .header-nav {
+    order: 3;
+    width: 100%;
+    margin: 0;
+    justify-content: space-between;
+  }
+  .launch-intro {
+    padding-top: 20px;
+  }
+  .launch-intro h1 {
+    font-size: 40px;
+  }
+  .launch-controls {
+    flex-wrap: wrap;
+  }
+  .launch-actions {
+    width: 100%;
+  }
+  .installation-picker {
+    flex: 1;
+    min-width: 0;
+  }
+  .launch-row {
+    gap: 14px;
+  }
+  .row-action {
+    font-size: 11px;
+  }
+  .home-wordmark {
+    letter-spacing: -4px;
+    height: 110px;
+  }
+  .footer-links {
+    gap: 12px;
+    margin-right: 12px;
+  }
 }
