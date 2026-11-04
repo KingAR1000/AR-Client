@@ -1,6 +1,6 @@
 # Validation
 
-Checks below were recorded on 28 October–3 November 2026. Installation and compilation checks do not establish authenticated gameplay or performance.
+Checks below were recorded on 28 October–4 November 2026. Installation and compilation checks do not establish authenticated gameplay or performance.
 
 ## Passed
 
@@ -31,6 +31,12 @@ Checks below were recorded on 28 October–3 November 2026. Installation and com
 - Large token bundles now use generation-based, size-bounded OS-vault entries. A small manifest is committed only after every piece is saved; failed writes preserve the previous credential. Existing single-entry credentials remain readable, and logout removes the stored pieces.
 - Regression coverage passed for large tokens, Unicode, size boundaries, account isolation, old credentials, refresh replacement, deletion, failed chunk/manifest writes, missing pieces, malformed metadata and oversize rejection. The actual Windows-vault save/read/refresh/logout test passed in GitHub Actions.
 - The owner must retry Microsoft sign-in using the corrected installer to verify the complete account flow. This automated storage test does not establish authenticated gameplay.
+
+## 4 November launcher layout and icon
+
+- Rebuilt the launcher shell and Home screen around Horizon-inspired top navigation, a single launch row and numbered setup rows. All launcher sections remain accessible from the main navigation and More menu. Horizon's MIT notice is retained.
+- Browser checks passed for all navigation routes, the Client/Server switch, installation creation dialog and dropdown closure. Home was checked at widths 600, 980, 1280 and 1440 without horizontal overflow; no uncaught browser errors occurred. Screenshots use the browser preview with no fabricated accounts or installations.
+- Generated a contrasting dark-tile AR app icon and rebuilt the configured 32/128/256px PNGs and multi-resolution Windows ICO. The 32px rendering was visually inspected.
 
 ## Cloudflare production deployment
 
