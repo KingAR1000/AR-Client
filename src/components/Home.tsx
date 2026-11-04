@@ -1,6 +1,5 @@
-import { ArrowUpRight, ChevronDown, Play, Plus } from "lucide-react";
+import { ChevronDown, Folder, Play, Settings2 } from "lucide-react";
 import type { Account, Page, Profile } from "../api";
-
 export default function HomeScreen({
   account,
   profiles,
@@ -12,6 +11,8 @@ export default function HomeScreen({
   navigate,
   create,
   launch,
+  openFolder,
+  configure,
 }: {
   account?: Account;
   profiles: Profile[];
@@ -23,121 +24,140 @@ export default function HomeScreen({
   navigate: (page: Page) => void;
   create: () => void;
   launch: () => unknown;
+  openFolder: () => unknown;
+  configure: () => void;
 }) {
   const isRunning = !!profile && running.includes(profile.id);
   const rows = [
     {
-      title: "Installation",
+      title: "Instance",
       detail: profile
-        ? `${profile.name} · ${profile.version} · ${profile.loader}`
-        : "Choose a version and modloader to get started.",
-      action: profile ? "Manage" : "Create installation",
-      click: profile ? () => navigate("Installations") : create,
+        ? `${profile.version} · ${profile.loader} · ${profile.ram / 1024} GB RAM`
+        : "Create an isolated Minecraft installation.",
+      action: profile ? "Edit…" : "Create…",
+      click: configure,
     },
     {
-      title: "Playing as",
+      title: "Game files",
+      detail: "Verify the installation and manage its contents.",
+      action: "Manage…",
+      click: () => navigate("Installations"),
+    },
+    {
+      title: "Minecraft folder",
+      detail: profile ? profile.name : "No installation selected.",
+      action: "Open folder",
+      click: openFolder,
+    },
+    {
+      title: "Microsoft account",
       detail: account
-        ? account.name
-        : "Connect the Microsoft account that owns Minecraft.",
-      action: account ? "Switch account" : "Sign in",
+        ? `Playing as ${account.name}`
+        : "Sign in with the account that owns Minecraft: Java Edition.",
+      action: account ? "Accounts…" : "Sign in with Microsoft",
       click: () => navigate("Accounts"),
-    },
-    {
-      title: "Mods & resource packs",
-      detail: "Make your installation your own.",
-      action: "Browse mods",
-      click: () => navigate("Mods"),
-    },
-    {
-      title: "In-game HUD",
-      detail: "Your widgets, keybinds and layout.",
-      action: "Customize",
-      click: () => navigate("HUD Editor"),
     },
   ];
   return (
-    <section className="launch-home">
-      <div className="launch-intro">
-        <div className="release-meta">
-          <span>MINECRAFT {profile?.version || latest || "JAVA EDITION"}</span>
-          <span className="meta-dot">·</span>
+    <section className="night-home">
+      <div className="night-hero">
+        <p className="game-meta">
+          Minecraft: Java Edition {profile?.version || latest}
           <span>
+            {" "}
+            ·{" "}
             {isRunning
-              ? "RUNNING"
+              ? "Running"
               : profile
-                ? "JAVA EDITION"
-                : "OFFICIAL RELEASES"}
+                ? profile.loader
+                : "Installation required"}
           </span>
-        </div>
-        <h1>AR Client</h1>
-        <p>
-          Your Minecraft. Your setup.
-          <br />
-          Versions, mods and friends. All in one place.
         </p>
-      </div>
-      <div className="launch-controls">
-        <div className="edition-toggle" aria-label="Game mode">
-          <span className="selected">Client</span>
-          <button onClick={() => navigate("Servers")}>Server</button>
-        </div>
-        <div className="launch-actions">
-          {profile ? (
-            <div className="installation-picker">
-              <select
-                aria-label="Active installation"
-                value={profile.id}
-                onChange={(e) => select(e.target.value)}
-              >
-                {profiles.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} · {p.version}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown size={13} />
-            </div>
-          ) : (
-            <button className="installation-picker" onClick={create}>
-              <Plus size={14} /> Installation
-            </button>
-          )}
+        <h1>
+          <img src="/app-icon.png" alt="" />
+          {profile?.name || "AR Client"}
+        </h1>
+        <p className="game-caption">
+          {profile
+            ? "Your installation. Your way to play."
+            : "Choose a Minecraft version to get started."}
+        </p>
+        <div className="game-actions">
           <button
-            className="primary launch-button"
+            className="primary"
             disabled={!!busy || isRunning}
             onClick={
               profile ? (account ? launch : () => navigate("Accounts")) : create
             }
           >
-            <Play size={14} fill="currentColor" />
+            <Play size={19} />
             {busy ||
               (isRunning
                 ? "Running"
                 : profile
                   ? account
                     ? "Play"
-                    : "Sign in to play"
-                  : "Set up Minecraft")}
+                    : "Sign in"
+                  : "Create installation")}
+          </button>
+          {profile && (
+            <div className="game-version">
+              <label htmlFor="game-installation">Installation</label>
+              <select
+                id="game-installation"
+                aria-label="Active installation"
+                value={profile.id}
+                onChange={(e) => select(e.target.value)}
+              >
+                {profiles.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.version} · {p.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown size={14} />
+            </div>
+          )}
+          <button className="text-button" onClick={() => navigate("Mods")}>
+            Mods
+          </button>
+          <button className="text-button" onClick={openFolder}>
+            <Folder size={14} />
+            Folder
+          </button>
+          <button className="friend-card" onClick={() => navigate("Friends")}>
+            <span>Play together</span>
+            <strong>Friends & messages</strong>
+            <small>Open your friends list →</small>
           </button>
         </div>
       </div>
-      <div className="launch-rows">
-        {rows.map((row, i) => (
-          <div className="launch-row" key={row.title}>
-            <span className="row-index">0{i + 1}</span>
+      <nav className="instance-tabs" aria-label="Instance navigation">
+        <span aria-current="page">Overview</span>
+        {(["Mods", "Resource Packs", "HUD Editor", "Servers"] as Page[]).map(
+          (p) => (
+            <button key={p} onClick={() => navigate(p)}>
+              {p === "Resource Packs"
+                ? "Packs"
+                : p === "Servers"
+                  ? "Multiplayer"
+                  : p}
+            </button>
+          ),
+        )}
+      </nav>
+      <div className="instance-overview">
+        {rows.map((row) => (
+          <div className="night-row" key={row.title}>
             <div>
               <h3>{row.title}</h3>
               <p>{row.detail}</p>
             </div>
             <button className="row-action" onClick={row.click}>
-              {row.action}
-              <ArrowUpRight size={13} />
+              {row.title === "Instance" && <Settings2 size={14} />} {row.action}
             </button>
           </div>
         ))}
-      </div>
-      <div className="home-wordmark" aria-hidden="true">
-        ar client
       </div>
     </section>
   );

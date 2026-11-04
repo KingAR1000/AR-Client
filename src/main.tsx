@@ -187,6 +187,86 @@ function App() {
   const open = (url: string) => request("link.open", { url }).catch(fail);
   return (
     <div className="shell">
+      <aside className="instance-sidebar">
+        <button
+          className="brand"
+          onClick={() => setPage("Home")}
+          aria-label="AR Client home"
+        >
+          <img src="/app-icon.png" alt="" />
+          <span>AR Client</span>
+        </button>
+        <div className="instance-label">
+          <span>INSTALLATIONS</span>
+          <button
+            className="icon-button"
+            aria-label="Create installation"
+            onClick={newProfile}
+          >
+            <Plus size={16} />
+          </button>
+        </div>
+        <nav className="instance-list" aria-label="Installations">
+          {state.profiles.map((p) => (
+            <button
+              key={p.id}
+              className={`instance-entry ${profile?.id === p.id ? "selected" : ""}`}
+              onClick={() => {
+                setSelected(p.id);
+                setPage("Home");
+              }}
+            >
+              <img src="/app-icon.png" alt="" />
+              <span>
+                {p.name}
+                <small>
+                  {state.running.includes(p.id)
+                    ? "Running"
+                    : `${p.version} · ${p.loader}`}
+                </small>
+              </span>
+            </button>
+          ))}
+          {!state.profiles.length && (
+            <button className="instance-empty" onClick={newProfile}>
+              <Plus size={20} />
+              <span>
+                Create an installation
+                <small>Choose your Minecraft version</small>
+              </span>
+            </button>
+          )}
+        </nav>
+        <nav className="sidebar-tools" aria-label="Library">
+          {(
+            ["Home", "Mods", "Servers", "Installations", "Updates"] as Page[]
+          ).map((name) => (
+            <button
+              key={name}
+              className={page === name ? "active" : ""}
+              aria-current={page === name ? "page" : undefined}
+              onClick={() => setPage(name)}
+            >
+              {name === "Installations"
+                ? "Versions"
+                : name === "Updates"
+                  ? "Patch notes"
+                  : name}
+            </button>
+          ))}
+        </nav>
+        <div className="sidebar-info">
+          <button
+            onClick={() => open("https://github.com/KingAR1000/AR-Client")}
+          >
+            <ArrowUpRight size={14} /> Source code
+          </button>
+          <button onClick={() => open("https://client.kingar1000.xyz")}>
+            <ArrowUpRight size={14} /> Website
+          </button>
+          <small>AR Client {state.version}</small>
+        </div>
+      </aside>
       <header className="app-header">
         <button
           className="brand"
@@ -199,7 +279,9 @@ function App() {
         <nav className="header-nav" aria-label="Main navigation">
           {nav
             .filter(([name]) =>
-              ["Home", "Installations", "Mods", "Friends"].includes(name),
+              ["Home", "Mods", "Servers", "Installations", "Updates"].includes(
+                name,
+              ),
             )
             .map(([name]) => (
               <button
@@ -208,73 +290,13 @@ function App() {
                 aria-current={page === name ? "page" : undefined}
                 onClick={() => setPage(name)}
               >
-                {name === "Home" ? "Play" : name}
+                {name === "Installations"
+                  ? "Versions"
+                  : name === "Updates"
+                    ? "Patch notes"
+                    : name}
               </button>
             ))}
-          <details
-            className="more-nav"
-            onBlur={(e) => {
-              if (!e.currentTarget.contains(e.relatedTarget as Node | null))
-                e.currentTarget.removeAttribute("open");
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") {
-                e.currentTarget.removeAttribute("open");
-                e.currentTarget.querySelector("summary")?.focus();
-              }
-            }}
-          >
-            <summary
-              className={
-                ![
-                  "Home",
-                  "Installations",
-                  "Mods",
-                  "Friends",
-                  "Settings",
-                ].includes(page)
-                  ? "active"
-                  : ""
-              }
-            >
-              More <ChevronDown size={12} />
-            </summary>
-            <div className="nav-menu">
-              {nav
-                .filter(
-                  ([name]) =>
-                    ![
-                      "Home",
-                      "Installations",
-                      "Mods",
-                      "Friends",
-                      "Settings",
-                    ].includes(name),
-                )
-                .map(([name, Icon]) => (
-                  <button
-                    key={name}
-                    aria-current={page === name ? "page" : undefined}
-                    onClick={(e) => {
-                      setPage(name);
-                      e.currentTarget
-                        .closest("details")
-                        ?.removeAttribute("open");
-                    }}
-                  >
-                    <Icon size={15} />
-                    {name}
-                  </button>
-                ))}
-            </div>
-          </details>
-          <button
-            className={page === "Settings" ? "active" : ""}
-            aria-current={page === "Settings" ? "page" : undefined}
-            onClick={() => setPage("Settings")}
-          >
-            Settings
-          </button>
         </nav>
         <button
           className="header-account"
@@ -285,7 +307,17 @@ function App() {
           }
         >
           <UserRound size={16} />
-          <span>{account?.name || "Sign in"}</span>
+          <span>
+            {account?.name || "Account"}
+            <small>{account ? "Microsoft" : "Sign in"}</small>
+          </span>
+        </button>
+        <button
+          className={`icon-button settings-shortcut ${page === "Settings" ? "active" : ""}`}
+          aria-label="Settings"
+          onClick={() => setPage("Settings")}
+        >
+          <Settings size={19} />
         </button>
       </header>
       <main>
@@ -307,7 +339,7 @@ function App() {
                   <Plus size={17} />
                   New installation
                 </button>
-              ) : (
+              ) : page === "Settings" ? null : (
                 <button
                   className="profile-switch"
                   onClick={() => setPage("Play")}
@@ -337,6 +369,12 @@ function App() {
               select={setSelected}
               navigate={setPage}
               create={newProfile}
+              openFolder={() =>
+                request("folder.open", profile ? { id: profile.id } : {}).catch(
+                  fail,
+                )
+              }
+              configure={() => (profile ? setEditing(profile) : newProfile())}
               launch={() =>
                 profile &&
                 run("Launch Minecraft", () =>
@@ -568,6 +606,7 @@ function App() {
               open={open}
               busy={!!busy}
               configure={setEditing}
+              navigate={setPage}
             />
           )}
           {page === "Updates" && (
@@ -685,7 +724,7 @@ const descriptions: Record<Page, string> = {
   Skins: "Your skin library and owned capes.",
   Accounts: "Your Minecraft identities, securely stored.",
   Updates: "Launcher releases and compatible content updates.",
-  Settings: "Performance, Java, and launcher preferences.",
+  Settings: "Accounts, updates, and the launcher itself.",
   "HUD Editor": "Position and customize your in-game widgets.",
 };
 createRoot(document.getElementById("root")!).render(

@@ -9,6 +9,7 @@ const root = fileURLToPath(new URL(".", import.meta.url));
 const types = {
   ".html": "text/html; charset=utf-8",
   ".png": "image/png",
+  ".svg": "image/svg+xml",
   ".jpg": "image/jpeg",
   ".ttf": "font/ttf",
   ".txt": "text/plain",

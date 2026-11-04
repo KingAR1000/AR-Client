@@ -178,9 +178,10 @@
         z-index: -2;
         pointer-events: none;
       }
-      .hero canvas {
+      .hero-art img {
         width: 100%;
         height: 100%;
+        object-fit: cover;
         display: block;
       }
       .hero-art:after {
@@ -888,6 +889,91 @@
           transition: none !important;
         }
       }
+
+      @font-face {
+        font-family: Bricolage;
+        src: url("/assets/BricolageGrotesque-Regular.ttf");
+        font-weight: 400;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: Bricolage;
+        src: url("/assets/BricolageGrotesque-SemiBold.ttf");
+        font-weight: 500 900;
+        font-display: swap;
+      }
+      body {
+        font-family: Bricolage, sans-serif;
+      }
+      h1,
+      h2,
+      h3,
+      .hero h1,
+      .section h2 {
+        font-family: Bricolage, sans-serif;
+        letter-spacing: -0.04em;
+      }
+      .hero h1 {
+        font-size: clamp(62px, 7vw, 108px);
+        line-height: 1.02;
+        font-weight: 600;
+      }
+      .hero-art {
+        inset: 0 -70px 0 18%;
+      }
+      .hero-art:after {
+        background:
+          linear-gradient(90deg, var(--bg), #0b0b0b65 38%, transparent),
+          linear-gradient(
+            0deg,
+            var(--bg),
+            transparent 22%,
+            transparent 80%,
+            var(--bg)
+          );
+      }
+      .button,
+      .nav-download {
+        border-radius: 0;
+        box-shadow:
+          inset 0 2px #fff6,
+          0 3px #777;
+        clip-path: polygon(
+          0 6px,
+          3px 6px,
+          3px 3px,
+          6px 3px,
+          6px 0,
+          calc(100% - 6px) 0,
+          calc(100% - 6px) 3px,
+          calc(100% - 3px) 3px,
+          calc(100% - 3px) 6px,
+          100% 6px,
+          100% calc(100% - 6px),
+          calc(100% - 6px) calc(100% - 6px),
+          calc(100% - 6px) 100%,
+          6px 100%,
+          6px calc(100% - 3px),
+          0 calc(100% - 3px)
+        );
+      }
+      .launcher-frame {
+        border: 2px solid #33333c;
+        border-radius: 0;
+        background: #121219;
+      }
+      .feature-rows {
+        border-top-color: #55555f;
+      }
+      @media (max-width: 700px) {
+        .hero h1 {
+          font-size: 64px;
+        }
+        .hero-art {
+          inset: 15% -80% 0 0;
+          opacity: 0.55;
+        }
+      }
     </style>
   </head>
   <body>
@@ -909,14 +995,14 @@
     <main id="main">
       <section class="wrap hero" aria-labelledby="title">
         <div class="hero-art" aria-hidden="true">
-          <canvas id="world"></canvas>
+          <img src="/assets/night-sky.svg" alt="" width="1280" height="800" />
         </div>
         <div class="hero-copy">
           <p class="label mono">Independent. Open source. Minecraft Java.</p>
-          <h1 id="title">Minecraft.<br /><span>On your</span><br />terms.</h1>
+          <h1 id="title">Your world.<br /><span>Your way.</span></h1>
           <p class="hero-description">
-            Your worlds, mods, and versions.<br />One launcher that keeps it all
-            together.
+            An installation for every way you play.<br />Minecraft, mods and
+            friends. One free launcher.
           </p>
           <div class="actions">
             <a class="button" href="#download"
@@ -967,11 +1053,11 @@
             width="1280"
             height="820"
             loading="lazy"
-            alt="AR Client desktop interface with navigation for installations, mods, skins, accounts, and updates"
+            alt="AR Client Night interface with an installation sidebar, pixel-cut launch controls and a monochrome sky"
           />
         </div>
         <div class="screenshot-note">
-          <span>Actual interface. Development build.</span
+          <span>Actual interface · Browser preview · Development build.</span
           ><span>Windows 11 / 64-bit</span>
         </div>
         <div class="feature-rows">
@@ -1173,168 +1259,6 @@
       </div>
     </footer>
     <script>
-      // Original voxel artwork, drawn only on resize. No game assets or render loop.
-      (() => {
-        const canvas = document.getElementById("world"),
-          ctx = canvas.getContext("2d");
-        if (!ctx) return;
-        const n = 37,
-          heights = [],
-          trees = new Map(),
-          noise = (x, z) => {
-            const s = Math.sin(x * 127.1 + z * 311.7) * 43758.5453;
-            return s - Math.floor(s);
-          };
-        for (let x = 0; x < n; x++) {
-          heights[x] = [];
-          for (let z = 0; z < n; z++) {
-            const river = 3.4 * Math.sin(z * 0.15) + 18,
-              distance = Math.abs(x - river),
-              hills =
-                3 +
-                3 * Math.sin(x * 0.13 + 1.2) * Math.cos(z * 0.13) +
-                2 * Math.sin(z * 0.2 + x * 0.09),
-              cliff = Math.max(0, 6 - Math.hypot(x - 29, z - 13) * 0.65),
-              h =
-                distance < 2
-                  ? 1
-                  : Math.max(
-                      2,
-                      Math.floor(
-                        hills +
-                          cliff +
-                          Math.min(distance, 7) * 0.55 +
-                          noise(x, z) * 0.6,
-                      ),
-                    );
-            heights[x][z] = h;
-            if (
-              h >= 4 &&
-              distance > 4 &&
-              x > 6 &&
-              z > 3 &&
-              z < 32 &&
-              noise(x + 42, z + 89) > 0.94
-            )
-              trees.set(x + "," + z, h);
-          }
-        }
-        function draw() {
-          const b = canvas.getBoundingClientRect(),
-            dpr = Math.min(devicePixelRatio || 1, 2);
-          canvas.width = Math.round(b.width * dpr);
-          canvas.height = Math.round(b.height * dpr);
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-          ctx.clearRect(0, 0, b.width, b.height);
-          const scale = Math.min(b.width / 73, b.height / 45),
-            sx = scale,
-            sy = scale * 0.49,
-            sz = scale * 0.82,
-            ox = b.width * 0.53,
-            oy = b.height * 0.24,
-            point = (x, z, h) => [
-              ox + (x - z) * sx,
-              oy + (x + z) * sy - h * sz,
-            ];
-          const face = (points, color) => {
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            points.forEach(([x, z, h], i) => {
-              const p = point(x, z, h);
-              if (i) ctx.lineTo(...p);
-              else ctx.moveTo(...p);
-            });
-            ctx.closePath();
-            ctx.fill();
-          };
-          const cube = (x, z, h, base, top, left, right) => {
-            face(
-              [
-                [x, z, h],
-                [x, z + 1, h],
-                [x, z + 1, base],
-                [x, z, base],
-              ],
-              left,
-            );
-            face(
-              [
-                [x, z + 1, h],
-                [x + 1, z + 1, h],
-                [x + 1, z + 1, base],
-                [x, z + 1, base],
-              ],
-              right,
-            );
-            face(
-              [
-                [x, z, h],
-                [x + 1, z, h],
-                [x + 1, z + 1, h],
-                [x, z + 1, h],
-              ],
-              top,
-            );
-          };
-          for (let sum = 0; sum < n * 2; sum++)
-            for (let x = 0; x < n; x++) {
-              const z = sum - x;
-              if (z < 0 || z >= n) continue;
-              const h = heights[x][z],
-                water = h === 1,
-                light = Math.floor(72 + h * 5 + noise(x, z) * 7);
-              cube(
-                x,
-                z,
-                h,
-                0,
-                water ? "#bcbcbc" : `rgb(${light},${light},${light})`,
-                water ? "#515151" : "#333333",
-                water ? "#777777" : "#484848",
-              );
-              if (!water && noise(x + 67, z + 17) > 0.86) {
-                const p = point(x + 0.2, z + 0.3, h + 0.01);
-                ctx.fillStyle = "#ffffff0b";
-                ctx.fillRect(p[0], p[1], scale * 0.32, 1);
-              }
-              if (trees.has(x + "," + z)) {
-                cube(
-                  x + 0.35,
-                  z + 0.35,
-                  h + 2,
-                  h,
-                  "#585858",
-                  "#282828",
-                  "#393939",
-                );
-                for (let layer = 0; layer < 3; layer++) {
-                  const width = layer === 2 ? 1 : 2;
-                  for (let tx = 0; tx < width; tx++)
-                    for (let tz = 0; tz < width; tz++)
-                      cube(
-                        x - 0.4 + tx + (layer === 2 ? 0.5 : 0),
-                        z - 0.4 + tz + (layer === 2 ? 0.5 : 0),
-                        h + 2.5 + layer,
-                        h + 1.7 + layer,
-                        layer === 2 ? "#a7a7a7" : "#858585",
-                        "#383838",
-                        "#555555",
-                      );
-                }
-              }
-            }
-        }
-        let scheduled = false;
-        new ResizeObserver(() => {
-          if (!scheduled) {
-            scheduled = true;
-            requestAnimationFrame(() => {
-              scheduled = false;
-              draw();
-            });
-          }
-        }).observe(canvas);
-      })();
       document.getElementById("year").textContent = new Date().getFullYear();
       // Resolve a real published Windows asset; keep the working builds link on failure.
       (async () => {

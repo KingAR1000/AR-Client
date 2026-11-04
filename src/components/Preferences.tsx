@@ -1,87 +1,137 @@
 import { useState } from "react";
-
 import {
-  ArrowUpRight,
   ExternalLink,
   Settings2,
+  UserRound,
+  RefreshCw,
   SlidersHorizontal,
 } from "lucide-react";
-
-import { request, type LauncherState, type Profile } from "../api";
-
-import type { Run } from "../api";
+import {
+  request,
+  type LauncherState,
+  type Profile,
+  type Page,
+  type Run,
+} from "../api";
 export default function Preferences({
   state,
   run,
   open,
   busy,
   configure,
+  navigate,
 }: {
   state: LauncherState;
   run: Run;
   open: (url: string) => void;
   busy: boolean;
   configure: (profile: Profile) => void;
+  navigate: (page: Page) => void;
 }) {
   const [id, setId] = useState(state.settings.microsoftClientId),
     [eula, setEula] = useState(state.settings.eulaAccepted),
     [key, setKey] = useState("");
+  const account = state.accounts.find((a) => a.id === state.activeAccount);
   return (
-    <div className="settings-layout">
-      <section className="panel wide">
-        <div className="settings-title">
-          <SlidersHorizontal size={19} />
-          <h3>Performance & Java</h3>
+    <div className="night-settings">
+      <section>
+        <h2>
+          <UserRound size={19} />
+          Account
+        </h2>
+        <div className="night-row">
+          <div>
+            <h3>Microsoft account</h3>
+            <p>
+              {account
+                ? `Signed in as ${account.name}.`
+                : "AR Client needs a Microsoft account that owns Minecraft: Java Edition."}
+            </p>
+          </div>
+          <button className="secondary" onClick={() => navigate("Accounts")}>
+            {account ? "Manage accounts" : "Sign in with Microsoft"}
+          </button>
         </div>
-        <p className="muted">
-          Memory, Java, and performance presets are saved per installation.
-        </p>
+      </section>
+      <section>
+        <h2>
+          <RefreshCw size={19} />
+          Updates
+        </h2>
+        <div className="night-row">
+          <div>
+            <h3>Launcher & game updates</h3>
+            <p>
+              Review launcher releases, Minecraft versions and compatible
+              content updates.
+            </p>
+          </div>
+          <button className="secondary" onClick={() => navigate("Updates")}>
+            Check updates
+          </button>
+        </div>
+      </section>
+      <section>
+        <h2>
+          <SlidersHorizontal size={19} />
+          Performance & Java
+        </h2>
         {state.profiles.length ? (
           state.profiles.map((p) => (
-            <div className="installation-row" key={p.id}>
-              <div className="grow">
+            <div className="night-row" key={p.id}>
+              <div>
                 <h3>{p.name}</h3>
-                <small>
+                <p>
                   {p.preset} · {p.ram / 1024} GB RAM ·{" "}
                   {p.java || "Automatic Java"}
-                </small>
+                </p>
               </div>
-              <button
-                className="secondary"
-                disabled={busy}
-                onClick={() => configure(p)}
-              >
-                <Settings2 size={14} />
-                Configure
-              </button>
-              <button
-                className="secondary"
-                disabled={busy}
-                onClick={() =>
-                  run("Apply performance preset", () =>
-                    request("preset.apply", { profile: p.id }),
-                  )
-                }
-              >
-                Apply preset
-              </button>
+              <div className="row-buttons">
+                <button
+                  className="secondary"
+                  disabled={busy}
+                  onClick={() => configure(p)}
+                >
+                  <Settings2 size={14} />
+                  Configure
+                </button>
+                <button
+                  className="secondary"
+                  disabled={busy}
+                  onClick={() =>
+                    run("Apply performance preset", () =>
+                      request("preset.apply", { profile: p.id }),
+                    )
+                  }
+                >
+                  Apply preset
+                </button>
+              </div>
             </div>
           ))
         ) : (
-          <p className="settings-note">
-            Create an installation to configure memory and performance.
-          </p>
+          <div className="night-row">
+            <div>
+              <h3>Installation settings</h3>
+              <p>
+                Create an installation to configure Java, memory and
+                performance.
+              </p>
+            </div>
+            <button
+              className="secondary"
+              onClick={() => navigate("Installations")}
+            >
+              Installations
+            </button>
+          </div>
         )}
-        <p className="settings-note">
-          Fabric presets install compatible Sodium and Lithium releases and
-          apply video settings.
-        </p>
       </section>
-      <section className="panel">
-        <h3>Minecraft</h3>
-        <p className="muted">
-          Review the Minecraft EULA before your first launch.
-        </p>
+      <section>
+        <h2>
+          <Settings2 size={19} />
+          Launcher
+        </h2>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -93,52 +143,50 @@ export default function Preferences({
             );
           }}
         >
-          <details className="advanced-settings">
+          <div className="night-row">
+            <div>
+              <h3>Minecraft EULA</h3>
+              <p>Review the EULA before launching Minecraft.</p>
+              <button
+                type="button"
+                className="text-button"
+                onClick={() => open("https://www.minecraft.net/eula")}
+              >
+                Read EULA <ExternalLink size={12} />
+              </button>
+            </div>
+            <label className="checkbox">
+              <input
+                type="checkbox"
+                checked={eula}
+                onChange={(e) => setEula(e.target.checked)}
+              />
+              I agree to the Minecraft EULA
+            </label>
+          </div>
+          <details className="night-row advanced-settings">
             <summary>Advanced authentication settings</summary>
             <label>
               Microsoft public client ID
               <input
                 value={id}
                 onChange={(e) => setId(e.target.value)}
-                placeholder="Application (client) ID — see README"
                 autoComplete="off"
               />
             </label>
             <p className="settings-note">
-              AR Client’s public application ID is already configured. Only
-              change it to use your own registered Microsoft app.
+              AR Client's app ID is configured. Only change this for your own
+              registered application.
             </p>
           </details>
-          <label className="checkbox">
-            <input
-              type="checkbox"
-              checked={eula}
-              onChange={(e) => setEula(e.target.checked)}
-            />
-            <span>I have read and agree to the Minecraft EULA.</span>
-          </label>
-          <button
-            type="button"
-            className="text-button"
-            onClick={() => open("https://www.minecraft.net/eula")}
-          >
-            Read Minecraft EULA <ExternalLink size={14} />
-          </button>
-          <div className="panel-footer">
+          <div className="settings-save">
             <button className="primary" disabled={busy}>
               Save settings
             </button>
           </div>
         </form>
-      </section>
-      <section className="panel">
-        <h3>Mod catalogs</h3>
-        <p className="muted">
-          {state.curseforgeConfigured
-            ? "Your personal key is saved in your OS credential vault and connects directly to CurseForge."
-            : "Browse Modrinth directly and CurseForge through the AR Client catalog service. A personal CurseForge key is optional."}
-        </p>
         <form
+          className="night-row catalog-settings"
           onSubmit={(e) => {
             e.preventDefault();
             run("Save CurseForge key", async () => {
@@ -147,48 +195,54 @@ export default function Preferences({
             });
           }}
         >
-          <label>
-            Personal API key (optional)
+          <div>
+            <h3>Mod catalogs</h3>
+            <p>
+              {state.curseforgeConfigured
+                ? "Your personal CurseForge key is stored in your OS vault."
+                : "Modrinth and CurseForge are configured. A personal key is optional."}
+            </p>
+          </div>
+          <div className="row-buttons">
             <input
+              aria-label="Personal CurseForge API key"
               type="password"
               value={key}
               onChange={(e) => setKey(e.target.value)}
               autoComplete="new-password"
-              placeholder="Stored securely, never in source code"
+              placeholder="Personal API key (optional)"
             />
-          </label>
-          <button className="secondary" disabled={busy || !key}>
-            Save key
-          </button>
-          {state.curseforgeConfigured && (
-            <button
-              type="button"
-              className="text-button"
-              onClick={() =>
-                run("Remove CurseForge key", () =>
-                  request("curseforge.key", { key: "" }),
-                )
-              }
-            >
-              Remove saved key
+            <button className="secondary" disabled={busy || !key}>
+              Save key
             </button>
-          )}
+            {state.curseforgeConfigured && (
+              <button
+                type="button"
+                className="secondary"
+                onClick={() =>
+                  run("Remove CurseForge key", () =>
+                    request("curseforge.key", { key: "" }),
+                  )
+                }
+              >
+                Remove
+              </button>
+            )}
+          </div>
         </form>
-      </section>
-      <section className="panel wide">
-        <h3>About AR Client</h3>
-        <p className="muted">
-          Version {state.version} · GNU GPL v3.0 · Created by KingAR1000
-        </p>
-        <p className="muted">
-          No ads. No telemetry. Not affiliated with Mojang or Microsoft.
-        </p>
-        <button
-          className="text-button"
-          onClick={() => open("https://github.com/KingAR1000/AR-Client")}
-        >
-          Source code <ArrowUpRight size={16} />
-        </button>
+        <div className="night-row">
+          <div>
+            <h3>About AR Client</h3>
+            <p>Version {state.version} · KingAR1000 · GNU GPL v3.0</p>
+            <p>Free forever. No ads. No telemetry.</p>
+          </div>
+          <button
+            className="secondary"
+            onClick={() => open("https://github.com/KingAR1000/AR-Client")}
+          >
+            Source code <ExternalLink size={14} />
+          </button>
+        </div>
       </section>
     </div>
   );
