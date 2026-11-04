@@ -238,22 +238,27 @@ function App() {
           )}
         </nav>
         <nav className="sidebar-tools" aria-label="Library">
-          {(
-            ["Home", "Mods", "Servers", "Installations", "Updates"] as Page[]
-          ).map((name) => (
-            <button
-              key={name}
-              className={page === name ? "active" : ""}
-              aria-current={page === name ? "page" : undefined}
-              onClick={() => setPage(name)}
-            >
-              {name === "Installations"
-                ? "Versions"
-                : name === "Updates"
-                  ? "Patch notes"
-                  : name}
-            </button>
-          ))}
+          {nav
+            .filter(([name]) =>
+              [
+                "Friends",
+                "Skins",
+                "HUD Editor",
+                "Resource Packs",
+                "Modpacks",
+                "Rust Edition",
+              ].includes(name),
+            )
+            .map(([name, Icon]) => (
+              <button
+                key={name}
+                aria-current={page === name ? "page" : undefined}
+                onClick={() => setPage(name)}
+              >
+                <Icon size={15} />
+                {name}
+              </button>
+            ))}
         </nav>
         <div className="sidebar-info">
           <button
@@ -277,26 +282,22 @@ function App() {
           <span>AR Client</span>
         </button>
         <nav className="header-nav" aria-label="Main navigation">
-          {nav
-            .filter(([name]) =>
-              ["Home", "Mods", "Servers", "Installations", "Updates"].includes(
-                name,
-              ),
-            )
-            .map(([name]) => (
-              <button
-                key={name}
-                className={page === name ? "active" : ""}
-                aria-current={page === name ? "page" : undefined}
-                onClick={() => setPage(name)}
-              >
-                {name === "Installations"
-                  ? "Versions"
-                  : name === "Updates"
-                    ? "Patch notes"
-                    : name}
-              </button>
-            ))}
+          {(
+            ["Home", "Mods", "Servers", "Installations", "Updates"] as Page[]
+          ).map((name) => (
+            <button
+              key={name}
+              className={page === name ? "active" : ""}
+              aria-current={page === name ? "page" : undefined}
+              onClick={() => setPage(name)}
+            >
+              {name === "Installations"
+                ? "Versions"
+                : name === "Updates"
+                  ? "Patch notes"
+                  : name}
+            </button>
+          ))}
         </nav>
         <button
           className="header-account"
