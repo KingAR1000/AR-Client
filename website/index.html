@@ -172,32 +172,6 @@
         isolation: isolate;
         overflow: hidden;
       }
-      .hero-art {
-        position: absolute;
-        inset: 0 -70px 0 30%;
-        z-index: -2;
-        pointer-events: none;
-      }
-      .hero-art img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-      }
-      .hero-art:after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background:
-          linear-gradient(90deg, var(--bg), transparent 35%),
-          linear-gradient(
-            0deg,
-            var(--bg),
-            transparent 12%,
-            transparent 85%,
-            var(--bg)
-          );
-      }
       .hero-copy {
         padding: 58px 0 78px;
         max-width: 640px;
@@ -629,14 +603,7 @@
         max-width: 540px;
       }
       @media (min-width: 1500px) {
-        .hero-art {
-          right: -100px;
-        }
-        .hero {
-          min-height: 780px;
-        }
-      }
-      @media (max-width: 900px) {
+        @media (max-width: 900px) {
         .wrap {
           width: calc(100% - 48px);
         }
@@ -646,47 +613,7 @@
         .hero h1 {
           font-size: 100px;
         }
-        .hero-art {
-          left: 15%;
-          right: -180px;
-          opacity: 0.7;
-        }
-        .hero-art:after {
-          background:
-            linear-gradient(90deg, var(--bg), #0b0b0b77 30%, transparent 60%),
-            linear-gradient(0deg, var(--bg), transparent 30%);
-        }
-        .scene-credit {
-          display: none;
-        }
-        .nav-links {
-          gap: 22px;
-        }
-        .fact {
-          display: block;
-        }
-        .fact small {
-          display: block;
-          margin-top: 4px;
-        }
-        .fact + .fact {
-          padding-left: 14px;
-        }
-        .section {
-          padding: 75px 0;
-        }
-        .version-section,
-        .download {
-          gap: 35px;
-        }
-        .version-display strong {
-          font-size: 86px;
-        }
-        .section-header > p {
-          max-width: 280px;
-        }
-      }
-      @media (max-width: 600px) {
+        @media (max-width: 600px) {
         .wrap {
           width: calc(100% - 36px);
         }
@@ -732,154 +659,7 @@
           font-size: 12px;
           max-width: 260px;
         }
-        .hero-art {
-          inset: 350px -100px -30px -160px;
-          opacity: 0.65;
-        }
-        .hero-art:after {
-          background: linear-gradient(
-            180deg,
-            var(--bg),
-            #0b0b0b50 25%,
-            transparent 65%,
-            var(--bg)
-          );
-        }
-        .hero-copy > .label {
-          font-size: 8px;
-        }
-        .actions {
-          gap: 18px;
-          margin-top: 24px;
-        }
-        .button {
-          padding: 0 16px;
-          gap: 18px;
-          min-height: 48px;
-          font-size: 11px;
-        }
-        .source-link {
-          font-size: 10px;
-        }
-        .hero-note {
-          font-size: 9px;
-        }
-        .facts {
-          grid-template-columns: 1fr 1fr;
-          gap: 22px 15px;
-          padding: 22px 0;
-        }
-        .fact + .fact {
-          padding-left: 0;
-          border: 0;
-        }
-        .fact span:first-child {
-          font-size: 12px;
-        }
-        .fact small {
-          font-size: 8px;
-        }
-        .section {
-          padding: 54px 0;
-        }
-        .section-header {
-          display: block;
-          margin-bottom: 25px;
-        }
-        h2 {
-          font-size: 42px;
-        }
-        .section-header > p {
-          margin-top: 18px;
-          max-width: 100%;
-        }
-        .frame-bar {
-          height: 26px;
-          font-size: 7px;
-          padding: 0 10px;
-        }
-        .screenshot-note {
-          font-size: 8px;
-        }
-        .feature-rows {
-          padding-top: 30px;
-        }
-        .feature-row {
-          grid-template-columns: 24px 1fr;
-          gap: 8px 14px;
-          padding: 22px 0;
-        }
-        .feature-row h3 {
-          font-size: 17px;
-        }
-        .feature-row p {
-          grid-column: 2;
-          font-size: 11px;
-        }
-        .version-section {
-          grid-template-columns: 1fr;
-          gap: 26px;
-          padding: 42px 0;
-        }
-        .version-display strong {
-          font-size: 100px;
-        }
-        .version-copy {
-          font-size: 11px;
-        }
-        .compat-list {
-          gap: 0 25px;
-        }
-        .download {
-          grid-template-columns: 1fr;
-          gap: 20px;
-        }
-        .download-copy > p {
-          margin: 17px 0 8px;
-          font-size: 12px;
-        }
-        .download-card {
-          padding: 22px;
-        }
-        .faq {
-          margin-top: 30px;
-        }
-        .faq summary {
-          font-size: 12px;
-        }
-        .opensource {
-          padding: 38px 0;
-        }
-        .opensource .wrap {
-          display: block;
-        }
-        .opensource h2 {
-          font-size: 37px;
-        }
-        .opensource p {
-          font-size: 11px;
-        }
-        .opensource a {
-          display: inline-flex;
-          margin-top: 20px;
-        }
-        .footer-top {
-          align-items: start;
-        }
-        .footer-links {
-          max-width: 170px;
-          justify-content: end;
-          gap: 12px 18px;
-        }
-        .footer-bottom {
-          display: block;
-          font-size: 8px;
-        }
-        .footer-bottom p + p {
-          margin-top: 12px;
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
+        @media (prefers-reduced-motion: reduce) {
         html {
           scroll-behavior: auto;
         }
@@ -918,48 +698,15 @@
         line-height: 1.02;
         font-weight: 600;
       }
-      .hero-art {
-        inset: 0 -70px 0 18%;
-      }
-      .hero-art:after {
-        background:
-          linear-gradient(90deg, var(--bg), #0b0b0b65 38%, transparent),
-          linear-gradient(
-            0deg,
-            var(--bg),
-            transparent 22%,
-            transparent 80%,
-            var(--bg)
-          );
-      }
       .button,
       .nav-download {
-        border-radius: 0;
-        box-shadow:
-          inset 0 2px #fff6,
-          0 3px #777;
-        clip-path: polygon(
-          0 6px,
-          3px 6px,
-          3px 3px,
-          6px 3px,
-          6px 0,
-          calc(100% - 6px) 0,
-          calc(100% - 6px) 3px,
-          calc(100% - 3px) 3px,
-          calc(100% - 3px) 6px,
-          100% 6px,
-          100% calc(100% - 6px),
-          calc(100% - 6px) calc(100% - 6px),
-          calc(100% - 6px) 100%,
-          6px 100%,
-          6px calc(100% - 3px),
-          0 calc(100% - 3px)
-        );
+        border-radius: 8px;
+        box-shadow: none;
+
       }
       .launcher-frame {
-        border: 2px solid #33333c;
-        border-radius: 0;
+        border: 1px solid #333;
+        border-radius: 12px;
         background: #121219;
       }
       .feature-rows {
@@ -969,11 +716,8 @@
         .hero h1 {
           font-size: 64px;
         }
-        .hero-art {
-          inset: 15% -80% 0 0;
-          opacity: 0.55;
-        }
-      }
+        .hero { min-height: 560px; }
+      .hero-copy { max-width: 840px; }
     </style>
   </head>
   <body>
@@ -994,9 +738,6 @@
     </header>
     <main id="main">
       <section class="wrap hero" aria-labelledby="title">
-        <div class="hero-art" aria-hidden="true">
-          <img src="/assets/night-sky.svg" alt="" width="1280" height="800" />
-        </div>
         <div class="hero-copy">
           <p class="label mono">Independent. Open source. Minecraft Java.</p>
           <h1 id="title">Your world.<br /><span>Your way.</span></h1>
@@ -1053,7 +794,7 @@
             width="1280"
             height="820"
             loading="lazy"
-            alt="AR Client Night interface with an installation sidebar, pixel-cut launch controls and a monochrome sky"
+            alt="AR Client Night interface with an installation sidebar, clean launch controls and a plain dark background"
           />
         </div>
         <div class="screenshot-note">

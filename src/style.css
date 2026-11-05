@@ -1194,7 +1194,7 @@ code {
   flex-wrap: wrap;
 }
 
-/* Adapted from Horizon Night: theme.rs (248/56/32 layout), plate.rs and sky.rs.
+/* Layout adapted from Horizon theme.rs (248/56/32). Flat AR styling.
    Copyright 2026 Ludovic Marie and Horizon contributors; MIT notice in licenses/. */
 @font-face {
   font-family: "Bricolage";
@@ -1211,14 +1211,14 @@ code {
 :root {
   font-family: "Bricolage", "Segoe UI", sans-serif;
   --sidebar-width: 248px;
-  --muted: #b6b6c2;
-  --border: #41414c;
-  --surface: #16161df5;
-  background: #0c0c11;
-  color: #f2f2f7;
+  --muted: #b6b6b6;
+  --border: #414141;
+  --surface: #161616;
+  background: #0c0c0c;
+  color: #f2f2f2;
 }
 body {
-  background: url("/night-sky.svg") center bottom / 100% 100vh fixed no-repeat;
+  background: #101010;
 }
 .shell {
   min-height: 100vh;
@@ -1231,8 +1231,8 @@ body {
   width: 248px;
   display: flex;
   flex-direction: column;
-  background: #15151dde;
-  border-right: 1px solid #393942;
+  background: #151515;
+  border-right: 1px solid #393939;
   z-index: 20;
   padding: 12px 10px;
 }
@@ -1252,7 +1252,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 3px 8px;
-  color: #aaaab8;
+  color: #aaaaaa;
   font-size: 11px;
 }
 .instance-list {
@@ -1269,7 +1269,7 @@ body {
   text-align: left;
   padding: 12px 8px;
   margin-top: 6px;
-  color: #dddde8;
+  color: #dddddd;
 }
 .instance-entry img {
   width: 34px;
@@ -1285,16 +1285,16 @@ body {
   display: block;
   font-size: 11px;
   margin-top: 4px;
-  color: #b6b6c2;
+  color: #b6b6b6;
   font-weight: 400;
 }
 .instance-entry.selected {
-  background: #383842;
-  outline: 1px solid #62626d;
+  background: #383838;
+  outline: 1px solid #626262;
 }
 .instance-empty {
   font-size: 12px;
-  border: 1px dashed #494953;
+  border: 1px dashed #494949;
 }
 .sidebar-tools {
   display: grid;
@@ -1308,16 +1308,16 @@ body {
   gap: 10px;
   padding: 8px;
   text-align: left;
-  color: #c1c1cd;
+  color: #c1c1c1;
   font-size: 12px;
 }
 .sidebar-tools button:hover,
 .sidebar-tools button[aria-current] {
-  background: #343440;
+  background: #343434;
   color: white;
 }
 .sidebar-info {
-  border-top: 1px solid #41414a;
+  border-top: 1px solid #414141;
   padding-top: 10px;
 }
 .sidebar-info small {
@@ -1334,8 +1334,8 @@ body {
   align-items: center;
   gap: 10px;
   padding: 0 14px 0 24px;
-  background: #0e0e16e8;
-  border-bottom: 1px solid #353540;
+  background: #0e0e0e;
+  border-bottom: 1px solid #353535;
   z-index: 15;
 }
 .app-header > .brand {
@@ -1349,21 +1349,21 @@ body {
 }
 .header-nav button {
   padding: 8px 13px;
-  color: #c4c4d1;
+  color: #c4c4c4;
   font-size: 13px;
 }
 .header-nav .active,
 .settings-shortcut.active {
-  background: #3b3b4a;
-  outline: 1px solid #707080;
+  background: #3b3b3b;
+  outline: 1px solid #707070;
   color: #fff;
 }
 .header-account {
   display: flex;
   gap: 10px;
   align-items: center;
-  background: #22222de6;
-  border: 1px solid #42424e;
+  background: #222222;
+  border: 1px solid #424242;
   padding: 5px 10px;
   text-align: left;
   font-size: 12px;
@@ -1397,7 +1397,7 @@ h1 {
   margin-bottom: 28px;
 }
 .page-heading p {
-  color: #c0c0cd;
+  color: #c0c0c0;
   font-size: 13px;
 }
 .primary,
@@ -1410,75 +1410,50 @@ select,
 .toast,
 .modal,
 .profile-tile {
-  border-radius: 0;
+  border-radius: 8px;
 }
 .primary {
-  background: #e5e5ed;
-  color: #15151d;
-  border: 2px solid #fff;
-  box-shadow: 0 3px 0 #a1a1b0;
+  background: #e5e5e5;
+  color: #151515;
+  border: 1px solid #eee;
+  box-shadow: none;
   font-weight: 600;
 }
 .secondary {
-  background: #32323f;
-  color: #efeff8;
-  border: 1px solid #646472;
-  box-shadow:
-    inset 0 1px #7a7a87,
-    0 2px #0a0a11;
+  background: #323232;
+  color: #efefef;
+  border: 1px solid #646464;
+  box-shadow: none;
 }
 .primary:hover {
   background: white;
 }
 .secondary:hover {
-  background: #454556;
+  background: #454545;
 }
 .panel {
   background: var(--surface);
-  border: 2px solid #08080d;
-  box-shadow:
-    inset 0 2px #5b5b68,
-    0 2px #08080d;
+  border: 1px solid #303030;
+  box-shadow: none;
 }
 input,
 select {
-  background: #13131df5;
-  border: 1px solid #464653;
-  color: #eeeef6;
+  background: #131313;
+  border: 1px solid #464646;
+  color: #eeeeee;
 }
 .header-nav .active,
 .instance-entry.selected,
 .game-actions > .primary,
 .instance-tabs > [aria-current] {
-  clip-path: polygon(
-    0 8px,
-    4px 8px,
-    4px 4px,
-    8px 4px,
-    8px 0,
-    calc(100% - 8px) 0,
-    calc(100% - 8px) 4px,
-    calc(100% - 4px) 4px,
-    calc(100% - 4px) 8px,
-    100% 8px,
-    100% calc(100% - 8px),
-    calc(100% - 4px) calc(100% - 8px),
-    calc(100% - 4px) calc(100% - 4px),
-    calc(100% - 8px) calc(100% - 4px),
-    calc(100% - 8px) 100%,
-    8px 100%,
-    8px calc(100% - 4px),
-    4px calc(100% - 4px),
-    4px calc(100% - 8px),
-    0 calc(100% - 8px)
-  );
+  border-radius: 8px;
 }
 .night-hero {
   padding-top: 108px;
   padding-bottom: 40px;
 }
 .game-meta {
-  color: #dedee9;
+  color: #dedede;
   font-size: 11px;
 }
 .game-meta::before {
@@ -1503,7 +1478,7 @@ select {
 }
 .game-caption {
   font-size: 13px;
-  color: #c7c7d4;
+  color: #c7c7c7;
   margin-top: 12px;
 }
 .game-actions {
@@ -1520,13 +1495,13 @@ select {
 }
 .game-version {
   position: relative;
-  background: #262633eb;
+  background: #262626;
   padding: 7px 30px 7px 12px;
   max-width: 200px;
 }
 .game-version label {
   font-size: 10px;
-  color: #b5b5c4;
+  color: #b5b5b5;
   display: block;
   margin-bottom: 4px;
 }
@@ -1547,12 +1522,12 @@ select {
 }
 .game-actions > .text-button {
   font-size: 13px;
-  color: #dddde8;
+  color: #dddddd;
 }
 .friend-card {
   margin-left: auto;
-  background: #14141df2;
-  border: 1px solid #4a4a59;
+  background: #141414;
+  border: 1px solid #4a4a4a;
   padding: 16px 20px;
   min-width: 220px;
   text-align: left;
@@ -1563,7 +1538,7 @@ select {
   display: block;
 }
 .friend-card > span {
-  color: #b1b1c0;
+  color: #b1b1b1;
   font-size: 11px;
   margin-bottom: 9px;
 }
@@ -1573,7 +1548,7 @@ select {
   margin-bottom: 6px;
 }
 .friend-card:hover {
-  background: #252533;
+  background: #252525;
 }
 .instance-tabs {
   display: flex;
@@ -1584,10 +1559,10 @@ select {
 .instance-tabs > * {
   padding: 8px 12px;
   font-size: 13px;
-  color: #d1d1e0;
+  color: #d1d1d1;
 }
 .instance-tabs > [aria-current] {
-  background: #353543;
+  background: #353535;
   color: #fff;
 }
 .instance-overview {
@@ -1595,11 +1570,10 @@ select {
   gap: 10px;
 }
 .night-row {
-  background: #14141df5;
-  border: 2px solid #09090e;
-  box-shadow:
-    inset 0 2px #5a5a68,
-    0 2px #09090e;
+  background: #141414;
+  border: 1px solid #303030;
+  box-shadow: none;
+  border-radius: 10px;
   padding: 16px;
   min-height: 70px;
   display: flex;
@@ -1611,7 +1585,7 @@ select {
   font-size: 14px;
 }
 .night-row p {
-  color: #b7b7c9;
+  color: #b7b7b7;
   font-size: 12px;
   line-height: 1.55;
   margin-top: 4px;
@@ -1621,14 +1595,14 @@ select {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #c7c7da;
+  color: #c7c7c7;
   font-size: 13px;
   white-space: nowrap;
   padding: 8px;
 }
 .row-action:hover {
   color: #fff;
-  background: #353543;
+  background: #353535;
 }
 .night-settings {
   display: grid;
@@ -1646,7 +1620,7 @@ select {
   margin-bottom: 5px;
 }
 .night-settings h2 svg {
-  color: #c7c7dd;
+  color: #c7c7c7;
 }
 .night-row > div:first-child {
   flex: 1;
@@ -1670,7 +1644,7 @@ select {
 }
 .night-settings .advanced-settings summary {
   cursor: pointer;
-  color: #c7c7d7;
+  color: #c7c7c7;
   font-size: 12px;
 }
 .night-settings .advanced-settings label {
@@ -1685,7 +1659,7 @@ select {
   max-width: 230px;
 }
 .footer {
-  color: #aaaaba;
+  color: #aaaaaa;
   font-size: 10px;
 }
 .footer-links {
@@ -1696,8 +1670,8 @@ select {
 }
 .environment-banner {
   font-size: 10px;
-  background: #202028;
-  border-bottom: 1px solid #363641;
+  background: #202020;
+  border-bottom: 1px solid #363636;
   padding: 8px 32px;
 }
 @media (max-width: 1100px) {
@@ -1813,4 +1787,18 @@ select {
   .row-buttons {
     width: 100%;
   }
+}
+
+.instance-entry,
+.sidebar-tools button,
+.header-account,
+.game-version,
+.friend-card {
+  border-radius: 8px;
+}
+.header-nav .active,
+.settings-shortcut.active,
+.instance-entry.selected {
+  outline: none;
+  background: #292929;
 }
