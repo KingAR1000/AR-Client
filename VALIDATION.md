@@ -1,6 +1,6 @@
 # Validation
 
-Checks below were recorded on 28 October–4 November 2026. Installation and compilation checks do not establish authenticated gameplay or performance.
+Checks below were recorded on 28 October–5 November 2026. Installation and compilation checks do not establish authenticated gameplay or performance.
 
 ## Passed
 
@@ -84,3 +84,7 @@ To repeat a live installation check, run `cargo run --manifest-path src-tauri/Ca
 - HUD controls support position, scale, opacity, color, visibility, keybinds, crosshair settings, scoreboard visibility and chat opacity. Named layouts, full themes and advanced chat/scoreboard styling are absent.
 - Resource packs have no animated preview. Loader upgrades are selected through installation settings; Minecraft upgrades use separate installations.
 - Performance presets can install compatible Sodium/Lithium releases. FPS, memory and latency improvements have not been benchmarked.
+
+## 5 November flat styling
+
+Removed the pixel-cut paths, beveled borders and sky SVG assets from both launcher and website. The instance/sidebar layout remains, with a plain dark background and smooth controls. Browser checks confirmed no background image or clip paths, no uncaught errors, and no Settings overflow at 600/980/1280/1440px. The website screenshot was refreshed from the actual UI. The frontend build and existing tests passed.
