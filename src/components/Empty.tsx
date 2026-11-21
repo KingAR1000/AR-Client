@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Box, Plus } from "lucide-react";
 
 export default function Empty({
@@ -5,17 +6,17 @@ export default function Empty({
   text,
   action,
   onClick,
+  icon,
 }: {
   title: string;
   text: string;
   action?: string;
   onClick?: () => void;
+  icon?: ReactNode;
 }) {
   return (
     <div className="empty">
-      <div className="empty-icon">
-        <Box size={28} />
-      </div>
+      <div className="empty-icon">{icon || <Box size={26} />}</div>
       <h3>{title}</h3>
       <p>{text}</p>
       {action && (

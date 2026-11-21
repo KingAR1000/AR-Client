@@ -6,6 +6,7 @@ import { message, request, type LauncherState } from "../api";
 
 import type { Run } from "../api";
 import Empty from "./Empty";
+import Head from "./Head";
 export default function Accounts({
   state,
   run,
@@ -144,8 +145,11 @@ export default function Accounts({
           </div>
         )}
         {state.accounts.map((a) => (
-          <div className="installation-row" key={a.id}>
-            <div className="avatar">{a.name.slice(0, 2)}</div>
+          <div
+            className={`installation-row ${a.id === state.activeAccount ? "current" : ""}`}
+            key={a.id}
+          >
+            <Head name={a.name} skin={a.skin} size={36} />
             <div className="grow">
               <h3>{a.name}</h3>
               <small>

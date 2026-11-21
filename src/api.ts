@@ -37,10 +37,18 @@ export type Content = {
   kind: string;
 };
 export const desktop = isTauri();
+// Development-only interface preview with sample data (`npm run dev`, then open /?preview). Never bundled in releases.
+export const preview =
+  import.meta.env.DEV &&
+  !desktop &&
+  typeof location !== "undefined" &&
+  new URLSearchParams(location.search).has("preview");
 export async function request<T = unknown>(
   action: string,
   args: unknown = {},
 ): Promise<T> {
+  if (import.meta.env.DEV && preview)
+    return (await import("./preview")).respond(action, args) as T;
   if (!desktop)
     throw new Error(
       "Open the AR Client desktop application to use this feature. This browser only displays the interface.",
@@ -111,3 +119,37 @@ export type Widget = {
   color: string;
   enabled: boolean;
 };
+export type Peer = {
+  id: string;
+  name: string;
+  skin: string;
+  lastSeen: number;
+  activity: string;
+  status: "pending" | "accepted";
+  requester: string;
+  created: number;
+  online: boolean;
+  unread: number;
+  lastUnread: number;
+};
+export type SocialSnapshot = {
+  id: string;
+  name: string;
+  skin: string;
+  now: number;
+  peers: Peer[];
+  blocks: { id: string; name: string; skin: string }[];
+};
+export type ChatMessage = {
+  id: number;
+  sender: string;
+  recipient: string;
+  body: string;
+  created: number;
+};
+export type Notify = (notice: {
+  text: string;
+  error?: boolean;
+  title?: string;
+  action?: { label: string; run: () => void };
+}) => void;

@@ -1,0 +1,8 @@
+ALTER TABLE users ADD COLUMN activity TEXT NOT NULL DEFAULT '';
+ALTER TABLE users ADD COLUMN verified INTEGER NOT NULL DEFAULT 0;
+CREATE INDEX users_name ON users(name);
+CREATE INDEX messages_inbox ON messages(recipient,id);
+CREATE TABLE reads(owner TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,peer TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,last_id INTEGER NOT NULL,PRIMARY KEY(owner,peer));
+CREATE TABLE proofs(nonce TEXT PRIMARY KEY,expires INTEGER NOT NULL);
+CREATE INDEX proofs_expiry ON proofs(expires);
+ALTER TABLE users ADD COLUMN skin TEXT NOT NULL DEFAULT '';
