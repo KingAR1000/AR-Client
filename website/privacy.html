@@ -56,7 +56,7 @@
       <nav><a href="index.html">← AR Client</a></nav>
       <h1>Privacy</h1>
       <p>
-        Updated 29 October 2026. AR Client is maintained by KingAR1000. Contact
+        Updated 21 November 2026. AR Client is maintained by KingAR1000. Contact
         <a href="mailto:hello@kingar1000.xyz">hello@kingar1000.xyz</a>.
       </p>
       <h2>Information on your device</h2>
@@ -120,12 +120,16 @@
       <footer>AR Client · KingAR1000 · GPL v3</footer>
       <h2>Optional friends and chat</h2>
       <p>
-        When you connect to AR Client Friends, the social service verifies your
-        Minecraft account using your Minecraft access token. It does not retain
-        that token or receive your Microsoft refresh token. It stores your
-        Minecraft ID and name, last-seen time while Friends is open, friend
-        requests, friendships, blocks, hashed expiring social sessions, and
-        messages.
+        When you connect to AR Client Friends, the launcher obtains your
+        Mojang-signed public profile and profile certificate from Mojang and
+        sends them, with a one-time proof signed by a key that stays on your
+        computer, to the social service. Your Minecraft access token and
+        Microsoft refresh token are never sent to it. The service stores your
+        Minecraft ID, name and skin address, last-seen time and a short activity
+        status (for example "Playing 26.3") while AR Client is connected, friend
+        requests, friendships, blocks, read positions, hashed expiring social
+        sessions, and messages. Only accepted friends see your online status and
+        activity.
       </p>
       <p>
         Messages are available only between accepted friends, are not end-to-end

@@ -6,8 +6,21 @@
     <meta name="theme-color" content="#0b0b0b" />
     <meta
       name="description"
-      content="AR Client. A free, open-source Minecraft Java launcher by KingAR1000. The latest stable Minecraft, isolated installations, mods, and skins. No ads."
+      content="AR Client. A free, open-source Minecraft Java launcher by KingAR1000. The latest stable Minecraft, isolated installations, mods, skins, and verified friends and chat. No ads."
     />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AR Client" />
+    <meta property="og:title" content="AR Client — Minecraft, on your terms." />
+    <meta
+      property="og:description"
+      content="A free, open-source Minecraft Java launcher. Installations, mods, skins, and friends — no ads."
+    />
+    <meta property="og:url" content="https://client.kingar1000.xyz/" />
+    <meta
+      property="og:image"
+      content="https://client.kingar1000.xyz/assets/launcher.jpg"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
     <title>AR Client — Minecraft, on your terms.</title>
     <link rel="icon" type="image/png" href="/assets/ar-mark.png" />
     <link
@@ -36,6 +49,8 @@
         --ink: #f1f1f1;
         --muted: #a2a2a2;
         --line: #ffffff22;
+        --accent: #43d17a;
+        --accent-ink: #04210f;
       }
       * {
         box-sizing: border-box;
@@ -72,12 +87,12 @@
       a:focus-visible,
       button:focus-visible,
       summary:focus-visible {
-        outline: 2px solid white;
+        outline: 2px solid var(--accent);
         outline-offset: 6px;
       }
       ::selection {
-        background: #fff;
-        color: #111;
+        background: var(--accent);
+        color: var(--accent-ink);
       }
       h1,
       h2,
@@ -199,7 +214,7 @@
       }
       .hero h1 span {
         color: transparent;
-        -webkit-text-stroke: 1px #f1f1f1;
+        -webkit-text-stroke: 1px var(--accent);
       }
       .hero-description {
         font-size: 15px;
@@ -218,19 +233,20 @@
         align-items: center;
         justify-content: center;
         gap: 30px;
-        background: #ededed;
-        color: #151515;
+        background: var(--accent);
+        color: var(--accent-ink);
         min-height: 51px;
         padding: 0 23px;
         font-size: 12px;
         font-weight: bold;
-        border: 1px solid #ededed;
+        border: 1px solid var(--accent);
+        box-shadow: 0 10px 34px #43d17a33;
         transition:
           background 0.16s,
           transform 0.16s;
       }
       .button:hover {
-        background: #fff;
+        background: #5ee08f;
         transform: translateY(-2px);
       }
       .source-link {
@@ -352,6 +368,67 @@
       }
       .feature-rows {
         padding-top: 50px;
+      }
+      .section-number {
+        color: var(--accent);
+      }
+      .social-section {
+        display: grid;
+        grid-template-columns: 0.85fr 1.15fr;
+        gap: 56px;
+        align-items: center;
+      }
+      .social-section h2 {
+        margin: 14px 0 18px;
+      }
+      .social-section > div > p {
+        color: var(--muted);
+        max-width: 420px;
+        line-height: 1.8;
+      }
+      .social-points {
+        list-style: none;
+        padding: 0;
+        margin: 28px 0 0;
+        border-top: 1px solid var(--line);
+      }
+      .social-points li {
+        display: grid;
+        grid-template-columns: 18px 1fr;
+        gap: 14px;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 13px;
+        color: #cfcfcf;
+      }
+      .social-points li::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        margin-top: 7px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 12px var(--accent);
+      }
+      .social-shot {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow:
+          0 40px 120px #000,
+          0 0 0 1px #43d17a1a,
+          0 0 80px #43d17a14;
+      }
+      .social-shot img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      @media (max-width: 900px) {
+        .social-section {
+          grid-template-columns: 1fr;
+          gap: 36px;
+        }
       }
       .feature-row {
         display: grid;
@@ -907,7 +984,7 @@
         ></a
       >
       <nav class="nav-links" aria-label="Main navigation">
-        <a href="#launcher">The launcher</a
+        <a href="#launcher">The launcher</a><a href="#friends">Friends</a
         ><a href="https://github.com/KingAR1000/AR-Client">GitHub ↗</a
         ><a class="nav-download" href="#download"
           >Get AR Client <span aria-hidden="true">↓</span></a
@@ -921,7 +998,7 @@
           <h1 id="title">Your world.<br /><span>Your way.</span></h1>
           <p class="hero-description">
             An installation for every way you play.<br />Minecraft, mods and
-            friends. One free launcher.
+            verified friends with chat. One free launcher.
           </p>
           <div class="actions">
             <a class="button" href="#download"
@@ -972,11 +1049,13 @@
             width="1280"
             height="820"
             loading="lazy"
-            alt="AR Client Night interface with an installation sidebar, clean launch controls and a plain dark background"
+            alt="AR Client home screen with navigation sidebar, a large Play button, installations, online friends and quick access tiles"
           />
         </div>
         <div class="screenshot-note">
-          <span>Actual interface · Browser preview · Development build.</span
+          <span
+            >Actual interface · Shown with sample data · Development
+            build.</span
           ><span>Windows 11 / 64-bit</span>
         </div>
         <div class="feature-rows">
@@ -1006,12 +1085,68 @@
               version-specific Fabric companion adds an editable in-game HUD.
             </p>
           </article>
+          <article class="feature-row">
+            <span>04</span>
+            <h3>Host for your friends.</h3>
+            <p>
+              Run an isolated, whitelisted Java server on your own computer,
+              with a live console, from the same launcher.
+            </p>
+          </article>
+          <article class="feature-row">
+            <span>05</span>
+            <h3>Everything, one shortcut away.</h3>
+            <p>
+              Press Ctrl+K to launch an installation, jump to any page, or
+              message a friend without reaching for the mouse.
+            </p>
+          </article>
+        </div>
+      </section>
+      <section
+        class="wrap section"
+        id="friends"
+        aria-labelledby="friends-title"
+      >
+        <div class="social-section">
+          <div>
+            <p class="section-number mono">02 / Friends &amp; chat</p>
+            <h2 id="friends-title">Play together,<br />stay in touch.</h2>
+            <p>
+              Add friends by Minecraft username, see who’s online and what
+              they’re playing, and chat privately — with notifications anywhere
+              in the launcher.
+            </p>
+            <ul class="social-points">
+              <li>
+                Identities are proven with Mojang-signed certificates. Your
+                Minecraft sign-in token never leaves your computer.
+              </li>
+              <li>
+                Unread badges, read receipts and live presence, refreshed
+                automatically.
+              </li>
+              <li>
+                Block anyone, delete your social data at any time. Messages
+                expire after 30 days and are not end-to-end encrypted.
+              </li>
+            </ul>
+          </div>
+          <div class="social-shot">
+            <img
+              src="/assets/friends.jpg"
+              width="1280"
+              height="820"
+              loading="lazy"
+              alt="AR Client Friends screen showing a friends list with online status and a private chat conversation"
+            />
+          </div>
         </div>
       </section>
       <section class="wrap version-section" aria-labelledby="version-title">
         <div>
           <p class="section-number mono" id="version-title">
-            02 / Latest stable, first
+            03 / Latest stable, first
           </p>
           <div class="version-display">
             <strong id="minecraft-version">26.3</strong
@@ -1039,7 +1174,7 @@
       <section class="wrap section" id="download">
         <div class="download">
           <div class="download-copy">
-            <p class="section-number mono">03 / Get AR Client</p>
+            <p class="section-number mono">04 / Get AR Client</p>
             <h2>Your next world<br />starts here.</h2>
             <p>
               Free to use. Free to change. A Microsoft account with access to
@@ -1120,6 +1255,18 @@
                 >validation notes</a
               >
               for the tested scope and remaining limitations.
+            </p>
+          </details>
+          <details>
+            <summary>How do friends and chat work?</summary>
+            <p>
+              Open Friends in the launcher and connect once. AR Client proves
+              your identity to its free Cloudflare-hosted service with
+              Mojang-signed data, then you can add friends by their exact
+              Minecraft username. Messages are only allowed between accepted
+              friends, are kept for 30 days, and are not end-to-end encrypted.
+              Your friend must also connect to Friends once before they can
+              receive a request.
             </p>
           </details>
           <details>

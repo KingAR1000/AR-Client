@@ -8,7 +8,7 @@ The primary target is always the **latest stable Minecraft release**, currently 
 
 ## Source
 
-- `src/`: React/TypeScript launcher interface, skin viewer and HUD editor.
+- `src/`: React/TypeScript launcher interface, skin viewer and HUD editor. Press Ctrl+K in the launcher for the command palette. `npm run dev` then `http://127.0.0.1:1420/?preview` shows the interface with sample data (development builds only).
 - `src-tauri/`: Rust authentication, installation, content and launch services.
 - `in-game/`: Fabric companion mod.
 - `website/`: Cloudflare Free website and API worker; see [hosting instructions](website/HOSTING.md).
@@ -73,7 +73,9 @@ The project owner must submit/review **a638a66e-7242-4bbe-b197-631d1ce1d7fb** at
 
 ## Friends and chat
 
-The Friends screen connects verified Minecraft identities, sends and accepts requests, removes friends, blocks players, and exchanges messages only between accepted friends. It supports recent-message polling, older-message retrieval and social-account deletion. Messages expire after 30 days and are not end-to-end encrypted. The Minecraft access token is used transiently to verify identity; the service stores only hashed, expiring social-session tokens. Native social-session tokens stay in memory. Microsoft refresh tokens remain in the OS vault.
+The Friends screen connects verified Minecraft identities, sends and accepts requests (two players requesting each other become friends), removes friends, blocks players, and exchanges messages only between accepted friends. The connection is launcher-wide once enabled: online friends, their activity (for example "Playing 26.3"), unread badges and in-app notifications work on every page, with read receipts and incremental message polling in chat. Messages expire after 30 days and are not end-to-end encrypted.
+
+Mojang blocks requests from Cloudflare Workers, so the service never contacts Mojang. Instead the launcher fetches its Mojang-signed profile (ID and current username) and its Mojang-signed profile certificate, then signs a single-use proof with the certificate's private key. The Worker verifies all three against pinned Mojang public keys. The Minecraft access token and the private key never leave the computer. Usernames are resolved to UUIDs on the player's computer. The service stores only hashed, expiring social-session tokens; native social-session tokens stay in memory and Microsoft refresh tokens remain in the OS vault. Accounts whose Xbox privacy or family settings block online multiplayer cannot obtain a profile certificate and therefore cannot use Friends.
 
 The Cloudflare Worker and D1 schema are in [`social/`](social/README.md). The backend Worker `ar-client` is deployed at `https://social.client.kingar1000.xyz/` on Workers/D1 Free. Health and unauthenticated rejection checks pass; real-account friends/chat still requires successful Minecraft login and end-to-end validation. A build can override the default service URL with `AR_SOCIAL_URL`; do not direct account tokens to an untrusted service.
 
